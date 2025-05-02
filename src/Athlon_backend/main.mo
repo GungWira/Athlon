@@ -76,6 +76,18 @@ actor Athlon {
         let newArena = await ArenaService.createArena(nextArenaId, name, location, sportTypes, description, image, owner, arenas);
         nextArenaId := nextArenaId + 1;
         return newArena;
-    }
+    };
+  
+  public func getAllArenas(): async [ArenaType.Arena] {
+      return Iter.toArray(arenas.vals());
+  };
+
+  public func searchArenas(
+    nameFilter: ?Text,
+    locationFilter: ?Text,
+    sportFilter: ?Text
+  ): async [ArenaType.Arena] {
+      return await ArenaService.searchArenas(arenas, nameFilter, locationFilter, sportFilter);
+  }
 
 };

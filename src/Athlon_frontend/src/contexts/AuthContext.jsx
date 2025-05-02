@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AuthClient } from "@dfinity/auth-client";
+import { INTERNET_IDENTITY_URL } from "../constants";
 
 const AuthContext = createContext();
 
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async () => {
     await authClient.login({
-      identityProvider: "https://identity.ic0.app/#authorize",
+      identityProvider: INTERNET_IDENTITY_URL,
       onSuccess: async () => {
         const id = authClient.getIdentity();
         setIdentity(id);
