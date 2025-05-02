@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Button({children, onClick, type="button", className=""}) {
 
-    const variant = "bg-blue-500 text-primary-foreground hover:bg-primary/90"
+    const variant = "bg-[#5336E8] text-white"
   return (
     <button
     type={type}
