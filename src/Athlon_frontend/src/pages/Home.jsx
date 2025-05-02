@@ -1,3 +1,4 @@
+import Button from "../components/ui/Button";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
@@ -11,7 +12,7 @@ export default function Home() {
           <button onClick={logout}>Logout</button>
         </>
       ) : (
-        <button onClick={login}>Login with Internet Identity</button>
+        <Button className="" onClick={login}>Login with Internet Identity test wwwww</Button>
       )}
     </div>
   );
