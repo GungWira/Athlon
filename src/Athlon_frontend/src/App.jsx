@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Athlon_backend } from 'declarations/Athlon_backend';
+import { useState } from "react";
+import { Athlon_backend } from "declarations/Athlon_backend";
 
 function App() {
-  const [greeting, setGreeting] = useState('');
+  const [greeting, setGreeting] = useState("");
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -15,6 +15,9 @@ function App() {
 
   return (
     <main>
+      <p className="text-blue-600">halo</p>
+      <h1 className="text-3xl text-emerald-400">haloo</h1>
+      <p></p>
       <img src="/logo2.svg" alt="DFINITY logo" />
       <br />
       <br />
