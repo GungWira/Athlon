@@ -1,12 +1,14 @@
 import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
 
 // TYPES
 import UserType "types/UserType";
 import ArenaType "types/ArenaType";
 // SERVICES
 import UserService "services/UserService";
+import ArenaService "services/ArenaService";
 
 
 actor Athlon {
@@ -22,6 +24,7 @@ actor Athlon {
     Principal.equal,
     Principal.hash
   );
+  var nextArenaId : Nat = 0;
   
 
   // DATA ENTRIES
@@ -62,6 +65,17 @@ actor Athlon {
   // FUNCTION ARENAS -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
 
-
+  public func createArena(
+        name: Text,
+        location: Text,
+        sportTypes: [Text],
+        description: Text,
+        image: Text,
+        owner: Principal,
+    ): async ArenaType.Arena {
+        let newArena = await ArenaService.createArena(nextArenaId, name, location, sportTypes, description, image, owner, arenas);
+        nextArenaId := nextArenaId + 1;
+        return newArena;
+    }
 
 };
