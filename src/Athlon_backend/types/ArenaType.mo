@@ -13,7 +13,7 @@ module {
         sportTypes: [Text];
         description: Text;
         image: Text;
-        createdAt: Nat;
+        createdAt: Int;
         owner: Principal;
     };
 }
