@@ -1,16 +1,32 @@
 import Principal "mo:base/Principal";
 import Time "mo:base/Time";
+import Text "mo:base/Text";
 
 import UserType "../types/UserType";
 
 module {
-    public func createUser(principal: Principal, name: Text, email: Text, userType: Text, users : UserType.Users) : async UserType.User {
+    public func createUser(
+        principal: Principal, 
+        username: Text, 
+        imageProfile: ?Text,
+        userType: Text, 
+        walletAddress: Text,
+        phoneNumber: Text,
+        arenas: ?[Nat],
+        preferedSports: ?[Text],
+        users : UserType.Users
+        ) : async UserType.User {
         let createdAt = Time.now();
+        
         let newUser : UserType.User = {
             principal = principal;
-            name = name;
-            email = email;
+            username = username;
+            imageProfile = imageProfile;
             userType = userType;
+            walletAddress = walletAddress;
+            phoneNumber = phoneNumber;
+            arenas = arenas;
+            preferedSports = preferedSports;
             createdAt = createdAt;
         };
 
