@@ -9,10 +9,15 @@ module {
     public type Arena = {
         id: Nat;
         name: Text;
-        location: Text;
-        sportTypes: [Text];
         description: Text;
-        image: Text;
+        images: [Text];
+        sports: [Text];
+        province: Text;
+        city: Text;
+        district: Text;
+        mapsLink: Text;
+        rules: Text;
+        facilities: [Text];
         createdAt: Int;
         owner: Principal;
     };

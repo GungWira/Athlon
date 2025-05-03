@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
     setAuthClient(client);
 
     const isLoggedIn = await client.isAuthenticated();
-    console.log("User is loggin :", isLoggedIn);
     setIsAuthenticated(isLoggedIn);
 
     if (isLoggedIn) {

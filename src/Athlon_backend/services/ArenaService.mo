@@ -9,30 +9,40 @@ import Array "mo:base/Array";
 
 module {
     public func createArena(
-        id: Nat,
-        name: Text,
-        location: Text,
-        sportTypes: [Text],
-        description: Text,
-        image: Text,
-        owner: Principal,
-        arenas: ArenaType.Arenas
-    ): async ArenaType.Arena{
-        let createdAt = Time.now();
-        let newArena : ArenaType.Arena = {
-            id = id;
-            name = name;
-            location = location;
-            sportTypes = sportTypes;
-            description = description;
-            image = image;
-            createdAt = createdAt;
-            owner = owner;
-        };
-
-        arenas.put(owner, newArena);
-        return newArena;
+    id: Nat,
+    name: Text,
+    description: Text,
+    images: [Text],
+    sports: [Text],
+    province: Text,
+    city: Text,
+    district: Text,
+    mapsLink: Text,
+    rules: Text,
+    facilities: [Text],
+    owner: Principal,
+    arenas: ArenaType.Arenas
+  ): async ArenaType.Arena {
+    let createdAt = Time.now();
+    let newArena: ArenaType.Arena = {
+      id = id;
+      name = name;
+      description = description;
+      images = images;
+      sports = sports;
+      province = province;
+      city = city;
+      district = district;
+      mapsLink = mapsLink;
+      rules = rules;
+      facilities = facilities;
+      createdAt = createdAt;
+      owner = owner;
     };
+
+    arenas.put(owner, newArena);
+    return newArena;
+  };
 
     public func searchArenas(
         arenas: ArenaType.Arenas,
@@ -52,12 +62,12 @@ module {
 
                 let matchLocation = switch (locationFilter) {
                     case (null) true;
-                    case (?loc) a.location == loc;
+                    case (?loc) a.city == loc;
                 };
 
                 let matchSport = switch (sportFilter) {
                     case (null) true;
-                    case (?sport) arrayAny<Text>(a.sportTypes, func(t: Text): Bool { t == sport });
+                    case (?sport) arrayAny<Text>(a.sports, func(t: Text): Bool { t == sport });
                 };
 
                 matchName and matchLocation and matchSport;
