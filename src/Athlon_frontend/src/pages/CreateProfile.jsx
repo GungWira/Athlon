@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { getAccountIdentifierFromPrincipal } from "../utils/icpUtils";
 
 export default function CreateProfile() {
-  const { principal, actor } = useAuth();
+  const { principal, actor, logout } = useAuth();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -146,6 +146,7 @@ export default function CreateProfile() {
           </p>
         )}
       </form>
+      <button onClick={logout}>Logout</button>
     </div>
   );
 }

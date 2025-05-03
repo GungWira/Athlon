@@ -1,3 +1,5 @@
+
+import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Hero from "../components/home/Hero";
@@ -6,10 +8,6 @@ import { sportCategories, trendingArenas } from "../data/dummy-data"
 import { CardArena } from "../components/home/CardArena";
 
 export default function Home() {
-  const { isAuthenticated, logout, principal } = useAuth();
-
-  return (
-    <div>
       <Hero />
 
       <section className="container mx-auto px-4 py-12">
