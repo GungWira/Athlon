@@ -6,12 +6,20 @@ import Text "mo:base/Text";
 module {
     public type Users = HashMap.HashMap<Principal, User>;
 
-
     public type User = {
         principal: Principal;
-        name: Text;
-        email: Text;
+        username: Text;
+        imageProfile: ?Text;
         userType: Text;
+        walletAddress: Text;
+        phoneNumber: Text;
+
+        // FOR OWNER
+        arenas: ?[Nat];
+
+        // FOR CUSTOMER
+        preferedSports: ?[Text];
+
         createdAt: Int;
     };
 }

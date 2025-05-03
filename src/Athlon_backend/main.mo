@@ -50,11 +50,15 @@ actor Athlon {
 
   public func createNewUser(
     principal: Principal, 
-    name: Text, 
-    email: Text, 
-    userType: Text
+    username: Text, 
+    imageProfile: ?Text,
+    userType: Text, 
+    walletAddress: Text,
+    phoneNumber: Text,
+    arenas: ?[Nat],
+    preferedSports: ?[Text],
     ) : async UserType.User {
-        return await UserService.createUser(principal, name, email, userType, users);
+        return await UserService.createUser(principal, username, imageProfile, userType, walletAddress, phoneNumber, arenas, preferedSports, users);
   };
 
   public func getUserById(principal: Principal): async ?UserType.User{
