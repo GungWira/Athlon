@@ -70,17 +70,50 @@ actor Athlon {
   // ---------------------------------------------------------------------------------------------------------------
 
   public func createArena(
-        name: Text,
-        location: Text,
-        sportTypes: [Text],
-        description: Text,
-        image: Text,
-        owner: Principal,
-    ): async ArenaType.Arena {
-        let newArena = await ArenaService.createArena(nextArenaId, name, location, sportTypes, description, image, owner, arenas);
-        nextArenaId := nextArenaId + 1;
-        return newArena;
+    name: Text,
+    description: Text,
+    images: [Text],
+    sports: [Text],
+    province: Text,
+    city: Text,
+    district: Text,
+    mapsLink: Text,
+    rules: Text,
+    facilities: [Text],
+    owner: Principal
+  ): async ArenaType.Arena {
+    let arena = await ArenaService.createArena(
+      nextArenaId,
+      name,
+      description,
+      images,
+      sports,
+      province,
+      city,
+      district,
+      mapsLink,
+      rules,
+      facilities,
+      owner,
+      arenas
+    );
+    nextArenaId += 1;
+    return arena;
+  };
+
+  public query func getArenaById(id: Nat): async ?ArenaType.Arena {
+  let values = arenas.vals();
+  for (arena in values) {
+    if (arena.id == id) {
+      return ?arena;
     };
+  };
+  return null;
+};
+
+  public query func getArenaByOwner(owner: Principal): async ?ArenaType.Arena {
+    return arenas.get(owner);
+  };
   
   public func getAllArenas(): async [ArenaType.Arena] {
       return Iter.toArray(arenas.vals());

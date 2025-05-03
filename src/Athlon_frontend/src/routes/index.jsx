@@ -4,6 +4,10 @@ import About from "../pages/About";
 import MainLayout from "../layouts/MainLayout";
 import ProtectedAuthRoute from "./protectedAuthRoute";
 import CreateProfile from "../pages/CreateProfile";
+import ProtectedOwnerRoute from "./protectedOwnerRoute";
+import DashboardOwner from "../pages/owner/DashboardOwner";
+import CreateArena from "../pages/owner/CreateArena";
+import OwnerArenaDetail from "../pages/owner/OwnerArenaDetail";
 
 export default function AppRoutes() {
   return (
@@ -13,6 +17,12 @@ export default function AppRoutes() {
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+      </Route>
+      {/* OWNER ROUTES */}
+      <Route element={<ProtectedOwnerRoute />}>
+        <Route path="/owner" element={<DashboardOwner />} />
+        <Route path="/owner/create-arena" element={<CreateArena />} />
+        <Route path="/owner/arena/:idArena" element={<OwnerArenaDetail />} />
       </Route>
     </Routes>
   );
