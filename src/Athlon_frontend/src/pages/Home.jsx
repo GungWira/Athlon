@@ -1,13 +1,15 @@
+import Loading from "../components/Loading";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
-  const { isAuthenticated, login, logout, principal } = useAuth();
+  const { isAuthenticated, login, logout, userData, loading } = useAuth();
 
+  if (loading) return <Loading />;
   return (
     <div>
       {isAuthenticated ? (
         <>
-          <p>Welcome! Your principal: {principal}</p>
+          <p>Welcome! Your principal: {userData.username}</p>
           <button onClick={logout}>Logout</button>
         </>
       ) : (

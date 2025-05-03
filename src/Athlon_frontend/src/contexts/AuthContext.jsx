@@ -52,29 +52,32 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async () => {
+    setLoading(true);
     await authClient.login({
       identityProvider: INTERNET_IDENTITY_URL,
       onSuccess: async () => {
         const id = authClient.getIdentity();
-        const principalText = id.getPrincipal().toText();
+        const principalText = id.getPrincipal();
 
         setIdentity(id);
         setPrincipal(principalText);
         setIsAuthenticated(true);
 
-        const canisterActor = createActor(process.env.CANISTER_ID_ATHLON, {
+        const canisterActor = createActor(canisterId, {
           agentOptions: { identity: id },
         });
 
         setActor(canisterActor);
 
         try {
-          const user = await canisterActor.getUserById(id.getPrincipal());
+          const user = await canisterActor.getUserById(principalText);
           if (user && user[0]) {
             setUserData(user[0]);
           }
         } catch (e) {
           console.error("Error fetching user:", e);
+        } finally {
+          setLoading(false);
         }
       },
     });
