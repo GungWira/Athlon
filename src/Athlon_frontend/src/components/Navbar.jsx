@@ -11,7 +11,7 @@ export default function Navbar() {
     <div>
       <Announcement />
 
-      <header className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="container border-b border-indigo-600/15 mx-auto px-4 py-4 flex items-center justify-between">
         <Link to={"/"} className="flex items-center">
           <h1 className="text-2xl font-bold">Athl<span className='text-indigo-600'>on.</span></h1>
         </Link>
