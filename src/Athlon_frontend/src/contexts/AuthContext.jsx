@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AuthClient } from "@dfinity/auth-client";
+import { canisterId, createActor } from "../../../declarations/Athlon_backend";
 import { INTERNET_IDENTITY_URL } from "../constants";
 
 const AuthContext = createContext();
@@ -10,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [identity, setIdentity] = useState(null);
   const [principal, setPrincipal] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actor, setActor] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -21,8 +24,25 @@ export const AuthProvider = ({ children }) => {
 
       if (isLoggedIn) {
         const id = client.getIdentity();
+        const principalUser = id.getPrincipal();
+
         setIdentity(id);
-        setPrincipal(id.getPrincipal().toText());
+        setPrincipal(principalUser);
+
+        const canisterActor = createActor(canisterId, {
+          agentOptions: { identity: id },
+        });
+
+        setActor(canisterActor);
+
+        try {
+          const user = await canisterActor.getUserById(id.getPrincipal());
+          if (user && user[0]) {
+            setUserData(user[0]);
+          }
+        } catch (e) {
+          console.error("Error fetching user:", e);
+        }
       }
 
       setLoading(false);
@@ -36,9 +56,26 @@ export const AuthProvider = ({ children }) => {
       identityProvider: INTERNET_IDENTITY_URL,
       onSuccess: async () => {
         const id = authClient.getIdentity();
+        const principalText = id.getPrincipal().toText();
+
         setIdentity(id);
-        setPrincipal(id.getPrincipal().toText());
+        setPrincipal(principalText);
         setIsAuthenticated(true);
+
+        const canisterActor = createActor(process.env.CANISTER_ID_ATHLON, {
+          agentOptions: { identity: id },
+        });
+
+        setActor(canisterActor);
+
+        try {
+          const user = await canisterActor.getUserById(id.getPrincipal());
+          if (user && user[0]) {
+            setUserData(user[0]);
+          }
+        } catch (e) {
+          console.error("Error fetching user:", e);
+        }
       },
     });
   };
@@ -48,6 +85,8 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setIdentity(null);
     setPrincipal(null);
+    setUserData(null);
+    setActor(null);
   };
 
   return (
@@ -56,6 +95,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         identity,
         principal,
+        actor,
+        userData,
         login,
         logout,
         loading,
