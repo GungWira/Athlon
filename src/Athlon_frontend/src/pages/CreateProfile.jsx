@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getAccountIdentifierFromPrincipal } from "../utils/icpUtils";
 
 export default function CreateProfile() {
-  const { principal, actor, logout } = useAuth();
+  const {
+    principal,
+    actor,
+    logout,
+    userData,
+    isAuthenticated,
+    refreshUserData,
+  } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const fromPath = location.state?.from || "/";
+
+  useEffect(() => {
+    if (!isAuthenticated || userData) {
+      navigate(fromPath, { replace: true });
+    }
+  }, [isAuthenticated, userData, fromPath, navigate]);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -31,7 +49,7 @@ export default function CreateProfile() {
     reader.onloadend = () => {
       setFormData((prev) => ({ ...prev, imageProfile: reader.result }));
     };
-    reader.readAsDataURL(file); // convert to base64
+    reader.readAsDataURL(file);
   };
 
   const generateWalletAddress = () => {
@@ -56,7 +74,7 @@ export default function CreateProfile() {
         [],
         []
       );
-      setMessage({ type: "success", text: "Profile created successfully!" });
+      await refreshUserData();
     } catch (err) {
       console.error(err);
       setMessage({ type: "error", text: "Failed to create profile" });

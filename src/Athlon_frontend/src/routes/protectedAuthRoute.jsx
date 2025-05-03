@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Loading from "../components/Loading";
+import MainLayout from "../layouts/MainLayout";
 
 export default function ProtectedAuthRoute() {
   const { isAuthenticated, loading, userData } = useAuth();
@@ -11,5 +12,9 @@ export default function ProtectedAuthRoute() {
     return <Navigate to="/createprofile" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <MainLayout>
+      <Outlet />
+    </MainLayout>
+  );
 }
