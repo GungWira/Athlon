@@ -14,40 +14,41 @@ export const AuthProvider = ({ children }) => {
   const [actor, setActor] = useState(null);
   const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    const initAuth = async () => {
-      const client = await AuthClient.create();
-      setAuthClient(client);
+  const initAuth = async () => {
+    const client = await AuthClient.create();
+    setAuthClient(client);
 
-      const isLoggedIn = await client.isAuthenticated();
-      setIsAuthenticated(isLoggedIn);
+    const isLoggedIn = await client.isAuthenticated();
+    console.log("User is loggin :", isLoggedIn);
+    setIsAuthenticated(isLoggedIn);
 
-      if (isLoggedIn) {
-        const id = client.getIdentity();
-        const principalUser = id.getPrincipal();
+    if (isLoggedIn) {
+      const id = client.getIdentity();
+      const principalUser = id.getPrincipal();
 
-        setIdentity(id);
-        setPrincipal(principalUser);
+      setIdentity(id);
+      setPrincipal(principalUser);
 
-        const canisterActor = createActor(canisterId, {
-          agentOptions: { identity: id },
-        });
+      const canisterActor = createActor(canisterId, {
+        agentOptions: { identity: id },
+      });
 
-        setActor(canisterActor);
+      setActor(canisterActor);
 
-        try {
-          const user = await canisterActor.getUserById(id.getPrincipal());
-          if (user && user[0]) {
-            setUserData(user[0]);
-          }
-        } catch (e) {
-          console.error("Error fetching user:", e);
+      try {
+        const user = await canisterActor.getUserById(id.getPrincipal());
+        if (user && user[0]) {
+          setUserData(user[0]);
         }
+      } catch (e) {
+        console.error("Error fetching user:", e);
       }
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
+  };
 
+  useEffect(() => {
     initAuth();
   }, []);
 
@@ -83,6 +84,18 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const refreshUserData = async () => {
+    if (!actor || !principal) return;
+    try {
+      const user = await actor.getUserById(principal);
+      if (user && user[0]) {
+        setUserData(user[0]);
+      }
+    } catch (e) {
+      console.error("Error refreshing user:", e);
+    }
+  };
+
   const logout = async () => {
     await authClient.logout();
     setIsAuthenticated(false);
@@ -103,6 +116,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         loading,
+        refreshUserData,
       }}
     >
       {children}
