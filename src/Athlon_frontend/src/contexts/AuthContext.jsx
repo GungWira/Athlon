@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
     const isLoggedIn = await client.isAuthenticated();
     setIsAuthenticated(isLoggedIn);
 
+    let actorInstance;
+
     if (isLoggedIn) {
       const id = client.getIdentity();
       const principalUser = id.getPrincipal();
@@ -28,22 +30,23 @@ export const AuthProvider = ({ children }) => {
       setIdentity(id);
       setPrincipal(principalUser);
 
-      const canisterActor = createActor(canisterId, {
+      actorInstance = createActor(canisterId, {
         agentOptions: { identity: id },
       });
 
-      setActor(canisterActor);
-
       try {
-        const user = await canisterActor.getUserById(id.getPrincipal());
+        const user = await actorInstance.getUserById(id.getPrincipal());
         if (user && user[0]) {
           setUserData(user[0]);
         }
       } catch (e) {
         console.error("Error fetching user:", e);
       }
+    } else {
+      actorInstance = createActor(canisterId);
     }
 
+    setActor(actorInstance);
     setLoading(false);
   };
 
