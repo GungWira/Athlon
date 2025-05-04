@@ -158,9 +158,6 @@ actor Athlon {
     return orderedArens;
   };
 
-
-
-  
   public func getAllArenas(): async [ArenaType.Arena] {
       return Iter.toArray(arenas.vals());
   };
@@ -201,8 +198,6 @@ actor Athlon {
     return field;
   };
 
-  
-
   public query func getFieldsByArenaId(arenaId: Text): async ?FieldType.Field {
     let values = fields.vals();
     for (field in values) {
@@ -212,4 +207,27 @@ actor Athlon {
     };
     return null;
   };
+
+  public query func getFieldsByArena(arenaId: Text): async [FieldType.Field] {
+    let values = Iter.toArray(fields.vals());
+
+    let fieldsOnArenas = Array.filter<FieldType.Field>(
+      values,
+      func(a: FieldType.Field): Bool {
+        a.arenaId == arenaId
+      }
+    );
+
+    let orderedFieldsOnArenas = Array.sort<FieldType.Field>(
+      fieldsOnArenas,
+      func(a: FieldType.Field, b: FieldType.Field): {#less; #greater; #equal} {
+        if (a.createdAt < b.createdAt) { #less }
+        else if (a.createdAt > b.createdAt) { #greater }
+        else { #equal }
+      }
+    );
+
+    return orderedFieldsOnArenas;
+  };
+
 };

@@ -9,6 +9,7 @@ export default function OwnerArenaDetail() {
   const { principal, isAuthenticated, actor } = useAuth();
 
   const [arenaData, setArenaData] = useState(null);
+  const [fieldData, setFieldData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +31,14 @@ export default function OwnerArenaDetail() {
           navigate(-1);
         } else {
           setArenaData(result[0]);
+
+          const resultFields = await actor.getFieldsByArena(idArena);
+          if (resultFields) {
+            console.log(resultFields);
+            setFieldData(resultFields);
+          } else {
+            setFieldData([]);
+          }
         }
       } catch (err) {
         console.error("Error fetching arena:", err);
@@ -59,6 +68,20 @@ export default function OwnerArenaDetail() {
           >
             Add Field
           </Link>
+          <div className="flex flex-col justify-start items-start mt-8 gap-8">
+            {fieldData.map((field, key) => (
+              <div className="flex flex-col gap-4" key={key}>
+                <p>{field.name}</p>
+                <div className="grid flex-row grid-cols-4 gap-2">
+                  {field.availableTimes.map((item, keyItem) => (
+                    <div className="bg-blue-200 px-2 py-1" key={keyItem}>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </pre>
       ) : (
         <p>No arena data found.</p>

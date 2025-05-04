@@ -20,6 +20,8 @@ module {
     owner: Principal,
     fields: FieldType.Fields
   ): async FieldType.Field {
+    let createdAt = Time.now();
+
     let id = GenerateUuid.generateUUID(owner, name);
 
     let field: FieldType.Field = {
@@ -31,6 +33,7 @@ module {
       price = price;
       priceUnit = priceUnit;
       owner = owner;
+      createdAt = createdAt;
       availableTimes = availableTimes;
     };
     fields.put(id, field);
