@@ -89,8 +89,7 @@ export default function CreateArena() {
       });
       setStep(1);
 
-      const arenaId = BigInt(result.id);
-      navigate(`/owner/arena/${arenaId}`);
+      navigate(`/owner/arena/${result.id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal membuat arena");

@@ -8,6 +8,7 @@ import ProtectedOwnerRoute from "./protectedOwnerRoute";
 import DashboardOwner from "../pages/owner/DashboardOwner";
 import CreateArena from "../pages/owner/CreateArena";
 import OwnerArenaDetail from "../pages/owner/OwnerArenaDetail";
+import CreateField from "../pages/owner/CreateField";
 
 export default function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function AppRoutes() {
         <Route path="/owner" element={<DashboardOwner />} />
         <Route path="/owner/create-arena" element={<CreateArena />} />
         <Route path="/owner/arena/:idArena" element={<OwnerArenaDetail />} />
+        <Route path="/owner/arena/add-field" element={<CreateField />} />
       </Route>
     </Routes>
   );

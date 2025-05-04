@@ -6,10 +6,10 @@ import Text "mo:base/Text";
 import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
+import GenerateUuid "../helper/generateUUID";
 
 module {
     public func createArena(
-    id: Nat,
     name: Text,
     description: Text,
     images: [Text],
@@ -24,6 +24,9 @@ module {
     arenas: ArenaType.Arenas
   ): async ArenaType.Arena {
     let createdAt = Time.now();
+
+    let id = GenerateUuid.generateUUID(owner, description);
+
     let newArena: ArenaType.Arena = {
       id = id;
       name = name;
@@ -40,7 +43,7 @@ module {
       owner = owner;
     };
 
-    arenas.put(owner, newArena);
+    arenas.put(id, newArena);
     return newArena;
   };
 

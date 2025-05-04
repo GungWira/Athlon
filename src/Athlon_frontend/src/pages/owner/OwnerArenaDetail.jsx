@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 
@@ -19,7 +19,7 @@ export default function OwnerArenaDetail() {
 
     const fetchArena = async () => {
       try {
-        const result = await actor.getArenaById(BigInt(idArena));
+        const result = await actor.getArenaById(idArena);
         if (!result) {
           navigate(-1);
           return;
@@ -52,6 +52,13 @@ export default function OwnerArenaDetail() {
           nama arena : {arenaData.name}
           <br />
           lokasi : {arenaData.city}
+          <br /> <br />
+          <Link
+            to={{ pathname: "/owner/arena/add-field" }}
+            state={{ arenaId: idArena, sports: arenaData.sports }}
+          >
+            Add Field
+          </Link>
         </pre>
       ) : (
         <p>No arena data found.</p>
