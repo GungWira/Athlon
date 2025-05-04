@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Announcement from "../components/home/Announcement";
 import ProfileAvatar from "./navbar/ProfileAvatar";
 import { useAuth } from "../contexts/AuthContext";
-
 export default function Navbar() {
   const { login, isAuthenticated } = useAuth();
   return (

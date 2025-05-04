@@ -10,6 +10,7 @@ import CreateArena from "../pages/owner/CreateArena";
 import OwnerArenaDetail from "../pages/owner/OwnerArenaDetail";
 import CreateField from "../pages/owner/CreateField";
 import SearchPage from "../pages/customer/SearchPage";
+import Owner from "../pages/Owner";
 
 export default function AppRoutes() {
   return (
@@ -20,7 +21,9 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/about" element={<About />} />
+        <Route path="/owner" element={<Owner />} />
       </Route>
+
       {/* OWNER ROUTES */}
       <Route element={<ProtectedOwnerRoute />}>
         <Route path="/owner" element={<DashboardOwner />} />
