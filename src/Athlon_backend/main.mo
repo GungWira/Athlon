@@ -2,13 +2,17 @@ import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
+import Text "mo:base/Text";
 
 // TYPES
 import UserType "types/UserType";
 import ArenaType "types/ArenaType";
+import FieldType "types/FieldType";
+
 // SERVICES
 import UserService "services/UserService";
 import ArenaService "services/ArenaService";
+import FieldService "services/FieldService";
 
 
 actor Athlon {
@@ -19,29 +23,36 @@ actor Athlon {
     Principal.hash
   );
   
-  private var arenas : ArenaType.Arenas = HashMap.HashMap<Principal, ArenaType.Arena>(
-    10,
-    Principal.equal,
-    Principal.hash
+  private var arenas : ArenaType.Arenas = HashMap.HashMap<Text, ArenaType.Arena>(
+    0,
+    Text.equal,
+    Text.hash
   );
   var nextArenaId : Nat = 0;
+
+  private var fields : FieldType.Fields = HashMap.HashMap<Text, FieldType.Field>(
+    0,
+    Text.equal,
+    Text.hash
+  );
+  var nextFieldId : Nat = 0;
   
 
   // DATA ENTRIES
-  private stable var arenasEntries : [(Principal, ArenaType.Arena)] = [];
   private stable var usersEntries : [(Principal, UserType.User)] = [];
+  private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
-    arenasEntries := Iter.toArray(arenas.entries());
     usersEntries := Iter.toArray(users.entries());
+    arenasEntries := Iter.toArray(arenas.entries());
   };
   
   system func postupgrade() {
-    arenas := HashMap.fromIter<Principal, ArenaType.Arena>(arenasEntries.vals(), 0, Principal.equal, Principal.hash);
-    arenasEntries := [];
     users := HashMap.fromIter<Principal, UserType.User>(usersEntries.vals(), 0, Principal.equal, Principal.hash);
     usersEntries := [];
+    arenas := HashMap.fromIter<Text, ArenaType.Arena>(arenasEntries.vals(), 0, Text.equal, Text.hash);
+    arenasEntries := [];
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -83,7 +94,6 @@ actor Athlon {
     owner: Principal
   ): async ArenaType.Arena {
     let arena = await ArenaService.createArena(
-      nextArenaId,
       name,
       description,
       images,
@@ -101,7 +111,7 @@ actor Athlon {
     return arena;
   };
 
-  public query func getArenaById(id: Nat): async ?ArenaType.Arena {
+  public query func getArenaById(id: Text): async ?ArenaType.Arena {
   let values = arenas.vals();
   for (arena in values) {
     if (arena.id == id) {
@@ -111,8 +121,8 @@ actor Athlon {
   return null;
 };
 
-  public query func getArenaByOwner(owner: Principal): async ?ArenaType.Arena {
-    return arenas.get(owner);
+  public query func getArenaByOwner(id: Text): async ?ArenaType.Arena {
+    return arenas.get(id);
   };
   
   public func getAllArenas(): async [ArenaType.Arena] {
@@ -127,4 +137,20 @@ actor Athlon {
       return await ArenaService.searchArenas(arenas, nameFilter, locationFilter, sportFilter);
   }
 
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION FIELD ------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+
+  // public func createField(
+  //   id: Nat,
+  //   arenaId: Nat,
+  //   name: Text,
+  //   sportType: Text,
+  //   size: Text,
+  //   price: Nat,
+  //   priceUnit: Text,
+  //   availableTimes: [Text],
+  //   owner: Principal,
+  //   fields: FieldType.Fields
+  // )
 };

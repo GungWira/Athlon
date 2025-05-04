@@ -1,11 +1,20 @@
+import Principal "mo:base/Principal";
+import Text "mo:base/Text";
+import Nat "mo:base/Nat";
+import HashMap "mo:base/HashMap";
+
 module {
+  public type Fields = HashMap.HashMap<Text, Field>;
+
   public type Field = {
-      id: Nat;
-      arenaId: Nat;
-      name: Text;
-      sportType: Text;
-      image: Text;
-      pricePerHour: Nat;
-      owner: Principal;
-  };
+  id: Text;
+  arenaId: Nat;
+  name: Text;
+  sportType: Text;
+  size: Text;
+  price: Nat;
+  priceUnit: Text;
+  owner: Principal;
+  availableTimes: [Text]; 
+};
 }
