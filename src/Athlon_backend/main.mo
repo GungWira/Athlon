@@ -28,30 +28,32 @@ actor Athlon {
     Text.equal,
     Text.hash
   );
-  var nextArenaId : Nat = 0;
 
   private var fields : FieldType.Fields = HashMap.HashMap<Text, FieldType.Field>(
     0,
     Text.equal,
     Text.hash
   );
-  var nextFieldId : Nat = 0;
   
 
   // DATA ENTRIES
   private stable var usersEntries : [(Principal, UserType.User)] = [];
   private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
+  private stable var fieldsEntries : [(Text, FieldType.Field)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
     usersEntries := Iter.toArray(users.entries());
     arenasEntries := Iter.toArray(arenas.entries());
+    fieldsEntries := Iter.toArray(fields.entries());
   };
   
   system func postupgrade() {
     users := HashMap.fromIter<Principal, UserType.User>(usersEntries.vals(), 0, Principal.equal, Principal.hash);
     usersEntries := [];
     arenas := HashMap.fromIter<Text, ArenaType.Arena>(arenasEntries.vals(), 0, Text.equal, Text.hash);
+    arenasEntries := [];
+    fields := HashMap.fromIter<Text, FieldType.Field>(fieldsEntries.vals(), 0, Text.equal, Text.hash);
     arenasEntries := [];
   };
 
@@ -107,7 +109,6 @@ actor Athlon {
       owner,
       arenas
     );
-    nextArenaId += 1;
     return arena;
   };
 
@@ -135,22 +136,33 @@ actor Athlon {
     sportFilter: ?Text
   ): async [ArenaType.Arena] {
       return await ArenaService.searchArenas(arenas, nameFilter, locationFilter, sportFilter);
-  }
+  };
 
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
 
-  // public func createField(
-  //   id: Nat,
-  //   arenaId: Nat,
-  //   name: Text,
-  //   sportType: Text,
-  //   size: Text,
-  //   price: Nat,
-  //   priceUnit: Text,
-  //   availableTimes: [Text],
-  //   owner: Principal,
-  //   fields: FieldType.Fields
-  // )
+  public func createField(
+    arenaId: Text,
+    name: Text,
+    sportType: Text,
+    size: Text,
+    price: Nat,
+    priceUnit: Text,
+    availableTimes: [Text],
+    owner: Principal,
+  ) : async FieldType.Field {
+    let field = await FieldService.createField(
+      arenaId,
+      name,
+      sportType,
+      size,
+      price,
+      priceUnit,
+      availableTimes,
+      owner,
+      fields
+    );
+    return field;
+  }
 };

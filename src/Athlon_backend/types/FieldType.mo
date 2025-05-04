@@ -8,7 +8,7 @@ module {
 
   public type Field = {
   id: Text;
-  arenaId: Nat;
+  arenaId: Text;
   name: Text;
   sportType: Text;
   size: Text;
