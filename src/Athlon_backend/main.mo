@@ -3,6 +3,9 @@ import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
+import Array "mo:base/Array";
+import Int "mo:base/Int";
+import Order "mo:base/Order";
 
 // TYPES
 import UserType "types/UserType";
@@ -113,18 +116,50 @@ actor Athlon {
   };
 
   public query func getArenaById(id: Text): async ?ArenaType.Arena {
-  let values = arenas.vals();
-  for (arena in values) {
-    if (arena.id == id) {
-      return ?arena;
+    let values = arenas.vals();
+    for (arena in values) {
+      if (arena.id == id) {
+        return ?arena;
+      };
     };
+    return null;
   };
-  return null;
-};
 
-  public query func getArenaByOwner(id: Text): async ?ArenaType.Arena {
-    return arenas.get(id);
+  public query func getArenaByOwner(owner: Principal): async ?ArenaType.Arena {
+    let values = arenas.vals();
+    for (arena in values) {
+      if (arena.owner == owner) {
+        return ?arena;
+      };
+    };
+    return null;
   };
+
+
+  public query func getArenasByOwner(owner: Principal): async [ArenaType.Arena] {
+    let values = Iter.toArray(arenas.vals());
+
+    let ownedArenas = Array.filter<ArenaType.Arena>(
+      values,
+      func(a: ArenaType.Arena): Bool {
+        a.owner == owner
+      }
+    );
+
+    let orderedArens = Array.sort<ArenaType.Arena>(
+      ownedArenas,
+      func(a: ArenaType.Arena, b: ArenaType.Arena): {#less; #greater; #equal} {
+        if (a.createdAt > b.createdAt) { #less }
+        else if (a.createdAt < b.createdAt) { #greater }
+        else { #equal }
+      }
+    );
+
+    return orderedArens;
+  };
+
+
+
   
   public func getAllArenas(): async [ArenaType.Arena] {
       return Iter.toArray(arenas.vals());
@@ -164,5 +199,17 @@ actor Athlon {
       fields
     );
     return field;
-  }
+  };
+
+  
+
+  public query func getFieldsByArenaId(arenaId: Text): async ?FieldType.Field {
+    let values = fields.vals();
+    for (field in values) {
+      if (field.arenaId == arenaId) {
+        return ?field;
+      };
+    };
+    return null;
+  };
 };
