@@ -6,6 +6,7 @@ import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Int "mo:base/Int";
 import Order "mo:base/Order";
+import Result "mo:base/Result";
 
 // TYPES
 import UserType "types/UserType";
@@ -16,6 +17,8 @@ import FieldType "types/FieldType";
 import UserService "services/UserService";
 import ArenaService "services/ArenaService";
 import FieldService "services/FieldService";
+import TransactionType "types/TransactionType";
+import BookingService "services/BookingService";
 
 
 actor Athlon {
@@ -37,18 +40,33 @@ actor Athlon {
     Text.equal,
     Text.hash
   );
+
+  private var userBalances : TransactionType.UserBalances = HashMap.HashMap<Principal, TransactionType.UserBalance>(
+    0,
+    Principal.equal,
+    Principal.hash
+  );
   
+  private var bookingsDetails : TransactionType.BookingsDetail = HashMap.HashMap<Text, TransactionType.Booking>(
+    0,
+    Text.equal,
+    Text.hash
+  );
 
   // DATA ENTRIES
   private stable var usersEntries : [(Principal, UserType.User)] = [];
   private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
   private stable var fieldsEntries : [(Text, FieldType.Field)] = [];
+  private stable var userBalancesEntries : [(Principal, TransactionType.UserBalance)] = [];
+  private stable var bookingsDetailsEntries : [(Text, TransactionType.Booking)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
     usersEntries := Iter.toArray(users.entries());
     arenasEntries := Iter.toArray(arenas.entries());
     fieldsEntries := Iter.toArray(fields.entries());
+    userBalancesEntries := Iter.toArray(userBalances.entries());
+    bookingsDetailsEntries := Iter.toArray(bookingsDetails.entries());
   };
   
   system func postupgrade() {
@@ -57,7 +75,11 @@ actor Athlon {
     arenas := HashMap.fromIter<Text, ArenaType.Arena>(arenasEntries.vals(), 0, Text.equal, Text.hash);
     arenasEntries := [];
     fields := HashMap.fromIter<Text, FieldType.Field>(fieldsEntries.vals(), 0, Text.equal, Text.hash);
-    arenasEntries := [];
+    fieldsEntries := [];
+    userBalances := HashMap.fromIter<Principal, TransactionType.UserBalance>(userBalancesEntries.vals(), 0, Principal.equal, Principal.hash);
+    userBalancesEntries := [];
+    bookingsDetails := HashMap.fromIter<Text, TransactionType.Booking>(bookingsDetailsEntries.vals(), 0, Text.equal, Text.hash);
+    bookingsDetailsEntries := [];
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -230,4 +252,33 @@ actor Athlon {
     return orderedFieldsOnArenas;
   };
 
+  public func bookField(
+    userId: Principal,
+    arenaId: Text,
+    startTime: Text,
+    endTime: Text,
+    fieldId: Text
+  ) : async Result.Result<TransactionType.Booking, Text> {
+    try {
+      switch(users.get(userId)) {
+        case null { return #err("User not found") };
+        case (?user) {
+          let bookingResult = await BookingService.bookAField(
+            userId,
+            arenaId,
+            startTime,
+            endTime,
+            fieldId,
+            userBalances,
+            arenas,
+            bookingsDetails
+          );
+          
+          return #ok(bookingResult);
+        };
+      };
+    } catch (error) {
+      return #err("Booking failed: " # Error.message(error));
+    };
+  };
 };
