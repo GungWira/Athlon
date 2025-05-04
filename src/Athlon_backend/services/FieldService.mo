@@ -1,5 +1,3 @@
-
-
 import FieldType "../types/FieldType";
 
 import Nat "mo:base/Nat";
