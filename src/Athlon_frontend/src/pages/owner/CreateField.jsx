@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function CreateField() {
-  const { actor } = useAuth();
+  const { actor, principal } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,18 +50,29 @@ export default function CreateField() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const result = await actor.createField({
-        arenaId: BigInt(arenaId),
-        name: form.name,
-        sportType: form.sportType,
-        size: form.size,
-        price: Number(form.price),
-        priceUnit: form.priceUnit,
-        availableTimes: form.availableTimes,
-      });
+    // console.log(form);
 
-      if ("ok" in result) {
+    try {
+      const result = await actor.createField(
+        arenaId,
+        form.name,
+        form.sportType,
+        form.size,
+        BigInt(form.price),
+        form.priceUnit,
+        form.availableTimes,
+        principal
+      );
+
+      if (result) {
+        setForm({
+          name: "",
+          sportType: sports?.[0] || "",
+          size: "",
+          price: "",
+          priceUnit: "per jam",
+          availableTimes: [],
+        });
         alert("Lapangan berhasil dibuat!");
         navigate(`/owner/arena/${arenaId}`);
       } else {

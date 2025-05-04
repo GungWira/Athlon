@@ -5,12 +5,12 @@ import FieldType "../types/FieldType";
 import Nat "mo:base/Nat";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
-import Array "mo:base/Array";
+import GenerateUuid "../helper/generateUUID";
+
 
 module {
   public func createField(
-    id: Text,
-    arenaId: Nat,
+    arenaId: Text,
     name: Text,
     sportType: Text,
     size: Text,
@@ -19,7 +19,9 @@ module {
     availableTimes: [Text],
     owner: Principal,
     fields: FieldType.Fields
-  ): FieldType.Field {
+  ): async FieldType.Field {
+    let id = GenerateUuid.generateUUID(owner, name);
+
     let field: FieldType.Field = {
       id = id;
       arenaId = arenaId;
@@ -32,7 +34,7 @@ module {
       availableTimes = availableTimes;
     };
     fields.put(id, field);
-    field
+    return field;
   };
 
 //   public func getFieldsByArenaId(arenaId: Nat, fields: FieldType.Fields): [FieldType.Field] {
@@ -69,9 +71,9 @@ module {
 //     |> Array.map(func(((fid, time, date), user)) = (time, user))
 //   };
 
-  func getTodayDate(): Int {
-    let now = Time.now();
-    let secondsInDay = 86_400_000_000_000;
-    now / secondsInDay
-  }
+//   func getTodayDate(): Int {
+//     let now = Time.now();
+//     let secondsInDay = 86_400_000_000_000;
+//     now / secondsInDay
+//   }
 }
