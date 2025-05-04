@@ -22,6 +22,9 @@ export default function CreateField() {
     size: "",
     price: "",
     priceUnit: "per jam",
+    openTime: "08:00",
+    closeTime: "20:00",
+    interval: 60,
     availableTimes: [],
   });
 
@@ -71,6 +74,9 @@ export default function CreateField() {
           size: "",
           price: "",
           priceUnit: "per jam",
+          openTime: "08:00",
+          closeTime: "20:00",
+          interval: 60,
           availableTimes: [],
         });
         alert("Lapangan berhasil dibuat!");
@@ -83,6 +89,36 @@ export default function CreateField() {
       alert("Terjadi kesalahan saat membuat lapangan.");
     }
   };
+
+  function generateTimeSlots(openTime, closeTime, interval) {
+    const slots = [];
+    const [openHour, openMinute] = openTime.split(":").map(Number);
+    const [closeHour, closeMinute] = closeTime.split(":").map(Number);
+    let start = new Date();
+    start.setHours(openHour, openMinute, 0, 0);
+    const end = new Date();
+    end.setHours(closeHour, closeMinute, 0, 0);
+
+    while (start < end) {
+      const endSlot = new Date(start.getTime() + interval * 60000);
+      if (endSlot > end) break;
+
+      const format = (date) => date.toTimeString().slice(0, 5); // "HH:MM"
+      slots.push(`${format(start)} - ${format(endSlot)}`);
+      start = endSlot;
+    }
+
+    return slots;
+  }
+
+  useEffect(() => {
+    const newSlots = generateTimeSlots(
+      form.openTime,
+      form.closeTime,
+      form.interval
+    );
+    setForm((prev) => ({ ...prev, availableTimes: newSlots }));
+  }, [form.openTime, form.closeTime, form.interval]);
 
   return (
     <form
@@ -142,40 +178,51 @@ export default function CreateField() {
         </select>
       </div>
 
-      <div className="border p-2 rounded">
-        <label className="font-medium">Waktu Tersedia</label>
-        <div className="flex gap-2 mt-1">
+      <div className="space-y-2 border p-2 rounded">
+        <label className="font-medium">Jam Operasional & Interval</label>
+        <div className="grid grid-cols-3 gap-2">
           <input
-            value={newTime}
-            onChange={(e) => setNewTime(e.target.value)}
-            placeholder="Contoh: 08:00 - 10:00"
-            className="flex-1 border p-2 rounded"
+            type="time"
+            name="openTime"
+            value={form.openTime}
+            onChange={handleChange}
+            className="border p-2 rounded"
           />
-          <button
-            type="button"
-            onClick={addTime}
-            className="bg-blue-500 text-white px-3 rounded"
-          >
-            Tambah
-          </button>
+          <input
+            type="time"
+            name="closeTime"
+            value={form.closeTime}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          />
+          <input
+            type="number"
+            name="interval"
+            value={form.interval}
+            onChange={handleChange}
+            className="border p-2 rounded"
+            min={15}
+            max={180}
+            step={15}
+          />
         </div>
-        <ul className="mt-2 space-y-1">
-          {form.availableTimes.map((time, i) => (
-            <li
-              key={i}
-              className="flex justify-between items-center bg-gray-100 px-2 py-1 rounded"
-            >
-              {time}
-              <button
-                type="button"
-                onClick={() => removeTime(time)}
-                className="text-red-500 hover:underline"
+        <div className="overflow-x-auto">
+          <div className="flex gap-2 mt-2">
+            {form.availableTimes.slice(0, 4).map((time, i) => (
+              <span
+                key={i}
+                className="bg-blue-100 px-3 py-1 rounded whitespace-nowrap"
               >
-                Hapus
-              </button>
-            </li>
-          ))}
-        </ul>
+                {time}
+              </span>
+            ))}
+            {form.availableTimes.length > 4 && (
+              <span className="text-sm text-gray-500 self-center">
+                +{form.availableTimes.length - 4} lagi
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       <button
