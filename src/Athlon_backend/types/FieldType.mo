@@ -15,6 +15,7 @@ module {
     price: Nat;
     priceUnit: Text;
     owner: Principal;
+    createdAt: Int;
     availableTimes: [Text]; 
   };
 }
