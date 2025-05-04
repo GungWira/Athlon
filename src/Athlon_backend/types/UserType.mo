@@ -10,7 +10,7 @@ module {
         principal: Principal;
         username: Text;
         imageProfile: ?Text;
-        userType: Text;
+        userType: Text; // owner | customer 
         walletAddress: Text;
         phoneNumber: Text;
 

@@ -9,6 +9,7 @@ import DashboardOwner from "../pages/owner/DashboardOwner";
 import CreateArena from "../pages/owner/CreateArena";
 import OwnerArenaDetail from "../pages/owner/OwnerArenaDetail";
 import CreateField from "../pages/owner/CreateField";
+import SearchPage from "../pages/customer/SearchPage";
 
 export default function AppRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function AppRoutes() {
 
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/about" element={<About />} />
       </Route>
       {/* OWNER ROUTES */}
