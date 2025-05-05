@@ -5,7 +5,7 @@ import Principal "mo:base/Principal";
 
 module {
   public type BookingsDetail = HashMap.HashMap<Text, Booking>;
-  public type UserBalances = HashMap.HashMap<Principal, UserBalances>;
+  public type UserBalances = HashMap.HashMap<Principal, UserBalance>;
 
   public type UserBalance = {
     id : Principal;
