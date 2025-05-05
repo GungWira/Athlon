@@ -7,6 +7,9 @@ import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
 import GenerateUuid "../helper/generateUUID";
+import FieldType "../types/FieldType";
+import TransactionType "../types/TransactionType";
+import BookingType "../types/BookingType";
 
 module {
     public func createArena(
@@ -79,6 +82,45 @@ module {
 
         return filtered;
     };
+
+    public func getArenaBookingDetail(
+        arenaId : Text,
+        arenas : ArenaType.Arenas,
+        fields : FieldType.Fields,
+        bookings : BookingType.Bookings
+    ) : async ?{
+        arena : ArenaType.Arena;
+        arenaFields : [FieldType.Field];
+        bookingDatas : [(Text, [BookingType.Booking])];
+    } {
+    // AMBIL ARENA BY ID ARENA
+    let maybeArena = arenas.get(arenaId);
+        switch (maybeArena) {
+            case null { return null };
+            case (?arena) {
+                let allFields = Iter.toArray(fields.vals());
+                let arenaFields = Array.filter(allFields, func(f : FieldType.Field) : Bool {
+                    f.arenaId == arenaId
+                });
+
+                let allBookings = Iter.toArray(bookings.vals());
+                let bookingsByField = Array.map<FieldType.Field, (Text, [BookingType.Booking])>(arenaFields, func(field : FieldType.Field) : (Text, [BookingType.Booking]) {
+                    let fieldBookings = Array.filter(allBookings, func(b : BookingType.Booking) : Bool {
+                    b.fieldId == field.id
+                    });
+                    (field.id, fieldBookings)
+                });
+
+                return ?{
+                    arena = arena;
+                    arenaFields = arenaFields;
+                    bookingDatas = bookingsByField;
+                };
+            };
+        };
+    };
+
+
 
     func arrayAny<T>(arr: [T], predicate: (T) -> Bool): Bool {
         for (val in arr.vals()) {

@@ -34,7 +34,6 @@ export default function OwnerArenaDetail() {
 
           const resultFields = await actor.getFieldsByArena(idArena);
           if (resultFields) {
-            console.log(resultFields);
             setFieldData(resultFields);
           } else {
             setFieldData([]);
