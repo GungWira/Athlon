@@ -4,9 +4,6 @@ import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
-import Int "mo:base/Int";
-import Order "mo:base/Order";
-import Result "mo:base/Result";
 
 // TYPES
 import UserType "types/UserType";
@@ -18,7 +15,7 @@ import TransactionType "types/TransactionType";
 import UserService "services/UserService";
 import ArenaService "services/ArenaService";
 import FieldService "services/FieldService";
-import BookingService "services/BookingService";
+import TransactionService "services/TransactionService";
 
 
 actor Athlon {
@@ -257,27 +254,14 @@ actor Athlon {
   // FUNCTION WALLET ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
 
-  public func getBalance(user : Principal) : async TransactionType.UserBalance {
-    return await BookingService.handleGetAccountBalance(user, userBalances);
+  public func getBalanceLedger(user : Principal) : async TransactionType.UserBalance {
+    return await TransactionService.updateUserBalanceFromLedger(user, userBalances);
   };
 
-  public func deductBalance(userId: Principal, amount: Nat): async Result.Result<TransactionType.UserBalance, Text> {
-  switch (userBalances.get(userId)) {
-    case (null) return #err("User not found");
-    case (?balanceUs) {
-      if (balanceUs.balance < amount) {
-        return #err("Insufficient balance");
-      };
-      let currentBalance = Nat.sub(balanceUs.balance, amount);
-      let updated = {
-        id = userId;
-        balance = currentBalance;
-      };
-      userBalances.put(userId, updated);
-      return #ok(updated);
-    };
+  public func getBalance(user : Principal) : async Nat {
+    return await TransactionService.getUserBalance(user, userBalances);
   };
-}
+
 
   // public func bookField(
   //   userId: Principal,
