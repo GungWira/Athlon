@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import { CardArena } from "../../components/home/CardArena";
@@ -46,10 +46,9 @@ export default function SearchPage() {
       {arenas.length == 0 ? (
         <p>Tidak ada data yang sesuai bang</p>
       ) : (
-        <>
-          {arenas.map((arena) => (
+        arenas.map((arena, key) => (
+          <Link to={`/arena/${arena.id}`} key={key}>
             <CardArena
-              key={arena.id}
               image={arena.images[0]}
               name={arena.name}
               location={arena.city}
@@ -59,8 +58,8 @@ export default function SearchPage() {
               tagColor={arena.tagColor}
               timeSlots={arena.timeSlots}
             />
-          ))}
-        </>
+          </Link>
+        ))
       )}
     </div>
   );

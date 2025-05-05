@@ -16,7 +16,6 @@ export default function DashboardOwner() {
           const result = await actor.getArenasByOwner(principal);
           if (result) {
             setArenas(result);
-            console.log(result);
           } else {
             setArenas([]);
           }
