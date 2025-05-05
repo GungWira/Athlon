@@ -1,9 +1,5 @@
-import Result "mo:base/Result";
-import Text "mo:base/Text";
 import TransactionType "../types/TransactionType";
 import IcpLedger "canister:icp_ledger_canister";
-import ArenaType "../types/ArenaType";
-import GenerateUuid "../helper/generateUUID";
 
 module {
 //   private func manageUserBalance(
