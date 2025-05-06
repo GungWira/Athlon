@@ -19,6 +19,8 @@ import FieldService "services/FieldService";
 import TransactionService "services/TransactionService";
 import BookingType "types/BookingType";
 import BookingService "services/BookingService";
+import DashboardType "types/DashboardType";
+import DashboardService "services/DashboardService";
 
 
 actor Athlon {
@@ -294,34 +296,12 @@ actor Athlon {
     return await TransactionService.getUserBalance(user, userBalances);
   };
 
+    // ---------------------------------------------------------------------------------------------------------------
+    // FUNCTION DASHBOARD --------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
 
-  // public func bookField(
-  //   userId: Principal,
-  //   arenaId: Text,
-  //   startTime: Text,
-  //   endTime: Text,
-  //   fieldId: Text
-  // ) : async Result.Result<UserBalanceType.Booking, Text> {
-  //   try {
-  //     switch(users.get(userId)) {
-  //       case null { return #err("User not found") };
-  //       case (?user) {
-  //         let bookingResult = await BookingService.bookAField(
-  //           userId,
-  //           arenaId,
-  //           startTime,
-  //           endTime,
-  //           fieldId,
-  //           userBalances,
-  //           arenas,
-  //           bookingsDetails
-  //         );
-          
-  //         return #ok(bookingResult);
-  //       };
-  //     };
-  //   } catch (error) {
-  //     return #err("Booking failed: " # Error.message(error));
-  //   };
-  // };
+  public func getDashboardOwner(owner : Principal) : async Result.Result <DashboardType.OwnerDashboard, Text> {
+    return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+  }
+
 };
