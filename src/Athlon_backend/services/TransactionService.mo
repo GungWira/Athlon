@@ -1,17 +1,17 @@
-import TransactionType "../types/TransactionType";
+import UserBalanceType "../types/UserBalanceType";
 import Result "mo:base/Result";
 
 import IcpLedger "canister:icp_ledger_canister";
 
 
 module{
-    public func updateUserBalanceFromLedger(userId: Principal, userBalances: TransactionType.UserBalances) : async TransactionType.UserBalance {
+    public func updateUserBalanceFromLedger(userId: Principal, userBalances: UserBalanceType.UserBalances) : async UserBalanceType.UserBalance {
         let ledgerBalance = await IcpLedger.icrc1_balance_of({
             owner = userId;
             subaccount = null;
         });
 
-        let balance : TransactionType.UserBalance = {
+        let balance : UserBalanceType.UserBalance = {
             id = userId;
             balance = ledgerBalance;
         };
@@ -20,7 +20,7 @@ module{
         return balance;
     };
 
-    public func getUserBalance(userId: Principal, userBalances: TransactionType.UserBalances) : async Nat {
+    public func getUserBalance(userId: Principal, userBalances: UserBalanceType.UserBalances) : async Nat {
         switch (userBalances.get(userId)) {
             case (?data) return data.balance;
             case (_) return 0;
@@ -31,7 +31,7 @@ module{
         from: Principal,
         to: Principal,
         amount: Nat,
-        userBalances: TransactionType.UserBalances
+        userBalances: UserBalanceType.UserBalances
     ) : async Result.Result<Text, Text> {
         let senderBalance = await getUserBalance(from, userBalances);
         if (senderBalance < amount) {

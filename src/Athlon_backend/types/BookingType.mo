@@ -14,5 +14,7 @@ module {
     timestamp : [Text];
     totalPrice : Nat;
     status : Text; // pending | confirmed | canceled | completed
+    date : Text;
+    createdAt : Int;
   };
 }
