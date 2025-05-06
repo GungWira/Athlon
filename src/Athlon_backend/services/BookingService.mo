@@ -43,6 +43,7 @@ module {
                     let newBooking : BookingType.Booking = {
                         id = bookingId;
                         user = user;
+                        owner = owner;
                         fieldId = fieldId;
                         arenaId = arenaId;
                         timestamp = times;

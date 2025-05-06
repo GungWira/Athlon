@@ -9,6 +9,7 @@ module {
   public type Booking = {
     id : Text;
     user : Principal;
+    owner : Principal;
     fieldId : Text;
     arenaId : Text;
     timestamp : [Text];
