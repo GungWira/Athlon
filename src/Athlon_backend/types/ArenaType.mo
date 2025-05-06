@@ -17,6 +17,7 @@ module {
         mapsLink: Text;
         rules: Text;
         facilities: [Text];
+        status: Text; // active | deactive 
         createdAt: Int;
         owner: Principal;
     };

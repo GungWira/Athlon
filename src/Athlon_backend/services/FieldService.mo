@@ -3,6 +3,7 @@ import FieldType "../types/FieldType";
 import Nat "mo:base/Nat";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
+import Result "mo:base/Result";
 import GenerateUuid "../helper/generateUUID";
 
 
@@ -38,43 +39,13 @@ module {
     return field;
   };
 
-//   public func getFieldsByArenaId(arenaId: Nat, fields: FieldType.Fields): [FieldType.Field] {
-//     fields.vals()
-//     |> Array.filter<FieldType.Field>(func(f) = f.arenaId == arenaId)
-//   };
-
-//   public func bookTimeSlot(
-//     fieldId: Nat,
-//     timeSlot: Text,
-//     user: Principal,
-//     bookings: Bookings
-//   ): async Result.Result<(), Text> {
-//     let today = getTodayDate();
-//     let key = (fieldId, timeSlot, today);
-//     switch (bookings.get(key)) {
-//       case (null) {
-//         bookings.put(key, user);
-//         #ok
-//       };
-//       case (_) { #err("Slot sudah dibooking.") };
-//     }
-//   };
-
-//   public func getBookingsForFieldToday(
-//     fieldId: Nat,
-//     bookings: Bookings
-//   ): [(Text, Principal)] {
-//     let today = getTodayDate();
-//     bookings.entries()
-//     |> Array.filter<((Nat, Text, Int), Principal)>(
-//         func(((fid, time, date), _)) = fid == fieldId and date == today
-//       )
-//     |> Array.map(func(((fid, time, date), user)) = (time, user))
-//   };
-
-//   func getTodayDate(): Int {
-//     let now = Time.now();
-//     let secondsInDay = 86_400_000_000_000;
-//     now / secondsInDay
-//   }
+  public func getFieldsByArenaId(arenaId: Text, fields : FieldType.Fields): async Result.Result<FieldType.Field, Text> {
+    let values = fields.vals();
+    for (field in values) {
+      if (field.arenaId == arenaId) {
+        return #ok field;
+      };
+    };
+    return #err "Tidak ada field yang ditemukan";
+  };
 }
