@@ -203,6 +203,13 @@ actor Athlon {
     return await ArenaService.getArenaBookingDetail(arenaId, arenas, fields, bookings, date)
   };
 
+  public func setArenaStatus(
+    arenaId : Text,
+    status : Text,
+  ) : async Result.Result<Text, Text> {
+    return await ArenaService.setArenaStatus(arenaId, status, arenas, fields);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -231,14 +238,11 @@ actor Athlon {
     return field;
   };
 
-  public query func getFieldsByArenaId(arenaId: Text): async ?FieldType.Field {
-    let values = fields.vals();
-    for (field in values) {
-      if (field.arenaId == arenaId) {
-        return ?field;
-      };
+  public func getFieldsByArenaId(arenaId: Text): async Result.Result<FieldType.Field, Text> {
+    switch (await FieldService.getFieldsByArenaId(arenaId, fields)) {
+      case (#ok(field)) { return #ok(field); };
+      case (#err(error)) { return #err(error); };
     };
-    return null;
   };
 
   public query func getFieldsByArena(arenaId: Text): async [FieldType.Field] {
