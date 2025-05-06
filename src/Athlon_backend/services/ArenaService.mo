@@ -8,7 +8,6 @@ import Iter "mo:base/Iter";
 import Array "mo:base/Array";
 import GenerateUuid "../helper/generateUUID";
 import FieldType "../types/FieldType";
-import TransactionType "../types/TransactionType";
 import BookingType "../types/BookingType";
 
 module {
@@ -87,7 +86,8 @@ module {
         arenaId : Text,
         arenas : ArenaType.Arenas,
         fields : FieldType.Fields,
-        bookings : BookingType.Bookings
+        bookings : BookingType.Bookings,
+        date : Text
     ) : async ?{
         arena : ArenaType.Arena;
         arenaFields : [FieldType.Field];
@@ -106,7 +106,7 @@ module {
                 let allBookings = Iter.toArray(bookings.vals());
                 let bookingsByField = Array.map<FieldType.Field, (Text, [BookingType.Booking])>(arenaFields, func(field : FieldType.Field) : (Text, [BookingType.Booking]) {
                     let fieldBookings = Array.filter(allBookings, func(b : BookingType.Booking) : Bool {
-                    b.fieldId == field.id
+                    b.fieldId == field.id and b.date == date
                     });
                     (field.id, fieldBookings)
                 });

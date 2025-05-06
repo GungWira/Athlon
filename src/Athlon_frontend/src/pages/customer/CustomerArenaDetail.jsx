@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
+import { getTodayFormattedDate } from "../../utils/formatedDate";
 
 export default function CustomerArenaDetail() {
   const { idArena } = useParams();
@@ -9,7 +10,8 @@ export default function CustomerArenaDetail() {
   const { principal, isAuthenticated, actor } = useAuth();
 
   const [arenaData, setArenaData] = useState(null);
-  const [fieldData, setFieldData] = useState([]);
+  const [fieldData, setFieldData] = useState(null);
+  const [bookings, setBookings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTimes, setSelectedTimes] = useState({});
 
@@ -21,23 +23,16 @@ export default function CustomerArenaDetail() {
 
     const fetchArena = async () => {
       try {
-        const tes = await actor.getArenaBookingDetail(idArena);
-        console.log(tes);
-        const result = await actor.getArenaById(idArena);
+        const today = getTodayFormattedDate();
+        const result = await actor.getArenaBookingDetail(idArena, today);
         if (!result) {
           navigate(-1);
           return;
         }
-
-        const ownerMatch = result[0].owner.toText() === principal.toText();
-        if (!ownerMatch) {
-          navigate(-1);
-        } else {
-          setArenaData(result[0]);
-
-          const resultFields = await actor.getFieldsByArena(idArena);
-          setFieldData(resultFields || []);
-        }
+        console.log(result);
+        setArenaData(result[0].arena);
+        setFieldData(result[0].arenaFields);
+        setBookings(result[0].bookingDatas);
       } catch (err) {
         console.error("Error fetching arena:", err);
         navigate(-1);
@@ -48,6 +43,15 @@ export default function CustomerArenaDetail() {
 
     fetchArena();
   }, [idArena, principal, isAuthenticated, navigate]);
+
+  const getBookedTimes = (fieldId) => {
+    const data = bookings.find(([id]) => id === fieldId);
+    if (!data) return [];
+    const [, bookingList] = data;
+
+    const times = bookingList.flatMap((booking) => booking.timestamp);
+    return times;
+  };
 
   const toggleTime = (fieldId, time) => {
     setSelectedTimes((prev) => {
@@ -62,7 +66,8 @@ export default function CustomerArenaDetail() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const today = getTodayFormattedDate();
     let total = 0;
     let selectedDetails = [];
 
@@ -81,9 +86,38 @@ export default function CustomerArenaDetail() {
       }
     });
 
-    console.log("Principal:", principal.toText());
-    console.log("Selected Times:", selectedDetails);
-    console.log("Total Price:", total);
+    if (selectedDetails.length === 0) {
+      alert("Silakan pilih setidaknya satu waktu booking.");
+      return;
+    }
+
+    const owner = arenaData.owner; // Ambil owner dari arenaData
+
+    try {
+      for (const detail of selectedDetails) {
+        const result = await actor.bookField(
+          idArena,
+          detail.fieldId,
+          detail.times,
+          principal,
+          owner,
+          today
+        );
+
+        if ("err" in result) {
+          alert(
+            `Booking gagal pada lapangan ${detail.fieldName}: ${result.err}`
+          );
+          return;
+        }
+      }
+
+      alert("Booking berhasil!");
+      // navigate("/customer/dashboard"); // atau sesuaikan rute dashboard
+    } catch (err) {
+      console.error("Error saat booking:", err);
+      alert("Terjadi kesalahan saat booking.");
+    }
   };
 
   if (loading) return <Loading />;
@@ -108,14 +142,21 @@ export default function CustomerArenaDetail() {
                   {field.availableTimes.map((time, idx) => {
                     const isSelected =
                       selectedTimes[field.id]?.includes(time) || false;
+                    const bookedTimes = getBookedTimes(field.id);
+                    const isBooked = bookedTimes.includes(time);
 
                     return (
                       <button
                         key={idx}
                         onClick={() => toggleTime(field.id, time)}
                         className={`px-2 py-1 rounded ${
-                          isSelected ? "bg-green-400 text-white" : "bg-blue-200"
+                          isBooked
+                            ? "bg-gray-300 cursor-not-allowed"
+                            : isSelected
+                            ? "bg-green-400 text-white"
+                            : "bg-blue-200"
                         }`}
+                        disabled={isBooked}
                       >
                         {time}
                       </button>
