@@ -1,9 +1,9 @@
-"use client"
+import React, { act, useEffect, useState } from "react";
 import {AlertTriangle, MapPin, Plus } from "lucide-react"
-import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import Loading from "../../components/Loading"
+
 
 export default function OwnerArenaDetail() {
   const { idArena } = useParams()
@@ -39,8 +39,7 @@ export default function OwnerArenaDetail() {
 
           const resultFields = await actor.getFieldsByArena(idArena)
           if (resultFields) {
-            console.log(resultFields)
-            setFieldData(resultFields)
+            setFieldData(resultFields);
           } else {
             setFieldData([])
           }
@@ -56,7 +55,27 @@ export default function OwnerArenaDetail() {
     fetchArena()
   }, [idArena, principal, isAuthenticated, navigate, actor])
 
-  if (loading) return <Loading />
+  const handleSetStatus = async (id, status) => {
+    try {
+      setLoading(true);
+      if (actor) {
+        let result = await actor.setArenaStatus(id, status);
+        console.log(result);
+        if ("ok" in result) {
+          setArenaData((prev) => ({
+            ...prev,
+            status: prev.status === "active" ? "deactive" : "active",
+          }));
+        }
+      }
+    } catch (error) {
+      console.log("Error mengubah status lapangan : ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <Loading />;
 
   const getSportInfo = (sport) => {
     switch (sport.toLowerCase()) {

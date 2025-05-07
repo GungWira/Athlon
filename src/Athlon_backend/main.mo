@@ -4,21 +4,23 @@ import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
-import Int "mo:base/Int";
-import Order "mo:base/Order";
 import Result "mo:base/Result";
 
 // TYPES
 import UserType "types/UserType";
 import ArenaType "types/ArenaType";
 import FieldType "types/FieldType";
-import TransactionType "types/TransactionType";
+import UserBalanceType "types/UserBalanceType";
 
 // SERVICES
 import UserService "services/UserService";
 import ArenaService "services/ArenaService";
 import FieldService "services/FieldService";
+import TransactionService "services/TransactionService";
+import BookingType "types/BookingType";
 import BookingService "services/BookingService";
+import DashboardType "types/DashboardType";
+import DashboardService "services/DashboardService";
 
 
 actor Athlon {
@@ -41,24 +43,24 @@ actor Athlon {
     Text.hash
   );
 
-  private var userBalances : TransactionType.UserBalances = HashMap.HashMap<Principal, TransactionType.UserBalance>(
+  private var userBalances : UserBalanceType.UserBalances = HashMap.HashMap<Principal, UserBalanceType.UserBalance>(
     0,
     Principal.equal,
     Principal.hash
   );
   
-  // private var bookingsDetails : TransactionType.BookingsDetail = HashMap.HashMap<Text, TransactionType.Booking>(
-  //   0,
-  //   Text.equal,
-  //   Text.hash
-  // );
+  private var bookings : BookingType.Bookings = HashMap.HashMap<Text, BookingType.Booking>(
+    0,
+    Text.equal,
+    Text.hash
+  );
 
   // DATA ENTRIES
   private stable var usersEntries : [(Principal, UserType.User)] = [];
   private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
   private stable var fieldsEntries : [(Text, FieldType.Field)] = [];
-  private stable var userBalancesEntries : [(Principal, TransactionType.UserBalance)] = [];
-  // private stable var bookingsDetailsEntries : [(Text, TransactionType.Booking)] = [];
+  private stable var userBalancesEntries : [(Principal, UserBalanceType.UserBalance)] = [];
+  private stable var bookingsEntries : [(Text, BookingType.Booking)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
@@ -66,7 +68,7 @@ actor Athlon {
     arenasEntries := Iter.toArray(arenas.entries());
     fieldsEntries := Iter.toArray(fields.entries());
     userBalancesEntries := Iter.toArray(userBalances.entries());
-    // bookingsDetailsEntries := Iter.toArray(bookingsDetails.entries());
+    bookingsEntries := Iter.toArray(bookings.entries());
   };
   
   system func postupgrade() {
@@ -76,10 +78,10 @@ actor Athlon {
     arenasEntries := [];
     fields := HashMap.fromIter<Text, FieldType.Field>(fieldsEntries.vals(), 0, Text.equal, Text.hash);
     fieldsEntries := [];
-    userBalances := HashMap.fromIter<Principal, TransactionType.UserBalance>(userBalancesEntries.vals(), 0, Principal.equal, Principal.hash);
+    userBalances := HashMap.fromIter<Principal, UserBalanceType.UserBalance>(userBalancesEntries.vals(), 0, Principal.equal, Principal.hash);
     userBalancesEntries := [];
-    // bookingsDetails := HashMap.fromIter<Text, TransactionType.Booking>(bookingsDetailsEntries.vals(), 0, Text.equal, Text.hash);
-    // bookingsDetailsEntries := [];
+    bookings := HashMap.fromIter<Text, BookingType.Booking>(bookingsEntries.vals(), 0, Text.equal, Text.hash);
+    bookingsEntries := [];
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -192,6 +194,24 @@ actor Athlon {
       return await ArenaService.searchArenas(arenas, nameFilter, locationFilter, sportFilter);
   };
 
+  public func getArenaBookingDetail(
+      arenaId : Text,
+      date : Text
+  ) : async ?{
+      arena : ArenaType.Arena;
+      arenaFields : [FieldType.Field];
+      bookingDatas : [(Text, [BookingType.Booking])];
+  } {
+    return await ArenaService.getArenaBookingDetail(arenaId, arenas, fields, bookings, date)
+  };
+
+  public func setArenaStatus(
+    arenaId : Text,
+    status : Text,
+  ) : async Result.Result<Text, Text> {
+    return await ArenaService.setArenaStatus(arenaId, status, arenas, fields);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -220,14 +240,11 @@ actor Athlon {
     return field;
   };
 
-  public query func getFieldsByArenaId(arenaId: Text): async ?FieldType.Field {
-    let values = fields.vals();
-    for (field in values) {
-      if (field.arenaId == arenaId) {
-        return ?field;
-      };
+  public func getFieldsByArenaId(arenaId: Text): async Result.Result<FieldType.Field, Text> {
+    switch (await FieldService.getFieldsByArenaId(arenaId, fields)) {
+      case (#ok(field)) { return #ok(field); };
+      case (#err(error)) { return #err(error); };
     };
-    return null;
   };
 
   public query func getFieldsByArena(arenaId: Text): async [FieldType.Field] {
@@ -252,60 +269,39 @@ actor Athlon {
     return orderedFieldsOnArenas;
   };
 
-
   // ---------------------------------------------------------------------------------------------------------------
-  // FUNCTION WALLET ------------------------------------------------------------------------------------------------
+  // FUNCTION BOOKING ----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
 
-  public func getBalance(user : Principal) : async TransactionType.UserBalance {
-    return await BookingService.handleGetAccountBalance(user, userBalances);
+  public func bookField(
+      arenaId : Text,
+      fieldId : Text,
+      times : [Text],
+      user : Principal,
+      owner : Principal,
+      date : Text
+  ) : async Result.Result<Text, Text> {
+    return await BookingService.bookField(arenaId, fieldId, times, user, owner, fields, userBalances, bookings, date);
   };
 
-  public func deductBalance(userId: Principal, amount: Nat): async Result.Result<TransactionType.UserBalance, Text> {
-  switch (userBalances.get(userId)) {
-    case (null) return #err("User not found");
-    case (?balanceUs) {
-      if (balanceUs.balance < amount) {
-        return #err("Insufficient balance");
-      };
-      let currentBalance = Nat.sub(balanceUs.balance, amount);
-      let updated = {
-        id = userId;
-        balance = currentBalance;
-      };
-      userBalances.put(userId, updated);
-      return #ok(updated);
-    };
-  };
-}
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION WALLET -----------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
 
-  // public func bookField(
-  //   userId: Principal,
-  //   arenaId: Text,
-  //   startTime: Text,
-  //   endTime: Text,
-  //   fieldId: Text
-  // ) : async Result.Result<TransactionType.Booking, Text> {
-  //   try {
-  //     switch(users.get(userId)) {
-  //       case null { return #err("User not found") };
-  //       case (?user) {
-  //         let bookingResult = await BookingService.bookAField(
-  //           userId,
-  //           arenaId,
-  //           startTime,
-  //           endTime,
-  //           fieldId,
-  //           userBalances,
-  //           arenas,
-  //           bookingsDetails
-  //         );
-          
-  //         return #ok(bookingResult);
-  //       };
-  //     };
-  //   } catch (error) {
-  //     return #err("Booking failed: " # Error.message(error));
-  //   };
-  // };
+  public func getBalanceLedger(user : Principal) : async UserBalanceType.UserBalance {
+    return await TransactionService.updateUserBalanceFromLedger(user, userBalances);
+  };
+
+  public func getBalance(user : Principal) : async Nat {
+    return await TransactionService.getUserBalance(user, userBalances);
+  };
+
+    // ---------------------------------------------------------------------------------------------------------------
+    // FUNCTION DASHBOARD --------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------
+
+  public func getDashboardOwner(owner : Principal) : async Result.Result <DashboardType.OwnerDashboard, Text> {
+    return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+  }
+
 };
