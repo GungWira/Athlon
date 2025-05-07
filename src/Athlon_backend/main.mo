@@ -222,6 +222,7 @@ actor Athlon {
     sportType: Text,
     size: Text,
     price: Nat,
+    image : Text,
     priceUnit: Text,
     availableTimes: [Text],
     owner: Principal,
@@ -234,6 +235,7 @@ actor Athlon {
       price,
       priceUnit,
       availableTimes,
+      image,
       owner,
       fields
     );
@@ -301,7 +303,33 @@ actor Athlon {
     // ---------------------------------------------------------------------------------------------------------------
 
   public func getDashboardOwner(owner : Principal) : async Result.Result <DashboardType.OwnerDashboard, Text> {
-    return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+    switch(users.get(owner)){
+      case(null) return #err "Data user tidak ditemukan";
+      case(?isUser){
+        switch(isUser.userType == "owner"){
+          case(false) return #err "Switch akun ke owner terlebih dahulu untuk melanjutkan";
+          case(true) {
+            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+          }
+        }
+      }
+    };
+  };
+
+  public func getDashboardCustomer(
+    customer : Principal
+  ) : async Result.Result <DashboardType.CustomerDashboard, Text> {
+    switch(users.get(customer)){
+      case(null) return #err "Data customer tidak ditemukan";
+      case(?isUser){
+        switch(isUser.userType == "customer"){
+          case(false) return #err "Switch akun ke customer terlebih dahulu untuk melanjutkan";
+          case(true) {
+            return await DashboardService.getCustomerDetailDashboard(customer, bookings, arenas, fields);
+          }
+        }
+      }
+    };
   }
 
 };

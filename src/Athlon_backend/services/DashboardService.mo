@@ -6,6 +6,7 @@ import ArenaType "../types/ArenaType";
 import BookingType "../types/BookingType";
 import UserBalanceType "../types/UserBalanceType";
 import DashboardType "../types/DashboardType";
+import FieldType "../types/FieldType";
 
 
 module{
@@ -62,12 +63,68 @@ module{
         };
 
         let ownerData : DashboardType.OwnerDashboard = {
-            id = owner;
             arenas = orderedArens;
             bookings = orderedBooks;
             balance = ownerBalance.balance
         };
 
         return #ok ownerData;
+    };
+
+    public func getCustomerDetailDashboard(
+        customer : Principal, 
+        bookings : BookingType.Bookings, 
+        arenas : ArenaType.Arenas, 
+        fields : FieldType.Fields
+    ) : async Result.Result <DashboardType.CustomerDashboard, Text> {
+
+        let allBooking = Iter.toArray(bookings.vals());
+
+        let ownerBooks = Array.filter<BookingType.Booking>(
+            allBooking,
+            func(b: BookingType.Booking): Bool {
+                b.user == customer
+            }
+        );
+
+        let orderedBooks = Array.sort<BookingType.Booking>(
+            ownerBooks,
+            func(a: BookingType.Booking, b: BookingType.Booking): {#less; #greater; #equal} {
+                if (a.createdAt > b.createdAt) { #less }
+                else if (a.createdAt < b.createdAt) { #greater }
+                else { #equal }
+            }
+        );
+
+        let mapped = Array.map<BookingType.Booking, DashboardType.CustomerBookingDetail>(
+            orderedBooks,
+            func(b: BookingType.Booking): DashboardType.CustomerBookingDetail {
+                let arenaName = switch (arenas.get(b.arenaId)) {
+                    case (?a) a.name;
+                    case (_) "Unknown Arena";
+                };
+
+                let fieldName = switch (fields.get(b.fieldId)) {
+                    case (?f) f.name;
+                    case (_) "Unknown Field";
+                };
+
+                {
+                    id = b.id;
+                    user = b.user;
+                    owner = b.owner;
+                    arenaID = b.arenaId;
+                    arenaName = arenaName;
+                    fieldName = fieldName;
+                    timestamp = b.timestamp;
+                    totalPrice = b.totalPrice;
+                    status = b.status;
+                    date = b.date;
+                    createdAt = b.createdAt;
+                }
+            }
+        );
+
+        return #ok {bookings = mapped};
     };
 }
