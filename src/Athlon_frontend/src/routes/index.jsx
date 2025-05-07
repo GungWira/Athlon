@@ -20,7 +20,6 @@ export default function AppRoutes() {
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/about" element={<About />} />
         <Route path="/owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
         <Route path="/testing" element={<Testing />} />
