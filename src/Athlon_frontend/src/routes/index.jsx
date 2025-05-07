@@ -8,6 +8,7 @@ import CreateArena from "../pages/owner/CreateArena";
 import OwnerArenaDetail from "../pages/owner/OwnerArenaDetail";
 import CreateField from "../pages/owner/CreateField";
 import SearchPage from "../pages/customer/SearchPage";
+import Owner from "../pages/Owner";
 import CustomerArenaDetail from "../pages/customer/CustomerArenaDetail";
 import Testing from "../pages/Testing";
 import DashboardCustomer from "../pages/customer/DashboardCustomer";
@@ -21,6 +22,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
         <Route path="/testing" element={<Testing />} />
       </Route>
