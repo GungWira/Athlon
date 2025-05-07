@@ -14,6 +14,7 @@ module {
     size: Text;
     price: Nat;
     priceUnit: Text;
+    image : Text;
     owner: Principal;
     createdAt: Int;
     availableTimes: [Text]; 

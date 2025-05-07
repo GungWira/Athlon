@@ -16,6 +16,7 @@ module {
     price: Nat,
     priceUnit: Text,
     availableTimes: [Text],
+    image : Text,
     owner: Principal,
     fields: FieldType.Fields
   ): async FieldType.Field {
@@ -31,6 +32,7 @@ module {
       size = size;
       price = price;
       priceUnit = priceUnit;
+      image = image;
       owner = owner;
       createdAt = createdAt;
       availableTimes = availableTimes;
