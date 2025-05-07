@@ -118,9 +118,7 @@ export default function CreateArena() {
 
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Column - Form Fields */}
             <div className="space-y-6">
-              {/* Arena Name */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium mb-2">
                   Nama Arena
@@ -137,7 +135,6 @@ export default function CreateArena() {
               </div>
               
 
-              {/* Sports Type */}
               <div>
                 <label className="block text-sm font-medium mb-2">Jenis</label>
                 <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
