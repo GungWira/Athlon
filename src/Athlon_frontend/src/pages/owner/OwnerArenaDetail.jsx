@@ -3,6 +3,7 @@ import {AlertTriangle, MapPin, Plus } from "lucide-react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import Loading from "../../components/Loading"
+import Button from "../../components/ui/Button";
 
 
 export default function OwnerArenaDetail() {
@@ -196,6 +197,13 @@ export default function OwnerArenaDetail() {
 
               {fieldData && fieldData.length > 0 ? (
                 <div className="space-y-4">
+                  <Link
+                    to={{ pathname: "/owner/arena/add-field" }}
+                    state={{ arenaId: idArena, sports: arenaData.sports }}
+                    className="text-purple-600 font-medium flex justify-end"
+                  >
+                    <Button rounded="lg">Tambah Lapangan</Button>
+                  </Link>
                   {fieldData.map((field, key) => (
                     <div className="border rounded-lg p-4" key={key}>
                       <h3 className="font-medium mb-3">{field.name}</h3>
