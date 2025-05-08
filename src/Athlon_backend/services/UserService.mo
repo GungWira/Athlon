@@ -38,4 +38,5 @@ module {
     public func getUser(principal: Principal, users: UserType.Users) : async ?UserType.User {
         return users.get(principal);
     };
+
 }

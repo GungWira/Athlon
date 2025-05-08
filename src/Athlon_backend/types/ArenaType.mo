@@ -21,4 +21,11 @@ module {
         createdAt: Int;
         owner: Principal;
     };
+
+    public type ArenaRecommendation = {
+        preferred : [Arena];
+        newest : [Arena];
+        oldest : [Arena];
+    };
+
 }

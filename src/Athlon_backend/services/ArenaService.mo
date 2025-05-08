@@ -7,10 +7,12 @@ import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
 import Result "mo:base/Result";
-import GenerateUuid "../helper/generateUUID";
+import Option "mo:base/Option";
+import Helper "../helper/Helper";
 import FieldType "../types/FieldType";
 import BookingType "../types/BookingType";
 import FieldService "FieldService";
+import UserType "../types/UserType";
 
 module {
     public func createArena(
@@ -29,7 +31,7 @@ module {
   ): async ArenaType.Arena {
     let createdAt = Time.now();
 
-    let id = GenerateUuid.generateUUID(owner, description);
+    let id = Helper.generateUUID(owner, description);
 
     let newArena: ArenaType.Arena = {
       id = id;
@@ -75,7 +77,7 @@ module {
 
                 let matchSport = switch (sportFilter) {
                     case (null) true;
-                    case (?sport) arrayAny<Text>(a.sports, func(t: Text): Bool { t == sport });
+                    case (?sport) Helper.any<Text>(a.sports, func(t: Text): Bool { t == sport });
                 };
 
                 let isActive = switch (a.status == "active"){
@@ -192,13 +194,65 @@ module {
         };
     };
 
+    public func getArenaRecommendation(
+        userOpt : ?Principal,
+        users : UserType.Users,
+        arenas : ArenaType.Arenas
+    ) : async ArenaType.ArenaRecommendation {
 
-    func arrayAny<T>(arr: [T], predicate: (T) -> Bool): Bool {
-        for (val in arr.vals()) {
-            if (predicate(val)) {
-                return true;
+        let arenaList = Iter.toArray(arenas.vals());
+
+        // Ambil arena berdasarkan createdAt terbaru
+        let sortedNewest = Array.sort<ArenaType.Arena>(
+            arenaList,
+            func(a: ArenaType.Arena, b: ArenaType.Arena): {#less; #greater; #equal} {
+            if (a.createdAt > b.createdAt) #less
+            else if (a.createdAt < b.createdAt) #greater
+            else #equal
             }
+        );
+
+        // Ambil arena berdasarkan createdAt terlama
+        let sortedOldest = Array.sort<ArenaType.Arena>(
+            arenaList,
+            func(a: ArenaType.Arena, b: ArenaType.Arena): {#less; #greater; #equal} {
+            if (a.createdAt < b.createdAt) #less
+            else if (a.createdAt > b.createdAt) #greater
+            else #equal
+            }
+        );
+
+        // Fungsi helper untuk filter berdasarkan sports
+        func hasMatchingSport(arena: ArenaType.Arena, preferred: [Text]) : Bool {
+            Helper.any<Text>(arena.sports, func(sport: Text): Bool {
+                Helper.contains<Text>(preferred, sport, Text.equal)
+            })
         };
-        return false;
-    }
+
+
+        let preferredArenas : [ArenaType.Arena] = switch (userOpt) {
+            case (?user) {
+            switch (users.get(user)) {
+                case (?u) {
+                let matched = Array.filter<ArenaType.Arena>(
+                    sortedNewest,
+                    func(a: ArenaType.Arena): Bool {
+                    hasMatchingSport(a, Option.get(u.preferedSports, []))
+                    }
+                );
+                Array.take(matched, 8)
+                };
+                case (_) [];
+            }
+            };
+            case (_) [];
+        };
+
+        {
+            preferred = preferredArenas;
+            newest = Array.take(sortedNewest, 8);
+            oldest = Array.take(sortedOldest, 8);
+        }
+    };
+
 }

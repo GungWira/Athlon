@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
 
   const initAuth = async () => {
+    setLoading(true);
     const client = await AuthClient.create();
     setAuthClient(client);
 
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Error fetching user:", e);
       }
     } else {
+      setPrincipal(null);
       actorInstance = createActor(canisterId);
     }
 

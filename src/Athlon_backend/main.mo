@@ -212,6 +212,12 @@ actor Athlon {
     return await ArenaService.setArenaStatus(arenaId, status, arenas, fields);
   };
 
+  public func getArenaRecommendation(
+    userOpt : ?Principal
+  ) : async ArenaType.ArenaRecommendation {
+    return await ArenaService.getArenaRecommendation(userOpt, users, arenas);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------

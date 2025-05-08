@@ -15,4 +15,24 @@ module {
     let finalHash = Text.hash(combined);
     return Nat32.toText(finalHash);
   };
+
+  public func any<T>(arr: [T], pred: (T) -> Bool): Bool {
+    for (item in arr.vals()) {
+      if (pred(item)) {
+        return true;
+      }
+    };
+    return false;
+  };
+
+  public func contains<T>(arr: [T], item: T, eq: (T, T) -> Bool) : Bool {
+    for (val in arr.vals()) {
+      if (eq(val, item)) {
+        return true;
+      }
+    };
+    return false;
+  };
+
+
 }

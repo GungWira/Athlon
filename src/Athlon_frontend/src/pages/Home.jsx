@@ -3,30 +3,15 @@ import { SportCategory } from "../components/home/SportCategory";
 import { sportCategories, trendingArenas } from "../data/dummy-data";
 import { CardArena } from "../components/home/CardArena";
 import Categories from "../components/home/Categories";
+import TrendingSportCenter from "../components/home/TrendingSportCenter";
+import ArenaRecomendation from "../components/home/ArenaRecomendation";
 
 export default function Home() {
   return (
     <div>
       <Hero />
       <Categories />
-      <section className="max-w-7xl mx-auto py-12">
-        <h2 className="text-2xl font-bold mb-8">Trending Sportcenter</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingArenas.map((arena) => (
-            <CardArena
-              key={arena.id}
-              image={arena.image}
-              name={arena.name}
-              location={arena.location}
-              price={arena.price}
-              description={arena.description}
-              tag={arena.tag}
-              tagColor={arena.tagColor}
-              timeSlots={arena.timeSlots}
-            />
-          ))}
-        </div>
-      </section>
+      <ArenaRecomendation />
     </div>
   );
 }
