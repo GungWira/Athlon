@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TrendingSportCenter from "./TrendingSportCenter";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../Loading";
+import TrustedSportcenter from "./TrustedSportcenter";
 
 export default function ArenaRecomendation() {
   const { actor, principal } = useAuth();
@@ -34,6 +35,7 @@ export default function ArenaRecomendation() {
   return (
     <>
       <TrendingSportCenter datas={arenasData.newest} />
+      <TrustedSportcenter datas={arenasData.oldest} />
     </>
   );
 }
