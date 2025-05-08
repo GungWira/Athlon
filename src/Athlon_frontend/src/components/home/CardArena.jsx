@@ -1,63 +1,53 @@
-import React from "react"
-export function CardArena({ image, name, location, price, description, tag, tagColor = "white", timeSlots }) {
-  const tagStyles = {
-    white: "bg-white",
-    indigo: "bg-indigo-100 text-indigo-600",
-  }
-
+import React from "react";
+import { Link } from "react-router-dom";
+export function CardArena({
+  id,
+  image,
+  name,
+  location,
+  price,
+  description,
+  tag,
+}) {
   return (
-    <div className="border border-indigo-600/15 rounded-lg overflow-hidden">
-      <div className="relative">
-        <img
-          src={image || "https://picsum.photos/1920/1080?random"}
-          alt={name}
-          width={400}
-          height={200}
-          className="w-full h-48 object-cover"
-        />
-        {tag && (
-          <div className={`absolute top-4 right-4 ${tagStyles[tagColor]} rounded-full px-3 py-1 text-sm`}>{tag}</div>
-        )}
-      </div>
-      <div className="p-4">
-        <h3 className="font-bold text-lg">{name}</h3>
-        <p className="text-sm text-gray-600">{description || location}</p>
-        {!timeSlots && description && (
-          <div className="mt-2 inline-block bg-gray-200 px-2 py-1 rounded text-sm">{location}</div>
-        )}
-        <div className="mt-2 font-bold">{price}</div>
-
-        {timeSlots && (
-          <>
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {timeSlots.slice(0, 4).map((slot) => (
-                <div
-                  key={slot.time}
-                  className={`text-center py-1 rounded-md text-sm ${
-                    !slot.available ? "bg-gray-100 text-gray-500" : "bg-indigo-600 text-white"
-                  }`}
-                >
-                  {slot.time}
-                </div>
-              ))}
-            </div>
-            {timeSlots.length > 4 && (
-              <div className="mt-2 grid grid-cols-4 gap-2">
-                {timeSlots.slice(4, 8).map((slot) => (
-                  <div
-                    key={slot.time}
-                    className={`text-center py-1 rounded-md text-sm ${
-                      !slot.available ? "bg-gray-100 text-gray-500" : "bg-indigo-600 text-white"
-                    }`}
-                  >
-                    {slot.time}
-                  </div>
-                ))}
+    <Link to={`/arena/${id}`}>
+      <div className="w-full max-w-3xl bg-white rounded-md flex flex-col gap-4 overflow-hidden border border-[#202020]/10">
+        <div className="relative w-full aspect-video overflow-hidden">
+          <img src={image} alt={`Image ${name} ${location}`} />
+          <div className="absolute top-4 right-4 bg-white rounded-full text-indigo-700 px-4 py-1 text-sm">
+            {tag.length == 1 ? tag : `${tag} ${tag.length - 1}+`}
+          </div>
+        </div>
+        <div className="flex flex-col bg-white px-3 py-1 justify-start items-start gap-4">
+          <div className="flex flex-col justify-start items-start gap-1">
+            <p className="text-base font-semibold text-[#202020] line-clamp-2">
+              {name}
+            </p>
+            <p className="text-sm text-[#202020]/80 line-clamp-2">
+              {description}
+            </p>
+            <div className="flex flex-row justify-start items-start gap-1 mt-2">
+              <div className="bg-[#5336E8]/5 rounded-full text-indigo-700 px-4  flex flex-row justify-center items-center gap-2 py-1 text-xs">
+                <img src="/location.webp" alt="location icon" className="w-4" />
+                {location}
               </div>
-            )}
-          </>
-        )}
+              <div className="bg-[#5336E8]/5 rounded-full text-indigo-700 flex flex-row justify-center items-center gap-2  px-4 py-1 text-xs">
+                <img src="/arena.webp" alt="arena icon" className="w-4" />
+                {location}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col justify-end items-end gap-2 w-full pb-5">
+            <div className="flex flex-row justify-center items-center gap-3">
+              <img src="/icp.webp" alt="" className="w-8" />
+              <p className="text-[#202020]/80 font-bold text-base">
+                1 ICP - 3 ICP
+              </p>
+            </div>
+            <p className="text-[#202020]/50 text-sm">Rp 10.000 - 15.000</p>
+          </div>
+        </div>
       </div>
-    </div>
-  )
+    </Link>
+  );
 }

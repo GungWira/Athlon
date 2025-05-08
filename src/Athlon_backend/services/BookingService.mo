@@ -6,7 +6,7 @@ import FieldType "../types/FieldType";
 import BookingType "../types/BookingType";
 import UserBalanceType "../types/UserBalanceType";
 
-import GenerateUuid "../helper/generateUUID";
+import Helper "../helper/Helper";
 import TransactionService "TransactionService";
 
 module {
@@ -38,7 +38,7 @@ module {
                 case (#ok(_successMsg)) {
                     // Simpan booking
                     let createdAt = Time.now();
-                    let bookingId = GenerateUuid.generateUUID(user, date);
+                    let bookingId = Helper.generateUUID(user, date);
 
                     let newBooking : BookingType.Booking = {
                         id = bookingId;

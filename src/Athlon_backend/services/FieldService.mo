@@ -4,7 +4,7 @@ import Nat "mo:base/Nat";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
-import GenerateUuid "../helper/generateUUID";
+import Helper "../helper/Helper";
 
 
 module {
@@ -22,7 +22,7 @@ module {
   ): async FieldType.Field {
     let createdAt = Time.now();
 
-    let id = GenerateUuid.generateUUID(owner, name);
+    let id = Helper.generateUUID(owner, name);
 
     let field: FieldType.Field = {
       id = id;
