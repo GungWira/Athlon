@@ -286,10 +286,11 @@ actor Athlon {
       fieldId : Text,
       times : [Text],
       user : Principal,
+      customerName : Text,
       owner : Principal,
       date : Text
   ) : async Result.Result<Text, Text> {
-    return await BookingService.bookField(arenaId, fieldId, times, user, owner, fields, userBalances, bookings, date);
+    return await BookingService.bookField(arenaId, fieldId, times, user, customerName, owner, arenas, fields, userBalances, bookings, date);
   };
 
   // ---------------------------------------------------------------------------------------------------------------
