@@ -1,60 +1,57 @@
 import React, { act, useEffect, useState } from "react";
-import {AlertTriangle, MapPin, Plus } from "lucide-react"
-import { useParams, useNavigate, Link } from "react-router-dom"
-import { useAuth } from "../../contexts/AuthContext"
-import Loading from "../../components/Loading"
+import { AlertTriangle, MapPin, Plus } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import Loading from "../../components/Loading";
 import Button from "../../components/ui/Button";
 
-
 export default function OwnerArenaDetail() {
-  const { idArena } = useParams()
-  const navigate = useNavigate()
-  const { principal, isAuthenticated, actor } = useAuth()
+  const { idArena } = useParams();
+  const navigate = useNavigate();
+  const { principal, isAuthenticated, actor } = useAuth();
 
-  const [arenaData, setArenaData] = useState(null)
-  const [fieldData, setFieldData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-
-
+  const [arenaData, setArenaData] = useState(null);
+  const [fieldData, setFieldData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated || !principal) {
-      navigate("/", { replace: true })
-      return
+      navigate("/", { replace: true });
+      return;
     }
 
     const fetchArena = async () => {
       try {
-        const result = await actor.getArenaById(idArena)
+        const result = await actor.getArenaById(idArena);
         if (!result) {
-          navigate(-1)
-          return
+          navigate(-1);
+          return;
         }
 
-        const ownerMatch = result[0].owner.toText() === principal.toText()
+        const ownerMatch = result[0].owner.toText() === principal.toText();
         if (!ownerMatch) {
-          navigate(-1)
+          navigate(-1);
         } else {
-          setArenaData(result[0])
+          setArenaData(result[0]);
+          console.log(result[0]);
 
-          const resultFields = await actor.getFieldsByArena(idArena)
+          const resultFields = await actor.getFieldsByArena(idArena);
           if (resultFields) {
             setFieldData(resultFields);
           } else {
-            setFieldData([])
+            setFieldData([]);
           }
         }
       } catch (err) {
-        console.error("Error fetching arena:", err)
-        navigate(-1)
+        console.error("Error fetching arena:", err);
+        navigate(-1);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchArena()
-  }, [idArena, principal, isAuthenticated, navigate, actor])
+    fetchArena();
+  }, [idArena, principal, isAuthenticated, navigate, actor]);
 
   const handleSetStatus = async (id, status) => {
     try {
@@ -81,34 +78,35 @@ export default function OwnerArenaDetail() {
   const getSportInfo = (sport) => {
     switch (sport.toLowerCase()) {
       case "football":
-        return { icon: "⚽", label: "Football" }
+        return "⚽";
       case "badminton":
-        return { icon: "🏸", label: "Badminton" }
+        return "🏸";
       case "basketball":
-        return { icon: "🏀", label: "Basketball" }
+        return "🏀";
       case "volleyball":
-        return { icon: "🏐", label: "Volleyball" }
+        return "🏐";
       case "futsal":
-        return { icon: "🥅", label: "Futsal" }
+        return "🥅";
       default:
-        return { icon: "🎯", label: sport }
+        return "🎯";
     }
-  }
+  };
   return (
     <div className="min-h-screen bg-white flex flex-col">
-
       <main className="flex-1  mx-auto px-4 py-6 w-full">
         {fieldData && fieldData.length === 0 && (
           <div className="bg-amber-50 border border-amber-100 rounded-md p-4 mb-6 flex items-start">
             <AlertTriangle className="text-amber-500 mr-3 mt-0.5 h-5 w-5 flex-shrink-0" />
             <div>
-              <h3 className="font-medium text-amber-800">Ups! Belum Ada Lapangan</h3>
+              <h3 className="font-medium text-amber-800">
+                Ups! Belum Ada Lapangan
+              </h3>
               <p className="text-amber-700 text-sm mt-1">
-                Kamu belum menambahkan data lapangan di arena ini. Yuk, tambahkan sekarang supaya bisa mulai menerima
-                booking!
+                Kamu belum menambahkan data lapangan di arena ini. Yuk,
+                tambahkan sekarang supaya bisa mulai menerima booking!
               </p>
             </div>
-            <button className="ml-auto text-amber-500" onClick={() => { }}>
+            <button className="ml-auto text-amber-500" onClick={() => {}}>
               ×
             </button>
           </div>
@@ -131,22 +129,11 @@ export default function OwnerArenaDetail() {
             <p className="text-gray-600 mb-4">Kota {arenaData.city}</p>
 
             <div className="flex flex-wrap gap-2 mb-6">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
-                {arenaData.sports.map((sport, index) => {
-                  const { icon, label } = getSportInfo(sport)
-                  return (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
-                    >
-                      <span className="mr-2">{icon}</span> {label}
-                    </span>
-                  )
-                })}
-              </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
-                <span className="mr-2">🏸</span> Badminton
-              </span>
+              {arenaData.sports.map((sport, key) => (
+                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-800">
+                  <span className="mr-2">{getSportInfo(sport)}</span> {sport}
+                </span>
+              ))}
             </div>
 
             <div className="mb-8">
@@ -157,23 +144,31 @@ export default function OwnerArenaDetail() {
               </p>
             </div>
 
-            <div className="mb-8">
-              <h2 className="font-semibold text-lg mb-3">Aturan</h2>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  {arenaData.rules}
-                </li>
-              </ul>
-            </div>
+            {/* ATURAN */}
+            {arenaData.rules != "" && (
+              <div className="mb-8">
+                <h2 className="font-semibold text-lg mb-3">Aturan</h2>
+                <ul className="space-y-2 text-gray-700">
+                  <li className="flex items-start">{arenaData.rules}</li>
+                </ul>
+              </div>
+            )}
 
             <div className="mb-8">
               <h2 className="font-semibold text-lg mb-3">Lokasi</h2>
               <div className="border rounded-lg p-4 flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">{arenaData.name}</h3>
-                  <p className="text-gray-600 text-sm">Denpasar Selatan, Bali</p>
+                  <p className="text-gray-600 text-sm">
+                    Denpasar Selatan, Bali
+                  </p>
                 </div>
-                <Link to={arenaData.mapsLink} target="_blank" rel="noopener noreferrer" className="text-purple-600 flex items-center">
+                <Link
+                  to={arenaData.mapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 flex items-center"
+                >
                   <MapPin className="w-4 h-4 mr-1" />
                   Lihat Lokasi
                 </Link>
@@ -181,16 +176,18 @@ export default function OwnerArenaDetail() {
             </div>
 
             {/* fasilitas  */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-lg mb-3">Fasilitas</h2>
-              <ul className="space-y-2 text-gray-700">
-                {arenaData.facilities.map((facility, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="mr-2">{index + 1}</span> {facility}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {arenaData.facilities.length != 0 && (
+              <div className="mb-8">
+                <h2 className="font-semibold text-lg mb-3">Fasilitas</h2>
+                <ul className="space-y-2 text-gray-700">
+                  {arenaData.facilities.map((facility, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="mr-2">{index + 1}</span> {facility}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="mb-8">
               <h2 className="font-semibold text-lg mb-3">Lapangan</h2>
@@ -243,5 +240,5 @@ export default function OwnerArenaDetail() {
         )}
       </main>
     </div>
-  )
+  );
 }
