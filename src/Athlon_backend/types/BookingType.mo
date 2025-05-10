@@ -10,8 +10,11 @@ module {
     id : Text;
     user : Principal;
     owner : Principal;
+    customerName : Text;
     fieldId : Text;
+    fieldName : Text;
     arenaId : Text;
+    arenaName : Text;
     timestamp : [Text];
     totalPrice : Nat;
     status : Text; // pending | confirmed | canceled | completed

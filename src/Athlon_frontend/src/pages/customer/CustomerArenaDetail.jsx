@@ -7,7 +7,7 @@ import { getTodayFormattedDate } from "../../utils/formatedDate";
 export default function CustomerArenaDetail() {
   const { idArena } = useParams();
   const navigate = useNavigate();
-  const { principal, isAuthenticated, actor } = useAuth();
+  const { principal, isAuthenticated, actor, userData } = useAuth();
 
   const [arenaData, setArenaData] = useState(null);
   const [fieldData, setFieldData] = useState(null);
@@ -100,6 +100,7 @@ export default function CustomerArenaDetail() {
           detail.fieldId,
           detail.times,
           principal,
+          userData.username,
           owner,
           today
         );

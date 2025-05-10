@@ -8,6 +8,7 @@ import UserBalanceType "../types/UserBalanceType";
 
 import Helper "../helper/Helper";
 import TransactionService "TransactionService";
+import ArenaType "../types/ArenaType";
 
 module {
   public func bookField(
@@ -15,15 +16,21 @@ module {
     fieldId : Text,
     times : [Text],
     user : Principal,
+    customerName : Text,
     owner : Principal,
+    arenas : ArenaType.Arenas,
     fields : FieldType.Fields,
     balances : UserBalanceType.UserBalances,
     bookings : BookingType.Bookings,
     date : Text
-) : async Result.Result<Text, Text> {
+  ) : async Result.Result<Text, Text> {
 
-    let maybeField = fields.get(fieldId);
-    switch (maybeField) {
+    let maybeArena = arenas.get(arenaId);
+    switch(maybeArena) {
+        case null return #err("Arena tidak ditemukan");
+        case (?arena){
+            let maybeField = fields.get(fieldId);
+        switch (maybeField) {
         case null return #err("Field tidak ditemukan");
         case (?field) {
             let pricePerSlot = field.price; 
@@ -43,9 +50,12 @@ module {
                     let newBooking : BookingType.Booking = {
                         id = bookingId;
                         user = user;
+                        customerName = customerName;
                         owner = owner;
                         fieldId = fieldId;
+                        fieldName = field.name;
                         arenaId = arenaId;
+                        arenaName = arena.name;
                         timestamp = times;
                         totalPrice = totalPrice;
                         status = "confirmed";
@@ -58,7 +68,9 @@ module {
                     };
                 };
             };
+            };
         };
     };
+  };
 
 };
