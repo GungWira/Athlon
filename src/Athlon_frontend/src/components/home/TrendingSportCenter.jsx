@@ -1,12 +1,6 @@
-import { useEffect } from "react";
 import { CardArena } from "./CardArena";
 
 export default function TrendingSportCenter({ datas }) {
-  useEffect(() => {
-    if (datas) {
-      console.log(datas);
-    }
-  }, [datas]);
   return (
     <section className="max-w-7xl mx-auto py-12">
       <div className="flex flex-col justify-start items-start gap-2 mb-8">

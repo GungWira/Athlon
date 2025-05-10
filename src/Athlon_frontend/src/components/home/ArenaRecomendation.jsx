@@ -16,7 +16,6 @@ export default function ArenaRecomendation() {
           const result = await actor.getArenaRecommendation(
             principal == null ? [] : [principal]
           );
-          console.log(result);
           if (result) {
             setArenasData(result);
           }

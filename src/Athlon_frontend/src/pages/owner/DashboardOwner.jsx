@@ -3,6 +3,7 @@ import Loading from "../../components/Loading";
 import { useEffect, useState } from "react";
 import { LandPlot, LayoutDashboard, NotebookTabs, User } from "lucide-react";
 import OverviewOwner from "../../components/dashboard/OverviewOwner";
+import ArenaOwner from "../../components/dashboard/ArenaOwner";
 
 export default function DashboardOwner() {
   const [navigation, setNavigation] = useState("overview");
@@ -122,6 +123,10 @@ export default function DashboardOwner() {
       {/* AREA DATA */}
       {navigation == "overview" && (
         <OverviewOwner datas={datas} userData={userData} />
+      )}
+
+      {navigation == "manage" && (
+        <ArenaOwner datas={datas} userData={userData} />
       )}
     </div>
   );
