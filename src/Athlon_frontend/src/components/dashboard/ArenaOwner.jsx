@@ -9,7 +9,6 @@ export default function ArenaOwner({ datas, userData }) {
 
   useEffect(() => {
     if (datas) {
-      console.log(datas);
       setFilteredArenas(datas.arenas);
     }
   }, [datas]);

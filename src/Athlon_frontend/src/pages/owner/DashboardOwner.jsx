@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { LandPlot, LayoutDashboard, NotebookTabs, User } from "lucide-react";
 import OverviewOwner from "../../components/dashboard/OverviewOwner";
 import ArenaOwner from "../../components/dashboard/ArenaOwner";
+import BookingOwner from "../../components/dashboard/BookingOwner";
 
 export default function DashboardOwner() {
   const [navigation, setNavigation] = useState("overview");
@@ -127,6 +128,10 @@ export default function DashboardOwner() {
 
       {navigation == "manage" && (
         <ArenaOwner datas={datas} userData={userData} />
+      )}
+
+      {navigation == "book" && (
+        <BookingOwner datas={datas} userData={userData} />
       )}
     </div>
   );
