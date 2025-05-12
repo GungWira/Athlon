@@ -11,6 +11,7 @@ import SearchPage from "../pages/customer/SearchPage";
 import Owner from "../pages/Owner";
 import CustomerArenaDetail from "../pages/customer/CustomerArenaDetail";
 import Testing from "../pages/Testing";
+import TestFe from "../pages/TestFe";
 
 export default function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function AppRoutes() {
         <Route path="/owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
         <Route path="/testing" element={<Testing />} />
+        <Route path="/testfe" element={<TestFe />} />
       </Route>
 
       {/* OWNER ROUTES */}

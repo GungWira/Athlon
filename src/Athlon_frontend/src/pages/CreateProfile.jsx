@@ -1,170 +1,456 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import { getAccountIdentifierFromPrincipal } from "../utils/icpUtils";
+"use client"
 
+import { useState, useEffect } from "react"
+import { useAuth } from "../contexts/AuthContext"
+import { useNavigate, useLocation } from "react-router-dom"
+import { getAccountIdentifierFromPrincipal } from "../utils/icpUtils"
+import Button from "../components/ui/Button"
+  
 export default function CreateProfile() {
-  const {
-    principal,
-    actor,
-    logout,
-    userData,
-    isAuthenticated,
-    refreshUserData,
-  } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { principal, actor, logout, userData, isAuthenticated, refreshUserData } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const fromPath = location.state?.from || "/"
 
-  const fromPath = location.state?.from || "/";
+ useEffect(() => {
+  if (!isAuthenticated) {
+    navigate("/login", { replace: true })
+  } else if (userData?.userType) {
+    navigate("/owner", { replace: true })
+  }
+}, [isAuthenticated, userData, fromPath, navigate])
 
-  useEffect(() => {
-    if (!isAuthenticated || userData) {
-      navigate(fromPath, { replace: true });
-    }
-  }, [isAuthenticated, userData, fromPath, navigate]);
-
+  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     username: "",
     imageProfile: null,
-    userType: "owner",
+    userType: "",
     walletAddress: "",
     phoneNumber: "",
-  });
+    preferedSports: [],
+  })
 
-  const [walletLocked, setWalletLocked] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [walletLocked, setWalletLocked] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState({ type: "", text: "" })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "walletAddress" && walletLocked) return;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    if (name === "walletAddress" && walletLocked) return
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]
+    if (!file) return
 
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onloadend = () => {
-      setFormData((prev) => ({ ...prev, imageProfile: reader.result }));
-    };
-    reader.readAsDataURL(file);
-  };
+      setFormData((prev) => ({ ...prev, imageProfile: reader.result }))
+    }
+    reader.readAsDataURL(file)
+  }
 
   const generateWalletAddress = () => {
-    const wallet = getAccountIdentifierFromPrincipal(principal);
-    setFormData((prev) => ({ ...prev, walletAddress: wallet }));
-    setWalletLocked(true);
-  };
+    const wallet = getAccountIdentifierFromPrincipal(principal)
+    setFormData((prev) => ({ ...prev, walletAddress: wallet }))
+    setWalletLocked(true)
+  }
+
+  const handleSportToggle = (sport) => {
+    setFormData((prev) => {
+      const currentSports = [...prev.preferedSports]
+      if (currentSports.includes(sport)) {
+        return { ...prev, preferedSports: currentSports.filter((s) => s !== sport) }
+      } else {
+        return { ...prev, preferedSports: [...currentSports, sport] }
+      }
+    })
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ type: "", text: "" });
+    e.preventDefault()
+    setLoading(true)
+    setMessage({ type: "", text: "" })
 
-    try {
-      await actor.createNewUser(
-        principal,
-        formData.username,
-        formData.imageProfile ? [formData.imageProfile] : [],
-        formData.userType,
-        formData.walletAddress,
-        formData.phoneNumber,
-        [],
-        []
-      );
-      await refreshUserData();
+  try {
+    await actor.createNewUser(
+      principal,
+      formData.username,
+      formData.imageProfile ? [formData.imageProfile] : [],
+      formData.userType,
+      formData.walletAddress,
+      formData.phoneNumber,
+      [],
+      formData.preferedSports.length > 0 ? [formData.preferedSports] : [],
+    );
+      await refreshUserData()
+
+      if (formData.userType === "owner") {
+        navigate("/owner")
+      } else {
+        navigate("/")
+      }
     } catch (err) {
-      console.error(err);
-      setMessage({ type: "error", text: "Failed to create profile" });
+      console.error(err)
+      setMessage({ type: "error", text: "Failed to create profile" })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Create Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          required
-          value={formData.username}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
+  const handleNextStep = () => {
+    if (step === 1) {
+      setStep(2)
+    } else if (step === 2 && formData.userType === "customer") {
+      setStep(3)
+    }
+  }
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            name="walletAddress"
-            placeholder="Wallet Address"
-            required
-            value={formData.walletAddress}
-            onChange={handleChange}
-            className={`w-full border p-2 rounded ${
-              walletLocked ? "bg-gray-100 text-gray-500" : ""
-            }`}
-            disabled={walletLocked}
-          />
-          <button
-            type="button"
-            onClick={generateWalletAddress}
-            className="bg-gray-200 px-3 rounded hover:bg-gray-300"
-            disabled={walletLocked}
-          >
-            Generate
-          </button>
+
+
+  const renderStepOne = () => {
+    return (
+      <div className="w-full mx-auto container p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-semibold">Select role?</h2>
+          <button onClick={logout}>logout</button>
         </div>
 
-        <input
-          type="text"
-          name="phoneNumber"
-          placeholder="Phone Number"
-          required
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div
+            className={`border rounded-lg p-4 h-64 flex flex-col cursor-pointer ${
+              formData.userType === "owner" ? "border-indigo-500 bg-indigo-50" : "border-gray-200"
+            }`}
+            onClick={() => setFormData((prev) => ({ ...prev, userType: "owner" }))}
+          >
+            <div className="flex justify-between w-full px-4">
+              <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full flex items-center justify-center mb-2">
+                <img src="cheer.svg" alt="" />
+              </div>
+              <div
+                className={`w-8 h-8 rounded-full border ${formData.userType === "owner" ? "border-indigo-500" : "border-gray-300"} mr-2 flex items-center justify-center `}
+              >
+                {formData.userType === "owner" && <div className="w-4 h-4 rounded-full bg-indigo-500"></div>}
+              </div>
+            </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full"
-        />
+            <div className="flex justify-start mt-8 px-4">
+              <p className="text-sm lg:text-lg font-medium">Saya Owner, Pemilik Lapangan</p>
+            </div>
+          </div>
 
-        <select
-          name="userType"
-          disabled
-          value={formData.userType}
-          className="w-full border p-2 rounded bg-gray-100 text-gray-500"
-        >
-          <option value="owner">Owner</option>
-        </select>
+          <div
+            className={`border rounded-lg p-4 h-64 flex flex-col cursor-pointer ${
+              formData.userType === "customer" ? "border-indigo-500 bg-indigo-50" : "border-gray-200"
+            }`}
+            onClick={() => setFormData((prev) => ({ ...prev, userType: "customer" }))}
+          >
+            <div className="flex justify-between w-full px-4">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2">
+                <img src="self-employed.svg" alt="customer" />
+              </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          {loading ? "Creating..." : "Create Profile"}
-        </button>
+              <div className="mb-1">
+                <div
+                  className={`w-8 h-8 rounded-full border ${formData.userType === "customer" ? "border-indigo-500" : "border-gray-300"} mr-2 flex items-center justify-center`}
+                >
+                  {formData.userType === "customer" && <div className="w-4 h-4 rounded-full bg-indigo-500"></div>}
+                </div>
+              </div>
+            </div>
 
-        {message.text && (
-          <p
-            className={`text-sm ${
-              message.type === "error" ? "text-red-500" : "text-green-500"
+            <div className="flex justify-start mt-8 px-4">
+              <p className="text-sm lg:text-lg font-medium">Saya Customer, Ingin Booking Lapangan</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end items-end">
+          <Button
+            onClick={handleNextStep}
+            disabled={!formData.userType}
+            className={`py-2 rounded-md text-white font-medium ${
+              formData.userType ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            {message.text}
-          </p>
-        )}
-      </form>
-      <button onClick={logout}>Logout</button>
+            Selanjutnya
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const renderStepTwo = () => {
+    return (
+      <div className="bg-white rounded-lg w-full mx-auto p-6">
+        <div className="relative">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Create {formData.userType === "owner" ? "Owner" : "Customer"} Account</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-1">
+              <p className="text-sm font-medium mb-2">Unggah Foto Profil</p>
+              <label htmlFor="profile-image" className="cursor-pointer block">
+                <div className="border border-gray-200 rounded-md aspect-square flex items-center justify-center bg-gray-100 overflow-hidden">
+                  {formData.imageProfile ? (
+                    <img
+                      src={formData.imageProfile || "/placeholder.svg"}
+                      alt="Profile"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#cccccc"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </label>
+              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="profile-image" />
+            </div>
+
+            <div className="col-span-1 space-y-4">
+              <div>
+                <p className="text-sm font-medium mb-2">Username</p>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Masukkan nama"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full border border-gray-200 p-2 rounded-md text-sm"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm font-medium mb-2">Nomor Telepon</p>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  placeholder="Masukkan alamat"
+                  required
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className="w-full border border-gray-200 p-2 rounded-md text-sm"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm font-medium mb-2">Wallet Address</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="walletAddress"
+                    placeholder="Masukkan wallet"
+                    required
+                    value={formData.walletAddress}
+                    onChange={handleChange}
+                    className={`w-full border border-gray-200 p-2 rounded-md text-sm ${walletLocked ? "bg-gray-100 text-gray-500" : ""}`}
+                    disabled={walletLocked}
+                  />
+                  <button
+                    type="button"
+                    onClick={generateWalletAddress}
+                    className="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm hover:bg-indigo-700 flex items-center"
+                    disabled={walletLocked}
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <button
+                  onClick={formData.userType === "owner" ? handleSubmit : handleNextStep}
+                  disabled={loading || !formData.username || !formData.walletAddress || !formData.phoneNumber}
+                  className={`w-full py-2 rounded-md text-white font-medium ${
+                    loading || !formData.username || !formData.walletAddress || !formData.phoneNumber
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}
+                >
+                  {loading ? "Creating..." : formData.userType === "owner" ? "Buat Akun" : "Selanjutnya"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {message.text && (
+            <p className={`text-sm mt-2 ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
+              {message.text}
+            </p>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  const renderStepThree = () => {
+    return (
+      <div className="bg-white rounded-lg w-full mx-auto p-6">
+        <div className="relative">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Customize Your Arena Experience</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-1">
+              <p className="text-sm font-medium mb-4">Pilih Olahraga Favoritmu!</p>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                  onClick={() => handleSportToggle("Badminton")}
+                  className={`flex items-center px-3 py-1 rounded-full border ${
+                    formData.preferedSports.includes("Badminton")
+                      ? "bg-indigo-600 text-white"
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <span className="mr-1">🏸</span> Badminton
+                  <span className="ml-1">{formData.preferedSports.includes("Badminton") ? "" : "+"}</span>
+                </button>
+
+                <button
+                  onClick={() => handleSportToggle("Basketball")}
+                  className={`flex items-center px-3 py-1 rounded-full border ${
+                    formData.preferedSports.includes("Basketball")
+                      ? "bg-indigo-600 text-white"
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <span className="mr-1">🏀</span> Basketball
+                  <span className="ml-1">{formData.preferedSports.includes("Basketball") ? "" : "+"}</span>
+                </button>
+
+                <button
+                  onClick={() => handleSportToggle("Voley Ball")}
+                  className={`flex items-center px-3 py-1 rounded-full border ${
+                    formData.preferedSports.includes("Voley Ball")
+                      ? "bg-indigo-600 text-white"
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <span className="mr-1">🏐</span> Voley Ball
+                  <span className="ml-1">{formData.preferedSports.includes("Voley Ball") ? "" : "+"}</span>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => handleSportToggle("Tennis")}
+                  className={`flex items-center px-3 py-1 rounded-full border ${
+                    formData.preferedSports.includes("Tennis")
+                      ? "bg-indigo-600 text-white"
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <span className="mr-1">🎾</span> Tennis
+                  <span className="ml-1">{formData.preferedSports.includes("Tennis") ? "" : "+"}</span>
+                </button>
+
+                <button
+                  onClick={() => handleSportToggle("Football")}
+                  className={`flex items-center px-3 py-1 rounded-full border ${
+                    formData.preferedSports.includes("Football")
+                      ? "bg-indigo-600 text-white"
+                      : "border-gray-300 text-gray-700 "
+                  }`}
+                >
+                  <span className="mr-1">⚽</span> Football
+                  <span className="ml-1">{formData.preferedSports.includes("Football") ? "" : "+"}</span>
+                </button>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading || formData.preferedSports.length === 0}
+                  className={`px-6 py-2 rounded-md text-white font-medium ${
+                    loading || formData.preferedSports.length === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}
+                >
+                  {loading ? "Creating..." : "Selesai"}
+                </button>
+
+                <button className="px-6 py-2 rounded-md text-gray-600 font-medium border border-gray-300 hover:bg-gray-50">
+                  Lewati
+                </button>
+              </div>
+            </div>
+
+            <div className="col-span-1">
+              <div className="bg-indigo-600 rounded-lg overflow-hidden h-64 relative">
+                <div className="absolute top-0 left-0 w-full h-full">
+                  <div className="absolute top-10 left-10 transform -rotate-45">
+                    <div className="w-20 h-8 bg-yellow-300 rounded-full"></div>
+                  </div>
+                  <div className="absolute bottom-10 right-10 transform rotate-45">
+                    <div className="w-20 h-8 bg-yellow-300 rounded-full"></div>
+                  </div>
+                </div>
+                <img
+                  src="/placeholder.svg?height=300&width=400"
+                  alt="Sports illustration"
+                  className="object-cover h-full w-full mix-blend-overlay"
+                />
+              </div>
+            </div>
+          </div>
+
+          {message.text && (
+            <p className={`text-sm mt-2 ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
+              {message.text}
+            </p>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Render the appropriate step
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg w-full max-w-6xl ">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-xs text-gray-500">
+              Step {step} of {formData.userType === "owner" ? "2" : "3"}
+            </p>
+            {step > 1 && (
+              <button className="text-gray-500" onClick={() => setStep(step - 1)}>
+                ✕
+              </button>
+            )}
+            {step === 1 && (
+              <button className="text-gray-500" disabled onClick={() => navigate(fromPath)}>
+                ✕
+              </button>
+            )}
+          </div>
+
+          {step === 1 && renderStepOne()}
+          {step === 2 && renderStepTwo()}
+          {step === 3 && renderStepThree()}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
