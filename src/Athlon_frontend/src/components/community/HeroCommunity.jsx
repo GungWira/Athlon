@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, MapPin, ChevronDown, Activity } from "lucide-react";
 
-export default function Hero() {
+export default function HeroCommunity() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -28,11 +28,11 @@ export default function Hero() {
       <div className="py-20 relative z-10">
         <div className="text-center text-white mb-6">
           <h2 className="text-4xl md:text-5xl font-bold mb-5">
-            Going Sport Today?
+            Join Community
           </h2>
           <p className="text-base opacity-80 mt-4">
-            Temukan berbagai jenis fasilitas olahraga terbaik untuk dirimu hanya
-            di Athlon!
+            Cari dan ikuti komunitas olahraga terbaik yang ada dan sesuai dengan
+            bakat kamu disini!
           </p>
         </div>
 

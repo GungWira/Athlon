@@ -11,7 +11,12 @@ import SearchPage from "../pages/customer/SearchPage";
 import Owner from "../pages/Owner";
 import CustomerArenaDetail from "../pages/customer/CustomerArenaDetail";
 import Testing from "../pages/Testing";
-import TestFe from "../pages/TestFe";
+import DashboardCustomer from "../pages/customer/DashboardCustomer";
+import ProtectedCustomerRoute from "./protectedCustomerRoute";
+import Community from "../pages/community/Community";
+import CreateCommunity from "../pages/community/CreateCommunity";
+import DetailCommunity from "../pages/community/DetailCommunity";
+
 
 export default function AppRoutes() {
   return (
@@ -21,12 +26,18 @@ export default function AppRoutes() {
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/owner" element={<Owner />} />
+        <Route path="/join-owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/community/create" element={<CreateCommunity />} />
+        <Route path="/community/:idCommunity" element={<DetailCommunity />} />
         <Route path="/testing" element={<Testing />} />
         <Route path="/testfe" element={<TestFe />} />
       </Route>
-
+      {/* CUSTOMER ROUTES */}
+      <Route element={<ProtectedCustomerRoute />}>
+        <Route path="/dashboard" element={<DashboardCustomer />} />
+      </Route>
       {/* OWNER ROUTES */}
       <Route element={<ProtectedOwnerRoute />}>
         <Route path="/owner" element={<DashboardOwner />} />

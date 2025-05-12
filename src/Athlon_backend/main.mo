@@ -21,6 +21,8 @@ import BookingType "types/BookingType";
 import BookingService "services/BookingService";
 import DashboardType "types/DashboardType";
 import DashboardService "services/DashboardService";
+import CommunityService "services/CommunityService";
+import CommunityType "types/CommunityType";
 
 
 actor Athlon {
@@ -55,12 +57,19 @@ actor Athlon {
     Text.hash
   );
 
+  private var communities : CommunityType.Communities = HashMap.HashMap<Text, CommunityType.Community>(
+    0,
+    Text.equal,
+    Text.hash
+  );
+
   // DATA ENTRIES
   private stable var usersEntries : [(Principal, UserType.User)] = [];
   private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
   private stable var fieldsEntries : [(Text, FieldType.Field)] = [];
   private stable var userBalancesEntries : [(Principal, UserBalanceType.UserBalance)] = [];
   private stable var bookingsEntries : [(Text, BookingType.Booking)] = [];
+  private stable var communitiesEntries : [(Text, CommunityType.Community)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
@@ -69,6 +78,7 @@ actor Athlon {
     fieldsEntries := Iter.toArray(fields.entries());
     userBalancesEntries := Iter.toArray(userBalances.entries());
     bookingsEntries := Iter.toArray(bookings.entries());
+    communitiesEntries := Iter.toArray(communities.entries());
   };
   
   system func postupgrade() {
@@ -82,6 +92,8 @@ actor Athlon {
     userBalancesEntries := [];
     bookings := HashMap.fromIter<Text, BookingType.Booking>(bookingsEntries.vals(), 0, Text.equal, Text.hash);
     bookingsEntries := [];
+    communities := HashMap.fromIter<Text, CommunityType.Community>(communitiesEntries.vals(), 0, Text.equal, Text.hash);
+    communitiesEntries := [];
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -212,6 +224,12 @@ actor Athlon {
     return await ArenaService.setArenaStatus(arenaId, status, arenas, fields);
   };
 
+  public func getArenaRecommendation(
+    userOpt : ?Principal
+  ) : async ArenaType.ArenaRecommendation {
+    return await ArenaService.getArenaRecommendation(userOpt, users, arenas);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -222,6 +240,7 @@ actor Athlon {
     sportType: Text,
     size: Text,
     price: Nat,
+    image : Text,
     priceUnit: Text,
     availableTimes: [Text],
     owner: Principal,
@@ -234,6 +253,7 @@ actor Athlon {
       price,
       priceUnit,
       availableTimes,
+      image,
       owner,
       fields
     );
@@ -278,10 +298,11 @@ actor Athlon {
       fieldId : Text,
       times : [Text],
       user : Principal,
+      customerName : Text,
       owner : Principal,
       date : Text
   ) : async Result.Result<Text, Text> {
-    return await BookingService.bookField(arenaId, fieldId, times, user, owner, fields, userBalances, bookings, date);
+    return await BookingService.bookField(arenaId, fieldId, times, user, customerName, owner, arenas, fields, userBalances, bookings, date);
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -296,12 +317,74 @@ actor Athlon {
     return await TransactionService.getUserBalance(user, userBalances);
   };
 
-    // ---------------------------------------------------------------------------------------------------------------
-    // FUNCTION DASHBOARD --------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION DASHBOARD --------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
 
   public func getDashboardOwner(owner : Principal) : async Result.Result <DashboardType.OwnerDashboard, Text> {
-    return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
-  }
+    switch(users.get(owner)){
+      case(null) return #err "Data user tidak ditemukan";
+      case(?isUser){
+        switch(isUser.userType == "owner"){
+          case(false) return #err "Switch akun ke owner terlebih dahulu untuk melanjutkan";
+          case(true) {
+            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+          }
+        }
+      }
+    };
+  };
 
+  public func getDashboardCustomer(
+    customer : Principal
+  ) : async Result.Result <DashboardType.CustomerDashboard, Text> {
+    switch(users.get(customer)){
+      case(null) return #err "Data customer tidak ditemukan";
+      case(?isUser){
+        switch(isUser.userType == "customer"){
+          case(false) return #err "Switch akun ke customer terlebih dahulu untuk melanjutkan";
+          case(true) {
+            return await DashboardService.getCustomerDetailDashboard(customer, bookings, arenas, fields);
+          }
+        }
+      }
+    };
+  };
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION LLM --------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+  
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION COMMUNITY --------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+  public func createCommunity(
+    name : Text,
+    owner : Principal,
+    ownerName: Text,
+    sports: [Text],
+    description: Text,
+    profile: Text,
+    banner : Text,
+    rules: Text
+  ): async Text {
+    await CommunityService.createCommunity(name, owner, ownerName, sports, description, profile, banner, rules, communities);
+  };
+
+  public func getCommunityById(id: Text): async Result.Result<CommunityType.Community, Text> {
+    await CommunityService.getCommunityById(id, communities);
+  };
+
+  public func getCommunities() : async [CommunityType.Community] {
+    return await CommunityService.getCommunities(communities);
+  };
+
+  public func joinCommunity(id: Text, user : Principal) : async Bool {
+    return await CommunityService.joinCommunity(id, user, communities);
+  };
+
+  public func leaveCommunity(id: Text, user : Principal) : async Bool {
+    return await CommunityService.leaveCommunity(id, user, communities);
+  }
 };

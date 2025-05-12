@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import { useAuth } from "../../contexts/AuthContext"
-import { ChevronDown } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { ChevronDown } from "lucide-react";
 
 export default function CreateField() {
-  const { actor, principal } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { actor, principal } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const { sports, arenaId } = location.state || {}
-  const [newTime, setNewTime] = useState("")
-  const [showSportDropdown, setShowSportDropdown] = useState(false)
-  const [showTimeDropdown, setShowTimeDropdown] = useState(false)
+  const { sports, arenaId } = location.state || {};
+  const [newTime, setNewTime] = useState("");
+  const [showSportDropdown, setShowSportDropdown] = useState(false);
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
   useEffect(() => {
     if (!sports || !arenaId) {
-      navigate(-1)
+      navigate(-1);
     }
-  }, [sports, arenaId, navigate])
+  }, [sports, arenaId, navigate]);
 
   const [form, setForm] = useState({
     name: "",
@@ -29,32 +29,32 @@ export default function CreateField() {
     closeTime: "20:00",
     interval: 60,
     availableTimes: [],
-  })
+  });
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const addTime = () => {
     if (newTime.trim() && !form.availableTimes.includes(newTime)) {
       setForm((prev) => ({
         ...prev,
         availableTimes: [...prev.availableTimes, newTime],
-      }))
-      setNewTime("")
+      }));
+      setNewTime("");
     }
-  }
+  };
 
   const removeTime = (time) => {
     setForm((prev) => ({
       ...prev,
       availableTimes: prev.availableTimes.filter((t) => t !== time),
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       const result = await actor.createField(
@@ -63,10 +63,11 @@ export default function CreateField() {
         form.sportType,
         form.size,
         BigInt(form.price),
+        "",
         form.priceUnit,
         form.availableTimes,
-        principal,
-      )
+        principal
+      );
 
       if (result) {
         setForm({
@@ -79,49 +80,54 @@ export default function CreateField() {
           closeTime: "20:00",
           interval: 60,
           availableTimes: [],
-        })
-        alert("Lapangan berhasil dibuat!")
-        navigate(`/owner/arena/${arenaId}`)
+        });
+        alert("Lapangan berhasil dibuat!");
+        navigate(`/owner/arena/${arenaId}`);
       } else {
-        alert("Gagal membuat lapangan: " + result.err)
+        alert("Gagal membuat lapangan: " + result.err);
       }
     } catch (error) {
-      console.error("Error:", error)
-      alert("Terjadi kesalahan saat membuat lapangan.")
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat membuat lapangan.");
     }
-  }
+  };
 
   function generateTimeSlots(openTime, closeTime, interval) {
-    const slots = []
-    const [openHour, openMinute] = openTime.split(":").map(Number)
-    const [closeHour, closeMinute] = closeTime.split(":").map(Number)
-    let start = new Date()
-    start.setHours(openHour, openMinute, 0, 0)
-    const end = new Date()
-    end.setHours(closeHour, closeMinute, 0, 0)
+    const slots = [];
+    const [openHour, openMinute] = openTime.split(":").map(Number);
+    const [closeHour, closeMinute] = closeTime.split(":").map(Number);
+    let start = new Date();
+    start.setHours(openHour, openMinute, 0, 0);
+    const end = new Date();
+    end.setHours(closeHour, closeMinute, 0, 0);
 
     while (start < end) {
-      const endSlot = new Date(start.getTime() + interval * 60000)
-      if (endSlot > end) break
+      const endSlot = new Date(start.getTime() + interval * 60000);
+      if (endSlot > end) break;
 
-      const format = (date) => date.toTimeString().slice(0, 5) // "HH:MM"
-      slots.push(`${format(start)} - ${format(endSlot)}`)
-      start = endSlot
+      const format = (date) => date.toTimeString().slice(0, 5); // "HH:MM"
+      slots.push(`${format(start)} - ${format(endSlot)}`);
+      start = endSlot;
     }
 
-    return slots
+    return slots;
   }
 
   useEffect(() => {
-    const newSlots = generateTimeSlots(form.openTime, form.closeTime, form.interval)
-    setForm((prev) => ({ ...prev, availableTimes: newSlots }))
-  }, [form.openTime, form.closeTime, form.interval])
+    const newSlots = generateTimeSlots(
+      form.openTime,
+      form.closeTime,
+      form.interval
+    );
+    setForm((prev) => ({ ...prev, availableTimes: newSlots }));
+  }, [form.openTime, form.closeTime, form.interval]);
 
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-1">Add Field</h1>
       <p className="text-gray-600 text-sm mb-6">
-        Tambahkan jenis lapangan yang tersedia di arena kamu agar bisa dipesan oleh pelanggan.
+        Tambahkan jenis lapangan yang tersedia di arena kamu agar bisa dipesan
+        oleh pelanggan.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -155,7 +161,9 @@ export default function CreateField() {
               className="w-full border border-gray-300 rounded-md p-3 text-sm flex justify-between items-center cursor-pointer"
               onClick={() => setShowSportDropdown(!showSportDropdown)}
             >
-              <span className="text-gray-500">{form.sportType || "Pilih jenis"}</span>
+              <span className="text-gray-500">
+                {form.sportType || "Pilih jenis"}
+              </span>
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
 
@@ -166,8 +174,8 @@ export default function CreateField() {
                     key={i}
                     className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 flex items-center"
                     onClick={() => {
-                      setForm((prev) => ({ ...prev, sportType: sport }))
-                      setShowSportDropdown(false)
+                      setForm((prev) => ({ ...prev, sportType: sport }));
+                      setShowSportDropdown(false);
                     }}
                   >
                     {sport === "Football" && <span className="mr-2">⚽</span>}
@@ -185,7 +193,10 @@ export default function CreateField() {
           <div className="relative">
             <div className="flex flex-wrap gap-2 mb-2">
               {form.availableTimes.slice(0, 3).map((time, i) => (
-                <div key={i} className="bg-indigo-600 text-white text-xs px-3 py-2 rounded whitespace-nowrap">
+                <div
+                  key={i}
+                  className="bg-indigo-600 text-white text-xs px-3 py-2 rounded whitespace-nowrap"
+                >
                   {time
                     .split(" - ")
                     .map((t) => t.split(":").slice(0, 2).join(":"))
@@ -213,12 +224,17 @@ export default function CreateField() {
                       className="w-full border border-gray-300 rounded-md p-2 text-sm"
                     >
                       {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                        <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
+                        <option
+                          key={hour}
+                          value={`${hour.toString().padStart(2, "0")}:00`}
+                        >
                           {hour.toString().padStart(2, "0")}:00
                         </option>
                       ))}
                     </select>
-                    <label className="block text-xs text-gray-500 mt-1">Waktu mulai</label>
+                    <label className="block text-xs text-gray-500 mt-1">
+                      Waktu mulai
+                    </label>
                   </div>
 
                   <div className="col-span-1">
@@ -229,12 +245,17 @@ export default function CreateField() {
                       className="w-full border border-gray-300 rounded-md p-2 text-sm"
                     >
                       {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                        <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
+                        <option
+                          key={hour}
+                          value={`${hour.toString().padStart(2, "0")}:00`}
+                        >
                           {hour.toString().padStart(2, "0")}:00
                         </option>
                       ))}
                     </select>
-                    <label className="block text-xs text-gray-500 mt-1">Waktu selesai</label>
+                    <label className="block text-xs text-gray-500 mt-1">
+                      Waktu selesai
+                    </label>
                   </div>
 
                   <div className="col-span-1">
@@ -248,7 +269,9 @@ export default function CreateField() {
                       max={180}
                       step={15}
                     />
-                    <label className="block text-xs text-gray-500 mt-1">Durasi</label>
+                    <label className="block text-xs text-gray-500 mt-1">
+                      Durasi
+                    </label>
                   </div>
                 </div>
               </div>
@@ -269,10 +292,13 @@ export default function CreateField() {
           />
         </div>
 
-        <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium mt-4">
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium mt-4"
+        >
           Simpan Lapangan
         </button>
       </form>
     </div>
-  )
+  );
 }
