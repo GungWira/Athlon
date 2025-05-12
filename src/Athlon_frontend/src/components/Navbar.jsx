@@ -4,7 +4,7 @@ import Announcement from "../components/home/Announcement";
 import ProfileAvatar from "./navbar/ProfileAvatar";
 import { useAuth } from "../contexts/AuthContext";
 export default function Navbar() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, userData } = useAuth();
   return (
     <div>
       <Announcement />
@@ -92,10 +92,10 @@ export default function Navbar() {
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                 <div className="py-1">
                   <Link
-                    to={"/booking"}
+                    to={"/community"}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
                   >
-                    Booking
+                    Community
                   </Link>
                   <Link
                     to={"/membership"}

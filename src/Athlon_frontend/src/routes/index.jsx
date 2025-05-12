@@ -13,6 +13,9 @@ import CustomerArenaDetail from "../pages/customer/CustomerArenaDetail";
 import Testing from "../pages/Testing";
 import DashboardCustomer from "../pages/customer/DashboardCustomer";
 import ProtectedCustomerRoute from "./protectedCustomerRoute";
+import Community from "../pages/community/Community";
+import CreateCommunity from "../pages/community/CreateCommunity";
+import DetailCommunity from "../pages/community/DetailCommunity";
 
 export default function AppRoutes() {
   return (
@@ -24,6 +27,9 @@ export default function AppRoutes() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/join-owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/community/create" element={<CreateCommunity />} />
+        <Route path="/community/:idCommunity" element={<DetailCommunity />} />
         <Route path="/testing" element={<Testing />} />
       </Route>
       {/* CUSTOMER ROUTES */}
