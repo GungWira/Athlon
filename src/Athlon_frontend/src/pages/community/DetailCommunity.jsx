@@ -1,27 +1,23 @@
 import React, { act, useEffect, useState } from "react";
-import { AlertTriangle, MapPin, Plus } from "lucide-react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, data } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import Button from "../../components/ui/Button";
 import toast, { Toaster } from "react-hot-toast";
+import CardComunity from "../../components/community/CardComunity";
 
 export default function DetailCommunity() {
   const { idCommunity } = useParams();
   const navigate = useNavigate();
-  const { principal, isAuthenticated, actor, userData } = useAuth();
+  const { principal, isAuthenticated, actor, login } = useAuth();
 
   const [datas, setDatas] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated || !principal) {
-      navigate("/", { replace: true });
-      return;
-    }
-
     const fetchArena = async () => {
+      console.log(principal);
       try {
         const result = await actor.getCommunityById(idCommunity);
         if ("err" in result) {
@@ -42,34 +38,41 @@ export default function DetailCommunity() {
   }, [idCommunity, principal, isAuthenticated, navigate, actor]);
 
   const handleAction = async () => {
-    if (principal.toText() == datas.owner.toText()) {
-      toast.error("Pemilik komunitas tidak boleh keluar!");
-      return;
-    }
-    if (!datas.members.includes(principal.toText())) {
-      const res = await actor.joinCommunity(idCommunity, principal);
-      if (res) {
-        setDatas((prev) => ({
-          ...prev,
-          members: [...prev.members, principal.toText()],
-        }));
-        toast.success("Berhasil mengikuti komunitas!");
-      } else {
-        toast.error("Gagal mengikuti komunitas!");
+    try {
+      setProcessing(true);
+      if (principal.toText() == datas.owner.toText()) {
+        toast.error("Pemilik komunitas tidak boleh keluar!");
+        return;
       }
-    } else {
-      const res = await actor.leaveCommunity(idCommunity, principal);
-      if (res) {
-        setDatas((prev) => ({
-          ...prev,
-          members: prev.members.filter(
-            (member) => member !== principal.toText()
-          ),
-        }));
-        toast.success("Berhasil keluar komunitas!");
+      if (!datas.members.includes(principal.toText())) {
+        const res = await actor.joinCommunity(idCommunity, principal);
+        if (res) {
+          setDatas((prev) => ({
+            ...prev,
+            members: [...prev.members, principal.toText()],
+          }));
+          toast.success("Berhasil mengikuti komunitas!");
+        } else {
+          toast.error("Gagal mengikuti komunitas!");
+        }
       } else {
-        toast.error("Gagal keluar komunitas!");
+        const res = await actor.leaveCommunity(idCommunity, principal);
+        if (res) {
+          setDatas((prev) => ({
+            ...prev,
+            members: prev.members.filter(
+              (member) => member !== principal.toText()
+            ),
+          }));
+          toast.success("Berhasil keluar komunitas!");
+        } else {
+          toast.error("Gagal keluar komunitas!");
+        }
       }
+    } catch (error) {
+      console.log("Error processing data : ", error);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -109,8 +112,8 @@ export default function DetailCommunity() {
 
           {/* detail arena */}
           {datas && (
-            <div className="mb-8 w-full flex flex-row justify-between items-start">
-              <div className="flex flex-col justify-start items-start">
+            <div className="mb-8 w-full flex flex-row justify-between items-start gap-8">
+              <div className="flex flex-col justify-start items-start w-full">
                 <div className="flex flex-row justify-between items-start gap-4 w-full">
                   <div className="flex flex-row justify-start items-start gap-4">
                     <img
@@ -153,6 +156,11 @@ export default function DetailCommunity() {
                     </ul>
                   </div>
                 )}
+
+                <div className="flex flex-col justify-start items-start gap-4 w-full">
+                  <h2 className="font-semibold text-lg mb-3">Event Terbaru</h2>
+                  <div className="grid grid-cols-2 justify-start items-start gap-4 w-full"></div>
+                </div>
               </div>
 
               {/* JOIN */}
@@ -170,22 +178,33 @@ export default function DetailCommunity() {
                 <p className="text-[#202020]/80 text-sm">
                   {getSportInfo(datas.sports[0])} {datas.sports[0]}
                 </p>
-                <button
-                  className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
-                    !datas.members.includes(principal.toText())
-                      ? "bg-indigo-600 hover:bg-indigo-700"
+                {principal ? (
+                  <button
+                    className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
+                      !datas.members.includes(principal.toText())
+                        ? "bg-indigo-600 hover:bg-indigo-700"
+                        : datas.owner.toText() == principal.toText()
+                        ? "bg-indigo-600 "
+                        : "bg-red-600 hover:bg-red-700"
+                    }`}
+                    onClick={handleAction}
+                  >
+                    {processing
+                      ? "Memproses..."
+                      : !datas.members.includes(principal.toText())
+                      ? "Join Community"
                       : datas.owner.toText() == principal.toText()
-                      ? "bg-indigo-600 "
-                      : "bg-red-600 hover:bg-red-700"
-                  }`}
-                  onClick={handleAction}
-                >
-                  {!datas.members.includes(principal.toText())
-                    ? "Join Community"
-                    : datas.owner.toText() == principal.toText()
-                    ? "Your Community"
-                    : "Leave Community"}
-                </button>
+                      ? "Your Community"
+                      : "Leave Community"}
+                  </button>
+                ) : (
+                  <button
+                    onClick={login}
+                    className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Login Untuk Bergabung
+                  </button>
+                )}
               </div>
             </div>
           )}

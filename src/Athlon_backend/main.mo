@@ -376,6 +376,10 @@ actor Athlon {
     await CommunityService.getCommunityById(id, communities);
   };
 
+  public func getCommunities() : async [CommunityType.Community] {
+    return await CommunityService.getCommunities(communities);
+  };
+
   public func joinCommunity(id: Text, user : Principal) : async Bool {
     return await CommunityService.joinCommunity(id, user, communities);
   };
