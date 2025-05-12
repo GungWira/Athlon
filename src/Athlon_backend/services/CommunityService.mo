@@ -4,6 +4,7 @@ import Array "mo:base/Array";
 import Time "mo:base/Time";
 import Result "mo:base/Result";
 import Principal "mo:base/Principal";
+import Iter "mo:base/Iter";
 
 module {
 // CREATE
@@ -36,12 +37,26 @@ module {
     return id;
   };
 
-    public func getCommunityById(id: Text, communities : CommunityType.Communities): async Result.Result<CommunityType.Community, Text> {
-        switch(communities.get(id)){
-            case (?isCom) return #ok isCom;
-            case (null) return #err "No community found";
+  public func getCommunityById(id: Text, communities : CommunityType.Communities): async Result.Result<CommunityType.Community, Text> {
+      switch(communities.get(id)){
+          case (?isCom) return #ok isCom;
+          case (null) return #err "No community found";
+      }
+  };
+
+  public func getCommunities(communities : CommunityType.Communities) : async [CommunityType.Community] {
+    let comunitiesList = Iter.toArray(communities.vals());
+
+    let sortedNewest = Array.sort<CommunityType.Community>(
+        comunitiesList,
+        func(a: CommunityType.Community, b: CommunityType.Community): {#less; #greater; #equal} {
+        if (a.createdAt > b.createdAt) #less
+        else if (a.createdAt < b.createdAt) #greater
+        else #equal
         }
-    };
+    );
+    return sortedNewest;
+  };
 
   // FIND by name or sport or both
 //   public func searchCommunity(nameQuery: ?Text, sportQuery: ?Text): async [CommunityType.Community] {
