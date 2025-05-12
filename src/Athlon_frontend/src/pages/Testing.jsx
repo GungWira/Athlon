@@ -5,7 +5,7 @@ import Loading from "../components/Loading";
 export default function Testing() {
   const { actor, principal, userData } = useAuth();
   const [balance, setBalance] = useState(null);
-  const [amount, setAmount] = useState("");
+  const [promnt, setPromnt] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,17 +39,10 @@ export default function Testing() {
     console.log("User balance: ", result);
   };
 
-  const handleDeduct = async () => {
-    try {
-      const result = await actor.deductBalance(principal, parseInt(amount));
-      if ("ok" in result) {
-        console.log("Saldo setelah dikurangi: ", result.ok);
-      } else {
-        console.error("Gagal mengurangi saldo:", result.err);
-      }
-    } catch (error) {
-      console.error("Deduct error:", error);
-    }
+  const handlePrompt = async () => {
+    // TESTING DISINI
+    const res = await actor.prompt(promnt);
+    console.log(res);
   };
 
   if (loading) return <Loading />;
@@ -76,15 +69,12 @@ export default function Testing() {
       <br />
 
       <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        style={{ marginLeft: "10px" }}
+        type="text"
+        placeholder="promt..."
+        value={promnt}
+        onChange={(e) => setPromnt(e.target.value)}
       />
-      <button onClick={handleDeduct} style={{ marginLeft: "10px" }}>
-        Kurangi Saldo
-      </button>
+      <button onClick={handlePrompt}>Promt!</button>
     </div>
   );
 }
