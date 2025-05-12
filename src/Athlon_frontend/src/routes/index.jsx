@@ -17,6 +17,7 @@ import Community from "../pages/community/Community";
 import CreateCommunity from "../pages/community/CreateCommunity";
 import DetailCommunity from "../pages/community/DetailCommunity";
 
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -31,6 +32,7 @@ export default function AppRoutes() {
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />
         <Route path="/testing" element={<Testing />} />
+        <Route path="/testfe" element={<TestFe />} />
       </Route>
       {/* CUSTOMER ROUTES */}
       <Route element={<ProtectedCustomerRoute />}>
