@@ -19,8 +19,8 @@ export default function RecomendationCommunity() {
     fetchData();
   }, [actor]);
   return (
-    <div className="w-full flex flex-col justify-start items-start gap-8 mt-12">
-      <div className="flex flex-col justify-start items-start gap-2 mb-8">
+    <div className="w-full flex flex-col justify-start items-start gap-4 mt-12">
+      <div className="flex flex-col justify-start items-start gap-2 mb-2">
         <h2 className="text-2xl font-bold text-[#202020]">Sport's Community</h2>
         <p className="text-base text-[#202020]/80">
           Komunitas olahraga yang siap bikin kamu tambah semangat olahraga!

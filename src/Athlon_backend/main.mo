@@ -355,7 +355,7 @@ actor Athlon {
         switch(isUser.userType == "customer"){
           case(false) return #err "Switch akun ke customer terlebih dahulu untuk melanjutkan";
           case(true) {
-            return await DashboardService.getCustomerDetailDashboard(customer, bookings, arenas, fields);
+            return await DashboardService.getCustomerDetailDashboard(customer, bookings, arenas, fields, communities, events);
           }
         }
       }
