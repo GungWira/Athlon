@@ -7,6 +7,8 @@ import BookingType "../types/BookingType";
 import UserBalanceType "../types/UserBalanceType";
 import DashboardType "../types/DashboardType";
 import FieldType "../types/FieldType";
+import CommunityType "../types/CommunityType";
+import EventType "../types/EventType";
 
 
 module{
@@ -75,7 +77,9 @@ module{
         customer : Principal, 
         bookings : BookingType.Bookings, 
         arenas : ArenaType.Arenas, 
-        fields : FieldType.Fields
+        fields : FieldType.Fields,
+        communities : CommunityType.Communities,
+        events : EventType.Events
     ) : async Result.Result <DashboardType.CustomerDashboard, Text> {
 
         let allBooking = Iter.toArray(bookings.vals());
@@ -125,6 +129,32 @@ module{
             }
         );
 
-        return #ok {bookings = mapped};
+        let principalText = Principal.toText(customer);
+        let allCommunities = Iter.toArray(communities.vals());
+
+        let userCommunities = Array.filter<CommunityType.Community>(
+            allCommunities,
+            func(c : CommunityType.Community) : Bool {
+            Array.find<Text>(c.members, func(m : Text) : Bool {
+            m == principalText
+        }) != null
+            }
+        );
+
+        let allEvents = Iter.toArray(events.vals());
+
+        let userEvents = Array.filter<EventType.Event>(
+            allEvents,
+            func(c : EventType.Event) : Bool {
+                Array.find<EventType.EventParticipant>(
+                c.participant,
+                func(p : EventType.EventParticipant) : Bool {
+                    p.principal == principalText
+                }
+                ) != null
+            }
+        );
+
+        return #ok {bookings = mapped; communities = userCommunities; events = userEvents};
     };
 }

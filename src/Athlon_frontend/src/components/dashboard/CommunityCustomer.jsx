@@ -1,0 +1,85 @@
+import React, { useEffect, useState } from "react";
+import CardComunity from "../community/CardComunity";
+import { Search } from "lucide-react";
+import { Link } from "react-router-dom";
+
+export default function CommunityCustomer({ datas, userData }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCommunity, setfilteredCommunity] = useState(
+    datas.communities || []
+  );
+
+  useEffect(() => {
+    if (datas) {
+      setfilteredCommunity(datas.communities);
+    }
+  }, [datas]);
+
+  useEffect(() => {
+    const filtered = datas.communities.filter((community) =>
+      community.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setfilteredCommunity(filtered);
+  }, [searchQuery, datas.communities]);
+
+  return (
+    <div className="w-full flex flex-col justify-start items-start gap-6">
+      <div className="flex flex-col justify-start items-start gap-2">
+        <h1 className="text-xl text-[#202020]/95">
+          Hi, <span className="font-bold">{userData.username}👋</span>
+        </h1>
+        <p className="text-base text-[#202020]/70">
+          Lihat daftar komunitas olahraga yang Anda ikuti disini!
+        </p>
+      </div>
+      <div className="flex flex-col justify-start items-start gap-3 w-full">
+        <p className="text-base text-[#202020] font-semibold">List Komunitas</p>
+        {/* SEARCHBAR */}
+        <div className="w-full border border-[#202020]/20 rounded-md px-4 py-3 flex flex-row justify-start items-center gap-3">
+          <Search className="w-5 text-[#202020]/60" />
+          <input
+            type="text"
+            className="font-base text-[#202020]/90 w-full outline-0"
+            placeholder="Cari komunitas disini..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {/* BOX CARD */}
+        {filteredCommunity.length == 0 ? (
+          <div className="w-full px-4 py-5 aspect-video flex justify-center items-center gap-2 flex-col">
+            <img src="/character-2.webp" alt="character img" className="w-64" />
+            <p className="text-lg font-bold text-[#202020] text-center mt-5">
+              Komunitas Tidak Ditemukan
+            </p>
+            <p className="text-sm text-[#202020]/70 text-center">
+              Yah belum ada nama komunitas yang sesuai dengan kata kunci yang
+              kamu input nih!
+            </p>
+            <Link
+              to={"/community"}
+              className="text-[#202020]/60 border border-[#202020]/30 px-8 py-2 rounded-full mt-4"
+            >
+              Periksa Komunitas
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 justify-start items-start w-full">
+            {filteredCommunity.map((community, key) => (
+              <CardComunity
+                key={key}
+                id={community.id}
+                banner={community.banner}
+                profile={community.profile}
+                title={community.name}
+                description={community.description}
+                members={community.members}
+                sports={community.sports}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

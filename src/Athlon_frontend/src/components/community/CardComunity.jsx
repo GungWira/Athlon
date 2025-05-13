@@ -20,7 +20,7 @@ export default function CardComunity({
         className={`w-full aspect-video bg-red-50 relative flex justify-center items-center bg-center bg-cover`}
         style={{ backgroundImage: `url(${banner})` }}
       >
-        <div className="w-[25%] aspect-square rounded-full bg-red-500 absolute -bottom-12 overflow-hidden">
+        <div className="w-[25%] aspect-square rounded-full bg-slate-100 absolute -bottom-12 overflow-hidden">
           <img src={profile} alt={title} />
         </div>
       </div>
