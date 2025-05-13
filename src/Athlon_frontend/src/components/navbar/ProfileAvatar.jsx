@@ -22,18 +22,24 @@ export default function ProfileAvatar() {
           >
             Dashboard
           </Link>
-          <Link
-            to="/premium"
-            className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            Jadi Premium
-          </Link>
-          <Link
-            to="/owner/create-arena"
-            className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            Tambah Lapangan
-          </Link>
+          {userData && userData.userType == "owner" && (
+            <>
+              <Link
+                to="/premium"
+                className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                Jadi Premium
+              </Link>
+
+              <Link
+                to="/owner/create-arena"
+                className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                Tambah Lapangan
+              </Link>
+            </>
+          )}
+
           <span
             onClick={logout}
             className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
