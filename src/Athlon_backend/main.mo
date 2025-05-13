@@ -11,19 +11,20 @@ import UserType "types/UserType";
 import ArenaType "types/ArenaType";
 import FieldType "types/FieldType";
 import UserBalanceType "types/UserBalanceType";
+import BookingType "types/BookingType";
+import DashboardType "types/DashboardType";
+import CommunityType "types/CommunityType";
+import EventType "types/EventType";
 
 // SERVICES
 import UserService "services/UserService";
 import ArenaService "services/ArenaService";
 import FieldService "services/FieldService";
 import TransactionService "services/TransactionService";
-import BookingType "types/BookingType";
 import BookingService "services/BookingService";
-import DashboardType "types/DashboardType";
 import DashboardService "services/DashboardService";
 import CommunityService "services/CommunityService";
-import CommunityType "types/CommunityType";
-
+import EventService "services/EventService";
 
 actor Athlon {
   // DATA
@@ -63,6 +64,12 @@ actor Athlon {
     Text.hash
   );
 
+  private var events : EventType.Events = HashMap.HashMap<Text, EventType.Event>(
+    0,
+    Text.equal,
+    Text.hash
+  );
+
   // DATA ENTRIES
   private stable var usersEntries : [(Principal, UserType.User)] = [];
   private stable var arenasEntries : [(Text, ArenaType.Arena)] = [];
@@ -70,6 +77,7 @@ actor Athlon {
   private stable var userBalancesEntries : [(Principal, UserBalanceType.UserBalance)] = [];
   private stable var bookingsEntries : [(Text, BookingType.Booking)] = [];
   private stable var communitiesEntries : [(Text, CommunityType.Community)] = [];
+  private stable var eventEntries : [(Text, EventType.Event)] = [];
 
   // PREUPGRADE & POSTUPGRADE FUNC TO KEEP DATA
   system func preupgrade() {
@@ -79,6 +87,7 @@ actor Athlon {
     userBalancesEntries := Iter.toArray(userBalances.entries());
     bookingsEntries := Iter.toArray(bookings.entries());
     communitiesEntries := Iter.toArray(communities.entries());
+    eventEntries := Iter.toArray(events.entries());
   };
   
   system func postupgrade() {
@@ -94,6 +103,8 @@ actor Athlon {
     bookingsEntries := [];
     communities := HashMap.fromIter<Text, CommunityType.Community>(communitiesEntries.vals(), 0, Text.equal, Text.hash);
     communitiesEntries := [];
+    events := HashMap.fromIter<Text, EventType.Event>(eventEntries.vals(), 0, Text.equal, Text.hash);
+    eventEntries := [];
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -386,5 +397,38 @@ actor Athlon {
 
   public func leaveCommunity(id: Text, user : Principal) : async Bool {
     return await CommunityService.leaveCommunity(id, user, communities);
+  };
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION EVENT ------------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+
+  public func createEvent(
+    owner : Principal,
+    ownerUsername : Text,
+    communityId : Text,
+    communityName : Text,
+    communityProfile : Text,
+    title : Text,
+    description : Text,
+    rules : Text,
+    banner : Text,
+    level : Text,
+    maxParticipant : Nat,
+    sport : Text,
+    date : Text,
+    time : Text,
+    arenaId : Text,
+    fieldId : Text,
+  ) : async Text {
+    return await EventService.createEvent(owner, ownerUsername, communityId, communityName, communityProfile, title, description, rules, banner, level, maxParticipant, sport, date, time, arenaId, fieldId, arenas, fields, events);
+  };
+
+  public func getEventById(id : Text) : async ?EventType.Event {
+    return await EventService.getEventById(id, events);
+  };
+
+  public func getEvents() : async [EventType.Event] {
+    return await EventService.getEvents(events);
   }
 };

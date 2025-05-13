@@ -98,22 +98,10 @@ export default function Navbar() {
                     Community
                   </Link>
                   <Link
-                    to={"/membership"}
+                    to={"/event"}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
                   >
-                    Membership
-                  </Link>
-                  <Link
-                    to={"/tournament"}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-                  >
-                    Tournaments
-                  </Link>
-                  <Link
-                    to={"/coaching"}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-                  >
-                    Coaching
+                    Event
                   </Link>
                 </div>
               </div>
