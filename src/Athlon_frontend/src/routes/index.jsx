@@ -20,7 +20,6 @@ import Event from "../pages/event/Event";
 import CreateEvent from "../pages/event/CreateEvent";
 import EventDetail from "../pages/event/EventDetail";
 
-
 export default function AppRoutes() {
   return (
     <Routes>
@@ -38,7 +37,6 @@ export default function AppRoutes() {
         <Route path="/event/create" element={<CreateEvent />} />
         <Route path="/event/:idEvent" element={<EventDetail />} />
         <Route path="/testing" element={<Testing />} />
-        <Route path="/testfe" element={<TestFe />} />
       </Route>
       {/* CUSTOMER ROUTES */}
       <Route element={<ProtectedCustomerRoute />}>
