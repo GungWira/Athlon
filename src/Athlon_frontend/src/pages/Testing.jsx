@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Loading from "../components/Loading";
 
 export default function Testing() {
-  const { actor, principal, userData } = useAuth();
+  const { actor, principal, userData, icpIdrRate } = useAuth();
   const [balance, setBalance] = useState(null);
   const [promnt, setPromnt] = useState("");
   const [loading, setLoading] = useState(true);

@@ -13,9 +13,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [actor, setActor] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [icpIdrRate, setIcpIdrRate] = useState(0);
 
   const initAuth = async () => {
     setLoading(true);
+
     const client = await AuthClient.create();
     setAuthClient(client);
 
@@ -34,6 +36,9 @@ export const AuthProvider = ({ children }) => {
       actorInstance = createActor(canisterId, {
         agentOptions: { identity: id },
       });
+
+      const rate = await actorInstance.get_icp_idr_exchange();
+      setIcpIdrRate(rate);
 
       try {
         const user = await actorInstance.getUserById(id.getPrincipal());
@@ -121,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         loading,
         refreshUserData,
+        icpIdrRate,
       }}
     >
       {children}
