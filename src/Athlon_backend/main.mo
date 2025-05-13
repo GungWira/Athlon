@@ -5,6 +5,13 @@ import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Result "mo:base/Result";
+import Blob "mo:base/Blob";
+import Cycles "mo:base/ExperimentalCycles";
+import Debug "mo:base/Debug";
+import Int "mo:base/Int";
+import Float "mo:base/Float";
+import IC "ic:aaaaa-aa";
+import JSON "mo:json";
 
 // TYPES
 import UserType "types/UserType";
@@ -430,5 +437,96 @@ actor Athlon {
 
   public func getEvents() : async [EventType.Event] {
     return await EventService.getEvents(events);
-  }
+  };
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // FUNCTION ICP RATE ---------------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------------------------------------------
+
+  public query func transform({
+    // context : Blob;
+    response : IC.http_request_result;
+  }) : async IC.http_request_result {
+    {
+      response with headers = [];
+    };
+  };
+
+  public func get_icp_idr_exchange() : async Text {
+      let host : Text = "api.coingecko.com";
+      let url = "https://" # host # "/api/v3/simple/price?ids=internet-computer&vs_currencies=idr";
+
+      let request_headers = [
+          { name = "User-Agent"; value = "price-feed" },
+          { name = "Accept"; value = "application/json" },
+      ];
+
+      let http_request : IC.http_request_args = {
+          url = url;
+          max_response_bytes = ?2048;
+          headers = request_headers;
+          body = null;
+          method = #get;
+          transform = ?{
+              function = transform;
+              context = Blob.fromArray([]);
+          };
+      };
+
+      // Tambahkan cycles untuk pemanggilan HTTPS
+      Cycles.add<system>(230_949_972_000);
+
+      let http_response = await IC.http_request(http_request);
+
+      let raw = switch (Text.decodeUtf8(http_response.body)) {
+          case (?r) r;
+          case null return "0"; // Error decode
+      };
+
+      // Parse JSON
+      let parsed = JSON.parse(raw);
+      switch (parsed) {
+        case (#ok(data)) {
+          switch(JSON.get(data, "internet-computer")) {
+            case (?idr) {
+              switch(JSON.get(idr, "idr")) {
+                case (?val) {
+                  switch (val) {
+                    case (#number(num)) {
+                      switch (num) {
+                        case (#int(i)) {
+                          Debug.print("Extracted int: " # debug_show(i));
+                          return Int.toText(i);
+                        };
+                        case (#float(f)) {
+                          Debug.print("Extracted float: " # debug_show(f));
+                          return Float.toText(f);
+                        };
+                      };
+                    };
+                    case (_) {
+                      Debug.print("Value bukan number");
+                      return "0";
+                    };
+                  };
+                };
+                case (_) {
+                  Debug.print("Key 'idr' tidak ditemukan");
+                  return "0";
+                };
+              };
+            };
+            case (_) {
+              Debug.print("Key 'internet-computer' tidak ditemukan");
+              return "0";
+            };
+          };
+        };
+        case (#err(e)) {
+          Debug.print("Gagal parse JSON: " # debug_show(e));
+          return "0";
+        };
+      };
+  };
+
 };

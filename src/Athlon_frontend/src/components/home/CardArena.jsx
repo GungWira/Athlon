@@ -8,9 +8,10 @@ export function CardArena({
   price,
   description,
   tag,
+  isOwner = false,
 }) {
   return (
-    <Link to={`/arena/${id}`}>
+    <Link to={`${isOwner ? "/owner" : ""}/arena/${id}`}>
       <div className="w-full max-w-3xl bg-white rounded-md flex flex-col gap-4 overflow-hidden border border-[#202020]/10">
         <div className="relative w-full aspect-video overflow-hidden">
           <img src={image} alt={`Image ${name} ${location}`} />

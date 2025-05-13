@@ -66,6 +66,7 @@ export default function ArenaOwner({ datas, userData }) {
             {filteredArenas.map((arena) => (
               <CardArena
                 key={arena.id}
+                isOwner={true}
                 id={arena.id}
                 image={arena.images[0]}
                 name={arena.name}

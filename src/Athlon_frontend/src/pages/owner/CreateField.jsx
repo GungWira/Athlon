@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { ChevronDown } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function CreateField() {
-  const { actor, principal } = useAuth();
+  const { actor, principal, icpIdrRate } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const { sports, arenaId } = location.state || {};
   const [newTime, setNewTime] = useState("");
+  const [process, setProcess] = useState(false);
   const [showSportDropdown, setShowSportDropdown] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
@@ -25,6 +27,8 @@ export default function CreateField() {
     size: "",
     price: "",
     priceUnit: "per jam",
+    icpPrice: "",
+    priceMethod: "icp",
     openTime: "08:00",
     closeTime: "20:00",
     interval: 60,
@@ -34,6 +38,19 @@ export default function CreateField() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleChangePrice = (e) => {
+    let current = 0;
+    const { name, value } = e.target;
+    console.log(name);
+    if (form.priceMethod == "rp") {
+      current = (value / Number(icpIdrRate)) * 10000000;
+    } else {
+      current = value * 10000000;
+    }
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, icpPrice: Math.ceil(current) }));
   };
 
   const addTime = () => {
@@ -55,6 +72,18 @@ export default function CreateField() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setProcess(true);
+
+    if (
+      !form.name ||
+      !form.sportType ||
+      !form.price ||
+      !form.availableTimes.length
+    ) {
+      toast.error("Harap lengkapi semua data yang diperlukan.");
+      setProcess(false);
+      return;
+    }
 
     try {
       const result = await actor.createField(
@@ -62,7 +91,7 @@ export default function CreateField() {
         form.name,
         form.sportType,
         form.size,
-        BigInt(form.price),
+        BigInt(form.icpPrice),
         "",
         form.priceUnit,
         form.availableTimes,
@@ -76,19 +105,23 @@ export default function CreateField() {
           size: "",
           price: "",
           priceUnit: "per jam",
+          icpPrice: "",
+          priceMethod: "icp",
           openTime: "08:00",
           closeTime: "20:00",
           interval: 60,
           availableTimes: [],
         });
-        alert("Lapangan berhasil dibuat!");
+        toast.success("Lapangan berhasil dibuat!");
         navigate(`/owner/arena/${arenaId}`);
       } else {
-        alert("Gagal membuat lapangan: " + result.err);
+        toast.error("Gagal membuat lapangan: " + result.err);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Terjadi kesalahan saat membuat lapangan.");
+      toast.error("Terjadi kesalahan saat membuat lapangan.");
+    } finally {
+      setProcess(false);
     }
   };
 
@@ -105,7 +138,7 @@ export default function CreateField() {
       const endSlot = new Date(start.getTime() + interval * 60000);
       if (endSlot > end) break;
 
-      const format = (date) => date.toTimeString().slice(0, 5); // "HH:MM"
+      const format = (date) => date.toTimeString().slice(0, 5);
       slots.push(`${format(start)} - ${format(endSlot)}`);
       start = endSlot;
     }
@@ -124,6 +157,8 @@ export default function CreateField() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
+      <Toaster position="top-right" reverseOrder={false} />
+
       <h1 className="text-2xl font-bold mb-1">Add Field</h1>
       <p className="text-gray-600 text-sm mb-6">
         Tambahkan jenis lapangan yang tersedia di arena kamu agar bisa dipesan
@@ -139,7 +174,6 @@ export default function CreateField() {
             onChange={handleChange}
             placeholder="Masukkan nama"
             className="w-full border border-gray-300 rounded-md p-3 text-sm"
-            required
           />
         </div>
 
@@ -281,22 +315,57 @@ export default function CreateField() {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Harga per jam</label>
-          <input
-            name="price"
-            value={form.price}
-            onChange={handleChange}
-            type="number"
-            placeholder="Masukkan harga sewa"
-            className="w-full border border-gray-300 rounded-md p-3 text-sm"
-            required
-          />
+          <div className="relative flex items-center">
+            <input
+              name="price"
+              value={form.price}
+              onChange={handleChangePrice}
+              type="number"
+              placeholder="Masukkan harga sewa"
+              className="w-full border border-gray-300 rounded-md p-3 text-sm ps-12"
+            />
+            {form.priceMethod === "icp" ? (
+              <img src="/icp.webp" alt="icp" className="w-7 absolute left-3" />
+            ) : (
+              <span className="absolute left-3 text-gray-500">Rp</span>
+            )}
+            <button
+              type="button"
+              onClick={() =>
+                setForm((prev) => ({
+                  ...prev,
+                  priceMethod: prev.priceMethod === "icp" ? "rp" : "icp",
+                }))
+              }
+              className="absolute right-3 bg-indigo-600 text-white px-3 py-1 rounded text-sm"
+            >
+              {form.priceMethod === "icp" ? "Rupiah" : "ICP"}
+            </button>
+          </div>
+          <p className="text-sm text-[#202020]/60">
+            Harga dalam {form.priceMethod === "icp" ? "Rupiah" : "ICP"}:{" "}
+            {form.price && icpIdrRate
+              ? form.priceMethod === "icp"
+                ? (parseFloat(form.price) * icpIdrRate).toLocaleString(
+                    "id-ID",
+                    {
+                      style: "currency",
+                      currency: "IDR",
+                    }
+                  )
+                : (parseFloat(form.price) / icpIdrRate).toFixed(2) + " ICP"
+              : 0}
+          </p>
         </div>
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium mt-4"
+          disabled={process}
+          className={`w-full cursor-pointer ${
+            process ? "bg-indigo-600/60" : "bg-indigo-600"
+          } text-white py-3 rounded-md font-medium mt-4`}
         >
-          Simpan Lapangan
+          {process ? "Memproses..." : "Simpan Lapangan"}
         </button>
       </form>
     </div>

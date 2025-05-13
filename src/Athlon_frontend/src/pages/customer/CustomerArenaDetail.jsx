@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import { getTodayFormattedDate } from "../../utils/formatedDate";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function CustomerArenaDetail() {
   const { idArena } = useParams();
@@ -16,11 +17,6 @@ export default function CustomerArenaDetail() {
   const [selectedTimes, setSelectedTimes] = useState({});
 
   useEffect(() => {
-    if (!isAuthenticated || !principal) {
-      navigate("/", { replace: true });
-      return;
-    }
-
     const fetchArena = async () => {
       try {
         const today = getTodayFormattedDate();
@@ -67,6 +63,10 @@ export default function CustomerArenaDetail() {
   };
 
   const handleSubmit = async () => {
+    if (!userData) {
+      toast.error("Login terlebih dahulu untuk melanjutkan booking");
+      return;
+    }
     const today = getTodayFormattedDate();
     let total = 0;
     let selectedDetails = [];
@@ -125,6 +125,7 @@ export default function CustomerArenaDetail() {
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-4 border rounded">
+      <Toaster position="top-right" reverseOrder={false} />
       <h1 className="text-xl font-bold mb-4">Arena Details</h1>
       {arenaData ? (
         <>
