@@ -19,6 +19,7 @@ import DetailCommunity from "../pages/community/DetailCommunity";
 import Event from "../pages/event/Event";
 import CreateEvent from "../pages/event/CreateEvent";
 import EventDetail from "../pages/event/EventDetail";
+import DetailTransaction from "../pages/customer/DetailTransaction";
 
 export default function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export default function AppRoutes() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/join-owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
+        <Route path="/arena/payment" element={<DetailTransaction />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />
