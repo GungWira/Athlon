@@ -255,6 +255,7 @@ actor Athlon {
   public func createField(
     arenaId: Text,
     name: Text,
+    description: Text,
     sportType: Text,
     size: Text,
     price: Nat,
@@ -266,6 +267,7 @@ actor Athlon {
     let field = await FieldService.createField(
       arenaId,
       name,
+      description,
       sportType,
       size,
       price,

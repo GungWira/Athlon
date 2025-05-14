@@ -10,6 +10,7 @@ module {
     id: Text;
     arenaId: Text;
     name: Text;
+    description: Text;
     sportType: Text;
     size: Text;
     price: Nat;
