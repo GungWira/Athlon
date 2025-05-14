@@ -108,12 +108,14 @@ export default function Navbar() {
                     </div>
                   </div>
                 </div>
-                <Link
-                  to="/join-owner"
-                  className="text-gray-600 hover:text-indigo-600"
-                >
-                  Join as Owner
-                </Link>
+                {!userData.userType === "owner" && (
+                  <Link
+                    to="/join-owner"
+                    className="text-gray-600 hover:text-indigo-600"
+                  >
+                    Join as Owner
+                  </Link>
+                )}
               </nav>
             ) : (
               <></>
