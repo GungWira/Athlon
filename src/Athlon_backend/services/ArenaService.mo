@@ -255,4 +255,45 @@ module {
         }
     };
 
+    public func updateArena(
+        arenaId: Text,
+        name: Text,
+        description: Text,
+        images: [Text],
+        sports: [Text],
+        province: Text,
+        city: Text,
+        district: Text,
+        mapsLink: Text,
+        rules: Text,
+        facilities: [Text],
+        arenas: ArenaType.Arenas
+    ): async Result.Result<Text, Text> {
+        let maybeArena = arenas.get(arenaId);
+        switch (maybeArena) {
+            case null { return #err "Arena tidak ditemukan" };
+            case (?arena) {
+                let updatedArena : ArenaType.Arena = {
+                    id = arena.id;
+                    name = name;
+                    description = description;
+                    images = images;
+                    sports = sports;
+                    province = province;
+                    city = city;
+                    district = district;
+                    mapsLink = mapsLink;
+                    rules = rules;
+                    facilities = facilities;
+                    status = arena.status;
+                    createdAt = arena.createdAt;
+                    owner = arena.owner;
+                };
+
+                arenas.put(arenaId, updatedArena);
+                return #ok "Arena berhasil diperbarui";
+            };
+        };
+    };
+
 }

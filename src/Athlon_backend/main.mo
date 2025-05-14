@@ -135,6 +135,10 @@ actor Athlon {
     return await UserService.getUser(principal, users);
   };
 
+  public func updateProfile(principal : Principal, username : Text, phone : Text, imageProfile : Text) : async ?UserType.User {
+    return await UserService.updateProfile(principal, username, phone, imageProfile, users);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION ARENAS -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -246,6 +250,22 @@ actor Athlon {
     userOpt : ?Principal
   ) : async ArenaType.ArenaRecommendation {
     return await ArenaService.getArenaRecommendation(userOpt, users, arenas);
+  };
+
+  public func updateArena(
+    arenaId : Text,
+    name: Text,
+    description: Text,
+    images: [Text],
+    sports: [Text],
+    province: Text,
+    city: Text,
+    district: Text,
+    mapsLink: Text,
+    rules: Text,
+    facilities: [Text],
+  ) : async Result.Result<Text, Text> {
+    return await ArenaService.updateArena(arenaId, name, description, images, sports, province, city, district, mapsLink, rules, facilities, arenas);
   };
 
   // ---------------------------------------------------------------------------------------------------------------
