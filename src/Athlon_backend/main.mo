@@ -348,6 +348,10 @@ actor Athlon {
     return await BookingService.bookField(arenaId, fieldId, times, user, customerName, owner, arenas, fields, userBalances, bookings, date);
   };
 
+  public func getBookingById(id : Text) : async ?BookingType.Booking {
+    return bookings.get(id);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION WALLET -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------

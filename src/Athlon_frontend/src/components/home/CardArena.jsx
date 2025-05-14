@@ -27,25 +27,16 @@ export function CardArena({
             <p className="text-sm text-[#202020]/80 line-clamp-2">
               {description}
             </p>
-            <div className="flex flex-row justify-start items-start gap-1 mt-2">
+            <div className="flex flex-row justify-start items-start gap-1 mt-2 pb-4">
               <div className="bg-[#5336E8]/5 rounded-full text-indigo-700 px-4  flex flex-row justify-center items-center gap-2 py-1 text-xs">
                 <img src="/location.webp" alt="location icon" className="w-4" />
                 {location}
               </div>
               <div className="bg-[#5336E8]/5 rounded-full text-indigo-700 flex flex-row justify-center items-center gap-2  px-4 py-1 text-xs">
                 <img src="/arena.webp" alt="arena icon" className="w-4" />
-                {location}
+                Lengkap
               </div>
             </div>
-          </div>
-          <div className="flex flex-col justify-end items-end gap-2 w-full pb-5">
-            <div className="flex flex-row justify-center items-center gap-3">
-              <img src="/icp.webp" alt="" className="w-8" />
-              <p className="text-[#202020]/80 font-bold text-base">
-                1 ICP - 3 ICP
-              </p>
-            </div>
-            <p className="text-[#202020]/50 text-sm">Rp 10.000 - 15.000</p>
           </div>
         </div>
       </div>
