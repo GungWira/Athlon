@@ -11,6 +11,7 @@ module {
   public func createField(
     arenaId: Text,
     name: Text,
+    description: Text,
     sportType: Text,
     size: Text,
     price: Nat,
@@ -28,6 +29,7 @@ module {
       id = id;
       arenaId = arenaId;
       name = name;
+      description = description;
       sportType = sportType;
       size = size;
       price = price;
