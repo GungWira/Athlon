@@ -22,6 +22,7 @@ import BookingType "types/BookingType";
 import DashboardType "types/DashboardType";
 import CommunityType "types/CommunityType";
 import EventType "types/EventType";
+import AiTypes "types/AiTypes";
 
 // SERVICES
 import UserService "services/UserService";
@@ -32,6 +33,8 @@ import BookingService "services/BookingService";
 import DashboardService "services/DashboardService";
 import CommunityService "services/CommunityService";
 import EventService "services/EventService";
+import AiService "services/AiService";
+
 
 actor Athlon {
   // DATA
@@ -394,7 +397,13 @@ actor Athlon {
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION LLM --------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
-  
+  public func testBot(input : Text, passAnswer : Text) : async Result.Result<Text, Text> {
+    return await AiService.askBot(input, passAnswer);
+  };
+
+  public func generateDesc(content: AiTypes.GenDescAi) : async Result.Result<Text, Text> {
+    return await AiService.generateDesc(content);
+  };
 
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION COMMUNITY --------------------------------------------------------------------------------------------
