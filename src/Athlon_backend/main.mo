@@ -495,11 +495,9 @@ actor Athlon {
                     case (#number(num)) {
                       switch (num) {
                         case (#int(i)) {
-                          Debug.print("Extracted int: " # debug_show(i));
                           return Int.toText(i);
                         };
                         case (#float(f)) {
-                          Debug.print("Extracted float: " # debug_show(f));
                           return Float.toText(f);
                         };
                       };

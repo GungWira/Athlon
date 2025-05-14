@@ -20,11 +20,13 @@ import Event from "../pages/event/Event";
 import CreateEvent from "../pages/event/CreateEvent";
 import EventDetail from "../pages/event/EventDetail";
 import DetailTransaction from "../pages/customer/DetailTransaction";
+import Logout from "../pages/Logout";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/createprofile" element={<CreateProfile />} />
+      <Route path="/logout" element={<Logout />} />
 
       <Route element={<ProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
