@@ -23,6 +23,7 @@ import DetailTransaction from "../pages/customer/DetailTransaction";
 import Logout from "../pages/Logout";
 import Success from "../pages/Success";
 import Premium from "../pages/Premium";
+import Evidence from "../pages/Evidence";
 
 export default function AppRoutes() {
   return (
@@ -38,6 +39,7 @@ export default function AppRoutes() {
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
         <Route path="/arena/payment" element={<DetailTransaction />} />
         <Route path="/success/" element={<Success />} />
+        <Route path="/evidence/:idBook" element={<Evidence />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />

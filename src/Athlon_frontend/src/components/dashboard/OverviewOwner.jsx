@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Loading from "../Loading";
+import { Link } from "react-router-dom";
 
 export default function OverviewOwner({ datas, userData }) {
   if (!datas && !userData) return <Loading />;
@@ -102,7 +103,8 @@ export default function OverviewOwner({ datas, userData }) {
             <div className="flex flex-col justify-start items-start w-full">
               {datas.bookings.map((books) =>
                 books.timestamp.map((stamp, key) => (
-                  <div
+                  <Link
+                    to={"/evidence/" + books.id}
                     key={key}
                     className={`grid flex-row justify-center items-center gap-3 grid-cols-5 w-full px-4 py-3 ${
                       key % 2 == 1 ? "bg-white" : "bg-indigo-600/5"
@@ -123,7 +125,7 @@ export default function OverviewOwner({ datas, userData }) {
                     <p className="text-sm text-[#202020] text-center">
                       {books.status}
                     </p>
-                  </div>
+                  </Link>
                 ))
               )}
             </div>

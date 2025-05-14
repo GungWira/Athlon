@@ -32,6 +32,23 @@ export default function CommunityCustomer({ datas, userData }) {
           Lihat daftar komunitas olahraga yang Anda ikuti disini!
         </p>
       </div>
+      <div className="w-full overflow-hidden rounded-xl bg-indigo-600 px-8 py-6 relative flex flex-col justify-start items-start gap-2">
+        <p className="text-white font-semibold text-xl">Buat Komunitas</p>
+        <p className="text-white opacity-80 text-base">
+          Buat komunitas olahraga kamu sekarang juga dengan mudah!
+        </p>
+        <Link
+          to={"/community/create"}
+          className="px-7 mt-2 cursor-pointer hover:bg-slate-50 py-2 rounded-md text-indigo-600 bg-white font-semibold"
+        >
+          Buat Komunitas
+        </Link>
+        <img
+          src="hero-orn-2.webp"
+          alt="orn"
+          className="absolute -top-1 -right-1 h-[90%]"
+        />
+      </div>
       <div className="flex flex-col justify-start items-start gap-3 w-full">
         <p className="text-base text-[#202020] font-semibold">List Komunitas</p>
         {/* SEARCHBAR */}
@@ -57,10 +74,10 @@ export default function CommunityCustomer({ datas, userData }) {
               kamu input nih!
             </p>
             <Link
-              to={"/community"}
+              to={"/community/create"}
               className="text-[#202020]/60 border border-[#202020]/30 px-8 py-2 rounded-full mt-4"
             >
-              Periksa Komunitas
+              Buat Komunitas
             </Link>
           </div>
         ) : (
