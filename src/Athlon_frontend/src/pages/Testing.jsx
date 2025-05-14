@@ -41,7 +41,7 @@ export default function Testing() {
 
   const handlePrompt = async () => {
     // TESTING DISINI
-    const res = await actor.prompt(promnt);
+    const res = await actor.generateDesc(promnt);
     console.log(res);
   };
 

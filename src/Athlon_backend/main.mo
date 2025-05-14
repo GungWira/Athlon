@@ -18,6 +18,11 @@ import UserType "types/UserType";
 import ArenaType "types/ArenaType";
 import FieldType "types/FieldType";
 import UserBalanceType "types/UserBalanceType";
+import BookingType "types/BookingType";
+import DashboardType "types/DashboardType";
+import CommunityType "types/CommunityType";
+import EventType "types/EventType";
+import AiTypes "types/AiTypes";
 
 // SERVICES
 import UserService "services/UserService";
@@ -27,7 +32,8 @@ import TransactionService "services/TransactionService";
 import BookingService "services/BookingService";
 import DashboardService "services/DashboardService";
 import CommunityService "services/CommunityService";
-import CommunityType "types/CommunityType";
+import EventService "services/EventService";
+import AiService "services/AiService";
 
 
 actor Athlon {
@@ -369,12 +375,12 @@ actor Athlon {
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION LLM --------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
-  public func testBot(input : Text, passAnswer : Text) : async () {
+  public func testBot(input : Text, passAnswer : Text) : async Result.Result<Text, Text> {
     return await AiService.askBot(input, passAnswer);
   };
 
-  public func generateDesc(input: Text, content: AiTypes.GenDescAi) : async Text {
-    return await AiService.generateDesc(input, content);
+  public func generateDesc(content: AiTypes.GenDescAi) : async Result.Result<Text, Text> {
+    return await AiService.generateDesc(content);
   };
 
   // ---------------------------------------------------------------------------------------------------------------
