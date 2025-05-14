@@ -1,7 +1,9 @@
 import React from 'react'
 import { ArrowRight, Shield, FileCodeIcon as FileContract, LayoutDashboard } from "lucide-react"
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Owner() {
+  const {login} = useAuth()
   return (
     <div className="">
       <section className="relative overflow-hidden mt-8 rounded-xl bg-indigo-600">
@@ -16,9 +18,9 @@ export default function Owner() {
               </p>
             </div>
 
-            <button className="bg-white text-indigo-600 px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors">
+            <button onClick={login} className="bg-white text-indigo-600 px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors">
               <ArrowRight size={18} />
-              <span>Gabung Sekarang</span>
+              <span >Gabung Sekarang</span>
             </button>
           </div>
         </div>
