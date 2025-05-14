@@ -37,7 +37,7 @@ export default function AppRoutes() {
         <Route path="/join-owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
         <Route path="/arena/payment" element={<DetailTransaction />} />
-        <Route path="/success/:idBook" element={<Success />} />
+        <Route path="/success/" element={<Success />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />

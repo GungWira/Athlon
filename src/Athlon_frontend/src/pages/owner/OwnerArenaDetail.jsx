@@ -140,7 +140,7 @@ export default function OwnerArenaDetail() {
 
             <div className="mb-8">
               <h2 className="font-semibold text-lg mb-3">Deskripsi</h2>
-              <p className="text-gray-700">
+              <p className="text-gray-700 whitespace-pre-line">
                 {arenaData.description ||
                   "Figma ipsum component variant main layer. Arrange fill pencil italic list bold link inspect. Layer pen background draft layout ipsum strikethrough distribute style. Italic undo inspect italic asset thumbnail duplicate create list."}
               </p>
