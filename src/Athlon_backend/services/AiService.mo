@@ -79,7 +79,6 @@ module AiService {
       locations;
       sportsType;
       context;
-      facilitate;
     } = content;
     let request_headers = [
       { name = "User-Agent"; value = "POST_USER_COMMAND" },
@@ -101,7 +100,6 @@ module AiService {
     "input:\\n" #
     "- arenaName: " # arenaName # "\\n" #
     "- context: " # context # "\\n" #
-    "- facilitate: " # facilitate # "\\n" #
     "- formatOutput: Deskriptif \\n" #
     "- locations: " # locations # "\\n" #
     "- sportsType: " # sportsType # "\\n" #
@@ -121,7 +119,7 @@ module AiService {
     Cycles.add<system>(230_850_258_000);
     let http_response : IC.http_request_result = await IC.http_request(http_request);
 
-    Debug.print("REQUEST-BODY : " #debug_show (Text.decodeUtf8(http_response.body)));
+    // Debug.print("REQUEST-BODY : " #debug_show (Text.decodeUtf8(http_response.body)));
 
     let decoded_text : Text = switch (Text.decodeUtf8(http_response.body)) {
       case (null) { return #err("No value returned") };
@@ -134,7 +132,7 @@ module AiService {
         return #err("Error parsing response");
       };
       case (#ok(data)) {
-        Debug.print("PARSED-JSON : " #debug_show (data));
+        // Debug.print("PARSED-JSON : " #debug_show (data));
 
         switch (JSON.get(data, "candidates[0].content.parts[0].text")) {
           case (null) {
@@ -144,7 +142,7 @@ module AiService {
           case (?jsonString) {
             switch (jsonString) {
               case (#string(text)) {
-                Debug.print("RESPONSE-TEXT: " # debug_show (text));
+                // Debug.print("RESPONSE-TEXT: " # debug_show (text));
                 return #ok(text);
               };
               case _ {

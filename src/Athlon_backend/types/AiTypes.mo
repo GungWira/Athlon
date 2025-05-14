@@ -13,6 +13,5 @@ module {
     locations : Text;
     sportsType : Text;
     context : Text;
-    facilitate : Text;
   };
 };
