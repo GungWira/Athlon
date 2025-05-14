@@ -11,6 +11,7 @@ import {
 import OverviewCustomer from "../../components/dashboard/OverviewCustomer";
 import BookingCustomer from "../../components/dashboard/BookingCustomer";
 import CommunityCustomer from "../../components/dashboard/CommunityCustomer";
+import AkunSaya from "../../components/dashboard/AkunSaya";
 
 export default function DashboardCustomer() {
   const [navigation, setNavigation] = useState("overview");
@@ -43,7 +44,7 @@ export default function DashboardCustomer() {
   if (loading && !datas) return <Loading />;
 
   return (
-    <div className="flex flex-row justify-start items-start gap-6 mt-4">
+    <div className="flex flex-col md:flex-row justify-start items-start gap-6 mt-4">
       {/* NAVIGATION */}
       <div className="flex flex-col px-4 py-6 rounded-xl border border-[#202020]/20 w-full max-w-xs">
         <h1 className="text-md font-semibold text-[#202020]">
@@ -55,18 +56,16 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <LayoutDashboard
-              className={`${
-                navigation == "overview"
+              className={`${navigation == "overview"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${
-                navigation == "overview"
+              className={`text-base ${navigation == "overview"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             >
               Overview
             </p>
@@ -76,18 +75,16 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <LandPlot
-              className={`${
-                navigation == "booking"
+              className={`${navigation == "booking"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${
-                navigation == "booking"
+              className={`text-base ${navigation == "booking"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             >
               Booking
             </p>
@@ -97,18 +94,16 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <Users
-              className={`${
-                navigation == "community"
+              className={`${navigation == "community"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${
-                navigation == "community"
+              className={`text-base ${navigation == "community"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             >
               Komunitas
             </p>
@@ -118,18 +113,16 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <User
-              className={`${
-                navigation == "account"
+              className={`${navigation == "account"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${
-                navigation == "account"
+              className={`text-base ${navigation == "account"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-              } group-hover:text-indigo-600`}
+                } group-hover:text-indigo-600`}
             >
               Akun Saya
             </p>
@@ -147,6 +140,10 @@ export default function DashboardCustomer() {
 
       {navigation == "community" && (
         <CommunityCustomer datas={datas} userData={userData} />
+      )}
+
+      {navigation == "account" && (
+        <AkunSaya datas={datas} userData={userData} />
       )}
     </div>
   );

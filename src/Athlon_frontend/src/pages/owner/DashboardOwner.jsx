@@ -5,6 +5,7 @@ import { LandPlot, LayoutDashboard, NotebookTabs, User } from "lucide-react";
 import OverviewOwner from "../../components/dashboard/OverviewOwner";
 import ArenaOwner from "../../components/dashboard/ArenaOwner";
 import BookingOwner from "../../components/dashboard/BookingOwner";
+import AkunSaya from "../../components/dashboard/AkunSaya";
 
 export default function DashboardOwner() {
   const [navigation, setNavigation] = useState("overview");
@@ -36,7 +37,7 @@ export default function DashboardOwner() {
   if (loading && !datas) return <Loading />;
 
   return (
-    <div className="flex flex-row justify-start items-start gap-6 mt-4">
+    <div className="flex flex-col md:flex-row justify-start items-start gap-6 mt-4">
       {/* NAVIGATION */}
       <div className="flex flex-col px-4 py-6 rounded-xl border border-[#202020]/20 w-full max-w-xs">
         <h1 className="text-md font-semibold text-[#202020]">
@@ -132,6 +133,10 @@ export default function DashboardOwner() {
 
       {navigation == "book" && (
         <BookingOwner datas={datas} userData={userData} />
+      )}
+
+      {navigation == "account" && (
+        <AkunSaya datas={datas} userData={userData}/>
       )}
     </div>
   );
