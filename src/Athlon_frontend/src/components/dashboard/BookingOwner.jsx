@@ -1,11 +1,90 @@
 import { Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import Chart from "react-apexcharts";
 
 export default function BookingOwner({ datas, userData }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBookings, setFilteredBookings] = useState(
     datas.bookings || []
   );
+  const series = [
+    {
+      name: "Booking",
+      data: [0, 0, 0, 0, 0, 0, 0],
+    },
+  ];
+
+  const getLast7Days = () => {
+    const days = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+    const today = new Date().getDay();
+    const last7Days = [];
+    for (let i = 0; i < 7; i++) {
+      last7Days.push(days[(today + i) % 7]);
+    }
+    return last7Days;
+  };
+
+  const options = {
+    chart: {
+      height: 350,
+      background: "#5336E8",
+      type: "area",
+      toolbar: { show: false },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      curve: "smooth",
+      width: 3,
+      colors: ["#FFFFFF"],
+    },
+    grid: {
+      borderColor: "#ffffff08",
+    },
+    title: {
+      text: "",
+      align: "left",
+      style: {
+        fontSize: "16px",
+        fontFamily: "Poppins, sans-serif",
+        color: "#202020",
+      },
+    },
+    xaxis: {
+      type: "category",
+      categories: getLast7Days(),
+      labels: {
+        style: {
+          colors: "#FFFFFF",
+          fontSize: "16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: "#FFFFFF",
+          fontSize: "16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      },
+    },
+    tooltip: {
+      x: {
+        format: "dd/MM/yy HH:mm",
+      },
+    },
+  };
 
   useEffect(() => {
     if (datas) {
@@ -33,6 +112,19 @@ export default function BookingOwner({ datas, userData }) {
           Periksa daftar booking customer kamu disini dengan mudah!
         </p>
       </div>
+      <div className="flex flex-col justify-start items-start gap-3 w-full">
+        <p className="text-base text-[#202020] font-semibold">Booking Chart</p>
+        <div className="w-full rounded-xl overflow-hidden bg-[#5336E8]">
+          <Chart
+            options={options}
+            series={series}
+            type="line"
+            height={250}
+            width="100%"
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col justify-start items-start gap-3 w-full">
         <p className="text-base text-[#202020] font-semibold">
           Customer's Booking
