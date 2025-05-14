@@ -39,4 +39,28 @@ module {
         return users.get(principal);
     };
 
+    public func updateProfile(principal : Principal, username : Text, phone : Text, imageProfile : Text, users : UserType.Users) : async ?UserType.User {
+        switch (users.get(principal)) {
+            case (?user) {
+                let updatedUser : UserType.User = {
+                    principal = principal;
+                    username = username;
+                    imageProfile = ?imageProfile;
+                    userType = user.userType;
+                    walletAddress = user.walletAddress;
+                    phoneNumber = phone;
+                    arenas = user.arenas;
+                    preferedSports = user.preferedSports;
+                    createdAt = user.createdAt;
+                };
+
+                users.put(principal, updatedUser);
+                return ?updatedUser;
+            };
+            case null {
+                return null;
+            };
+        }
+    };
+
 }
