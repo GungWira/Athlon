@@ -9,7 +9,10 @@ export default function ProfileAvatar() {
       <div className="flex justify-center items-center gap-4 -space-x-2 overflow-hidden">
         <img
           className="inline-block size-10 rounded-full ring-2 ring-white"
-          src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+          src={
+            userData.imageProfile ||
+            `https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`
+          }
           alt=""
         />
         {userData ? userData.username : "Guest"}
@@ -22,18 +25,24 @@ export default function ProfileAvatar() {
           >
             Dashboard
           </Link>
-          <Link
-            to="/premium"
-            className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            Jadi Premium
-          </Link>
-          <Link
-            to="/owner/create-arena"
-            className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            Tambah Lapangan
-          </Link>
+          {userData && userData.userType == "owner" && (
+            <>
+              <Link
+                to="/premium"
+                className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                Jadi Premium
+              </Link>
+
+              <Link
+                to="/owner/create-arena"
+                className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              >
+                Tambah Lapangan
+              </Link>
+            </>
+          )}
+
           <span
             onClick={logout}
             className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"

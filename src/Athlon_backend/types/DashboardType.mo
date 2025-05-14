@@ -1,5 +1,7 @@
 import ArenaType "ArenaType";
 import BookingType "BookingType";
+import CommunityType "CommunityType";
+import EventType "EventType";
 
 
 module{
@@ -11,6 +13,8 @@ module{
 
     public type CustomerDashboard = {
         bookings : [CustomerBookingDetail];
+        communities : [CommunityType.Community];
+        events : [EventType.Event];
     };
 
     public type CustomerBookingDetail = {

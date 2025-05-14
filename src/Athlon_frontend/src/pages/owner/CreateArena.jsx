@@ -1,15 +1,17 @@
-import React, { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { X, ChevronDown, ImageIcon } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { useAuth } from "../../contexts/AuthContext"
+import { useNavigate } from "react-router-dom"
+import { X, ChevronDown, ImageIcon } from "lucide-react"
+import toast, { Toaster } from "react-hot-toast"
 
 const sportsOptions = [
   { label: "Futsal", icon: "⚽" },
   { label: "Badminton", icon: "🏸" },
   { label: "Basketball", icon: "🏀" },
   { label: "Volleyball", icon: "🏐" },
-];
+]
 
 const facilitiesOptions = [
   { label: "Musholla", value: "Musholla" },
@@ -18,12 +20,12 @@ const facilitiesOptions = [
   { label: "Jual Makanan Ringan", value: "Jual Makanan Ringan" },
   { label: "Jual Minuman", value: "Jual Minuman" },
   { label: "Toilet", value: "Toilet" },
-];
+]
 
 export default function CreateArena() {
-  const { actor, principal } = useAuth();
-  const navigate = useNavigate();
-  const [isSubmit, setIsSubmit] = useState(false);
+  const { actor, principal } = useAuth()
+  const navigate = useNavigate()
+  const [isSubmit, setIsSubmit] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -35,67 +37,86 @@ export default function CreateArena() {
     mapsLink: "",
     rules: "",
     facilities: [],
-  });
-  const [facilitiesOpen, setFacilitiesOpen] = useState(false);
+  })
+  const [facilitiesOpen, setFacilitiesOpen] = useState(false)
+  const facilitiesRef = useRef(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (facilitiesRef.current && !facilitiesRef.current.contains(event.target)) {
+        setFacilitiesOpen(false)
+      }
+    }
+
+    // Add event listener when dropdown is open
+    if (facilitiesOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [facilitiesOpen])
+
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files)
     const readers = files.map(
       (file) =>
         new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        })
-    );
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result)
+          reader.readAsDataURL(file)
+        }),
+    )
     Promise.all(readers).then((images) => {
-      setFormData((prev) => ({ ...prev, images }));
-    });
-  };
+      setFormData((prev) => ({ ...prev, images }))
+    })
+  }
 
   const toggleSelect = (key, value) => {
     setFormData((prev) => {
-      const exists = prev[key].includes(value);
+      const exists = prev[key].includes(value)
       return {
         ...prev,
-        [key]: exists
-          ? prev[key].filter((v) => v !== value)
-          : [...prev[key], value],
-      };
-    });
-  };
+        [key]: exists ? prev[key].filter((v) => v !== value) : [...prev[key], value],
+      }
+    })
+  }
 
   const handleSubmit = async () => {
     try {
       if (!formData.name.trim()) {
-        toast.error("Nama arena tidak boleh kosong");
-        return;
+        toast.error("Nama arena tidak boleh kosong")
+        return
       }
       if (formData.sports.length === 0) {
-        toast.error("Harap pilih setidaknya satu jenis olahraga");
-        return;
+        toast.error("Harap pilih setidaknya satu jenis olahraga")
+        return
       }
       if (!formData.province.trim()) {
-        toast.error("Provinsi tidak boleh kosong");
-        return;
+        toast.error("Provinsi tidak boleh kosong")
+        return
       }
       if (!formData.city.trim()) {
-        toast.error("Kota/Kecamatan tidak boleh kosong");
-        return;
+        toast.error("Kota/Kecamatan tidak boleh kosong")
+        return
       }
       if (!formData.mapsLink.trim()) {
-        toast.error("Link maps tidak boleh kosong");
-        return;
+        toast.error("Link maps tidak boleh kosong")
+        return
       }
       if (!formData.description.trim()) {
-        toast.error("Deskripsi tidak boleh kosong");
-        return;
+        toast.error("Deskripsi tidak boleh kosong")
+        return
       }
       if (formData.images.length === 0) {
-        toast.error("Harap unggah setidaknya satu gambar arena");
-        return;
+        toast.error("Harap unggah setidaknya satu gambar arena")
+        return
       }
 
-      setIsSubmit(true);
+      setIsSubmit(true)
 
       const result = await actor.createArena(
         formData.name,
@@ -108,8 +129,8 @@ export default function CreateArena() {
         formData.mapsLink,
         formData.rules,
         formData.facilities,
-        principal
-      );
+        principal,
+      )
 
       setFormData({
         name: "",
@@ -122,29 +143,28 @@ export default function CreateArena() {
         mapsLink: "",
         rules: "",
         facilities: [],
-      });
+      })
 
-      navigate(`/owner/arena/${result.id}`);
+      navigate(`/owner/arena/${result.id}`)
     } catch (err) {
-      console.error(err);
-      alert("Gagal membuat arena");
+      console.error(err)
+      alert("Gagal membuat arena")
     } finally {
-      setIsSubmit(false);
+      setIsSubmit(false)
     }
-  };
+  }
 
   return (
     <div>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="  flex items-center justify-center z-50 p-4">
-        <div className=" rounded-lg w-full ">
+      <div className="flex items-center justify-center z-50 p-4">
+        <div className="rounded-lg w-full">
           {/* Header */}
-          <div className="flex justify-between items-center p-6 ">
+          <div className="flex justify-between items-center p-6">
             <div>
               <h2 className="text-xl font-bold">Create Arena</h2>
               <p className="text-sm text-gray-500 mt-1">
-                Masukkan nama arena, fasilitas, dan deskripsi singkat untuk
-                menarik penyewa.
+                Masukkan nama arena, fasilitas, dan deskripsi singkat untuk menarik penyewa.
               </p>
             </div>
             <button className="text-gray-500 hover:text-gray-700">
@@ -156,10 +176,7 @@ export default function CreateArena() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-6">
                 <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-2"
-                  >
+                  <label htmlFor="name" className="block text-sm font-medium mb-2">
                     Nama Arena
                   </label>
                   <input
@@ -167,18 +184,14 @@ export default function CreateArena() {
                     id="name"
                     placeholder="Masukkan nama"
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Jenis
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Jenis</label>
                   <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
                     <div className="flex flex-wrap gap-2">
                       {sportsOptions.map((sport) => (
@@ -194,9 +207,7 @@ export default function CreateArena() {
                         >
                           <span>{sport.icon}</span>
                           <span>{sport.label}</span>
-                          {!formData.sports?.includes(sport.label) && (
-                            <span className="ml-1 text-lg">+</span>
-                          )}
+                          {!formData.sports?.includes(sport.label) && <span className="ml-1 text-lg">+</span>}
                         </button>
                       ))}
                     </div>
@@ -205,9 +216,7 @@ export default function CreateArena() {
 
                 {/* Location */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Lokasi
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Lokasi</label>
                   <div className="grid grid-cols-3 gap-3">
                     <input
                       type="text"
@@ -250,10 +259,7 @@ export default function CreateArena() {
 
                 {/* deksripsi  */}
                 <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium mb-2"
-                  >
+                  <label htmlFor="description" className="block text-sm font-medium mb-2">
                     Deskripsi
                   </label>
                   <textarea
@@ -273,40 +279,48 @@ export default function CreateArena() {
                 {/* Facilities */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Fasilitas{" "}
-                    <span className="text-gray-500 text-xs">(Opsional)</span>
+                    Fasilitas <span className="text-gray-500 text-xs">(Opsional)</span>
                   </label>
-                  <div className="relative">
+                  <div className="relative" ref={facilitiesRef}>
                     <button
                       type="button"
                       onClick={() => setFacilitiesOpen(!facilitiesOpen)}
                       className="w-full flex items-center justify-between border border-gray-300 rounded-md p-2.5 bg-white"
                     >
                       <span className="text-gray-500">Pilih fasilitas</span>
-                      <ChevronDown
-                        size={16}
-                        className={`transition-transform ${
-                          facilitiesOpen ? "rotate-180" : ""
-                        }`}
-                      />
+                      <ChevronDown size={16} className={`transition-transform ${facilitiesOpen ? "rotate-180" : ""}`} />
                     </button>
+
+                    {/* Selected facilities tags */}
+                    {formData.facilities.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {formData.facilities.map((facility) => (
+                          <div
+                            key={facility}
+                            className="flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-sm"
+                          >
+                            <span>{facility}</span>
+                            <button
+                              type="button"
+                              onClick={() => toggleSelect("facilities", facility)}
+                              className="text-indigo-600 hover:text-indigo-800"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     {facilitiesOpen && (
                       <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4">
                         <div className="grid grid-cols-2 gap-3">
                           {facilitiesOptions.map((facility) => (
-                            <label
-                              key={facility.value}
-                              className="flex items-center gap-2"
-                            >
+                            <label key={facility.value} className="flex items-center gap-2">
                               <input
                                 type="checkbox"
-                                checked={formData.facilities.includes(
-                                  facility.value
-                                )}
-                                onChange={() =>
-                                  toggleSelect("facilities", facility.value)
-                                }
+                                checked={formData.facilities.includes(facility.value)}
+                                onChange={() => toggleSelect("facilities", facility.value)}
                                 className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               />
                               <span>{facility.label}</span>
@@ -320,12 +334,8 @@ export default function CreateArena() {
 
                 {/* Arena Rules */}
                 <div>
-                  <label
-                    htmlFor="rules"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Aturan Arena{" "}
-                    <span className="text-gray-500 text-xs">(Opsional)</span>
+                  <label htmlFor="rules" className="block text-sm font-medium mb-2">
+                    Aturan Arena <span className="text-gray-500 text-xs">(Opsional)</span>
                   </label>
                   <textarea
                     id="rules"
@@ -344,9 +354,7 @@ export default function CreateArena() {
 
               {/* Right Column - Image Upload */}
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Unggah Foto Arena
-                </label>
+                <label className="block text-sm font-medium mb-2">Unggah Foto Arena</label>
                 <div className="border border-gray-300 rounded-lg h-[300px] relative overflow-hidden">
                   {formData.images.length > 0 ? (
                     <div className="relative w-full h-full group">
@@ -383,10 +391,7 @@ export default function CreateArena() {
                         onChange={handleImageChange}
                         className="hidden"
                       />
-                      <label
-                        htmlFor="image-upload"
-                        className="cursor-pointer text-indigo-600 hover:text-indigo-800"
-                      >
+                      <label htmlFor="image-upload" className="cursor-pointer text-indigo-600 hover:text-indigo-800">
                         Upload image
                       </label>
                     </div>
@@ -411,5 +416,5 @@ export default function CreateArena() {
         </div>
       </div>
     </div>
-  );
+  )
 }
