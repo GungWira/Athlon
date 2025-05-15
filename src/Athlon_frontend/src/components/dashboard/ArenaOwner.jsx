@@ -33,16 +33,34 @@ export default function ArenaOwner({ datas, userData }) {
       <div className="flex flex-col justify-start items-start gap-3 w-full">
         <div className="w-full overflow-hidden rounded-xl bg-indigo-600 px-8 py-6 relative flex flex-col justify-start items-start gap-2">
           <p className="text-white font-semibold text-xl">Buat Arena</p>
-          <p className="text-white opacity-80 text-base">
-            Kelola lapangan, atur harga, dan pantau semua dalam <br /> satu
-            dashboard.
-          </p>
-          <Link
-            to={"/owner/create-arena"}
-            className="px-7 mt-2 cursor-pointer hover:bg-slate-50 py-2 rounded-md text-indigo-600 bg-white font-semibold"
-          >
-            Buat Arena
-          </Link>
+          {userData.isPremium == false && datas.arenas.length > 0 ? (
+            <p className="text-white opacity-80 text-base">
+              Yah kamu sudah membuat arena, yuk upgrade premium untuk
+              mendapatkan fitur lebih lengkap!
+            </p>
+          ) : (
+            <p className="text-white opacity-80 text-base">
+              Kelola lapangan, atur harga, dan pantau semua dalam <br /> satu
+              dashboard.
+            </p>
+          )}
+
+          {userData.isPremium == false && datas.arenas.length > 0 ? (
+            <Link
+              to={"/premium"}
+              className="px-7 mt-2 cursor-pointer hover:bg-slate-50 py-2 rounded-md text-indigo-600 bg-white font-semibold"
+            >
+              Upgrade Premium
+            </Link>
+          ) : (
+            <Link
+              to={"/owner/create-arena"}
+              className="px-7 mt-2 cursor-pointer hover:bg-slate-50 py-2 rounded-md text-indigo-600 bg-white font-semibold"
+            >
+              Buat Arena
+            </Link>
+          )}
+
           <img
             src="hero-orn-2.webp"
             alt="orn"

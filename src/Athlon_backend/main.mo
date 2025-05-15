@@ -145,6 +145,13 @@ actor class Athlon() = this {
     return await UserService.updateProfile(principal, username, phone, imageProfile, users);
   };
 
+  public func setUserPremium(
+    principal: Principal,
+    amount: Nat
+  ) : async ?UserType.User {
+    return await UserService.setUserPremium(principal, users, athlonPrincipal, amount, userBalances);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION ARENAS -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
