@@ -409,6 +409,10 @@ actor Athlon {
     return await AiService.generateDesc(content);
   };
 
+  public func generateRules(content: AiTypes.GenDescAi) : async Result.Result<Text, Text> {
+    return await AiService.generateDesc(content);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION COMMUNITY --------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
