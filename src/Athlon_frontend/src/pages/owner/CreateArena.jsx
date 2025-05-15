@@ -40,6 +40,8 @@ export default function CreateArena() {
   const facilitiesRef = useRef(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [showPromptRules, setShowPromptRules] = useState(false);
+  const [promptRules, setPromptRules] = useState("");
   const [prompting, setPrompting] = useState(false);
 
   // Close dropdown when clicking outside
@@ -53,12 +55,10 @@ export default function CreateArena() {
       }
     }
 
-    // Add event listener when dropdown is open
     if (facilitiesOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    // Clean up the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -200,6 +200,51 @@ export default function CreateArena() {
     } finally {
       setPrompting(false);
       setShowPrompt(false);
+      setPrompt("");
+    }
+  };
+
+  const handlePromptRulesSubmit = async () => {
+    setShowPromptRules(true);
+    setPrompting(true);
+
+    try {
+      if (!promptRules.trim()) {
+        toast.error("Prompt tidak boleh kosong");
+        return;
+      }
+
+      if (
+        !formData.name.trim() ||
+        !formData.province.trim() ||
+        !formData.city.trim() ||
+        !formData.sports.length
+      ) {
+        toast.error(
+          "Harap isi semua informasi arena sebelum membuat aturan arena"
+        );
+        return;
+      }
+
+      const data = {
+        arenaName: formData.name,
+        locations: `${formData.province}, ${formData.city}`,
+        sportsType: formData.sports.join(", "),
+        context: prompt,
+      };
+      const response = await actor.generateRules(data);
+      setFormData((prev) => ({
+        ...prev,
+        rules: response.ok,
+      }));
+      toast.success("Rules berhasil dibuat");
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal membuat rules");
+    } finally {
+      setPrompting(false);
+      setShowPromptRules(false);
+      setPromptRules("");
     }
   };
 
@@ -448,6 +493,8 @@ export default function CreateArena() {
                   <textarea
                     id="rules"
                     placeholder="Masukkan aturan"
+                    onFocus={() => setShowPromptRules(true)}
+                    onBlur={() => setShowPromptRules(false)}
                     value={formData.rules}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -457,6 +504,29 @@ export default function CreateArena() {
                     }
                     className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[80px]"
                   />
+                </div>
+                <div
+                  className={`flex w-full justify-between items-center gap-2 border border-[#202020]/20 transition-all ease-in-out duration-500 px-2 rounded-lg overflow-hidden ${
+                    showPromptRules
+                      ? "h-11 py-1 border-[#202020]/20"
+                      : "h-0 py-0 border-0"
+                  }`}
+                >
+                  <img src="shine.webp" alt="shine" className="w-4" />
+                  <input
+                    type="text"
+                    placeholder="Generate dengan Ai"
+                    onChange={(e) => setPromptRules(e.target.value)}
+                    onFocus={() => setShowPromptRules(true)}
+                    onBlur={() => setShowPromptRules(false)}
+                    className="w-full outline-0"
+                  />
+                  <button
+                    onClick={handlePromptRulesSubmit}
+                    className="bg-indigo-600 text-white px-4 py-1 rounded-md"
+                  >
+                    {prompting ? "Memproses..." : "Generate"}
+                  </button>
                 </div>
               </div>
 
