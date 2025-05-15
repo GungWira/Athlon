@@ -1,5 +1,5 @@
 import React, { act, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, data } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import toast, { Toaster } from "react-hot-toast";
@@ -136,6 +136,17 @@ export default function DetailEvent() {
     return `${dayName}, ${day} ${monthName} ${year}`;
   };
 
+  const datePassed = (dateString) => {
+    const today = new Date();
+    const eventDate = new Date(
+      `${dateString.slice(4)}-${dateString.slice(2, 4)}-${dateString.slice(
+        0,
+        2
+      )}`
+    );
+    return eventDate < today;
+  };
+
   return (
     <div>
       <Toaster position="top-right" reverseOrder={false} />
@@ -201,11 +212,13 @@ export default function DetailEvent() {
               {/* JOIN */}
               <div className="flex flex-col justify-start items-start gap-1 px-4 py-3 rounded-md border border-[#202020]/20 w-full max-w-96">
                 <p className="font-semibold text-xl text-[#202020] ">
-                  {principal
-                    ? datas.owner.toText() == principal.toText()
-                      ? "Event Anda"
+                  {!datePassed(datas.date)
+                    ? principal
+                      ? datas.owner.toText() == principal.toText()
+                        ? "Event Anda"
+                        : "Gabung Event"
                       : "Gabung Event"
-                    : "Gabung Event"}
+                    : "Event Selesai"}
                 </p>
                 <p className="text-[#202020]/80 mb-2 text-base">
                   Ikuti event olahraga untuk bertemu dengan sesama pecinta
@@ -233,40 +246,46 @@ export default function DetailEvent() {
                   </p>
                 </div>
 
-                {principal ? (
-                  datas.owner.toText() != principal.toText() ? (
-                    <button
-                      className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
-                        !datas.participant.includes(principal.toText())
-                          ? "bg-indigo-600 hover:bg-indigo-700"
+                {!datePassed(datas.date) ? (
+                  principal ? (
+                    datas.owner.toText() != principal.toText() ? (
+                      <button
+                        className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
+                          !datas.participant.includes(principal.toText())
+                            ? "bg-indigo-600 hover:bg-indigo-700"
+                            : datas.owner.toText() == principal.toText()
+                            ? "bg-indigo-600 "
+                            : "bg-red-600 hover:bg-red-700"
+                        }`}
+                        onClick={handleAction}
+                      >
+                        {processing
+                          ? "Memproses..."
+                          : !datas.participant.includes(principal.toText())
+                          ? "Join Event"
                           : datas.owner.toText() == principal.toText()
-                          ? "bg-indigo-600 "
-                          : "bg-red-600 hover:bg-red-700"
-                      }`}
-                      onClick={handleAction}
-                    >
-                      {processing
-                        ? "Memproses..."
-                        : !datas.participant.includes(principal.toText())
-                        ? "Join Event"
-                        : datas.owner.toText() == principal.toText()
-                        ? "Your Event"
-                        : "Leave Event"}
-                    </button>
+                          ? "Your Event"
+                          : "Leave Event"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleStop}
+                        className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
+                      >
+                        Hentikan Lomba
+                      </button>
+                    )
                   ) : (
                     <button
-                      onClick={handleStop}
+                      onClick={login}
                       className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
                     >
-                      Hentikan Lomba
+                      Login Untuk Bergabung
                     </button>
                   )
                 ) : (
-                  <button
-                    onClick={login}
-                    className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    Login Untuk Bergabung
+                  <button className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700">
+                    Kompetisi Berakhir
                   </button>
                 )}
                 <div className="flex flex-row justify-start items-center gap-2 mt-2">
