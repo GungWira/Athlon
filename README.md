@@ -52,7 +52,7 @@ To integrate **Gemini AI**, you need API keys:
 
 **Obtain Gemini API Key**
 - Sign up at [Google AI](https://ai.google.dev/) and generate an API key.
-- Add the key to your `/src/ECOBUDDY_backend/constants/GlobalConstants.mo` file:
+- Add the key to your `/src/Athlon_backend/constants/GlobalConstants.mo` file:
      ```sh
      API_KEY=your_api_key_here
      ```
@@ -75,3 +75,10 @@ To start the local development server:
    ```
 
 Your application should now be running at `http://[your CANISTER_ID_Athlon_frontend].localhost:4943`.
+
+##🔮 Conclusion & Future Plans
+ArenaChain is redefining how people discover and book sports venues by harnessing the power of Web3 technology. With various features, Athlon offers a secure, transparent, and future-ready platform for sports communities. Looking ahead, we aim to expand Atlhon with these exciting developments:
+- ** 💬 Community Features : Enable users to join local communities, interact, and build connections with other sports enthusiasts.
+- ** 📅 Shared Practice Schedules : Allow users to create and join open training sessions or matches, fostering collaboration and team spirit.
+- ** 🌐 Multi-chain Integration : Expand beyond Internet Computer (ICP) to support additional blockchain networks.
+- ** 🌟 On-chain Reviews & Ratings : Maintain transparency and build trust through immutable community feedback.
