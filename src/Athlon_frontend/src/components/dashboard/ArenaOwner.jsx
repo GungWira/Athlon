@@ -31,6 +31,26 @@ export default function ArenaOwner({ datas, userData }) {
         </p>
       </div>
       <div className="flex flex-col justify-start items-start gap-3 w-full">
+        <div className="w-full overflow-hidden rounded-xl bg-indigo-600 px-8 py-6 relative flex flex-col justify-start items-start gap-2">
+          <p className="text-white font-semibold text-xl">Buat Arena</p>
+          <p className="text-white opacity-80 text-base">
+            Kelola lapangan, atur harga, dan pantau semua dalam <br /> satu
+            dashboard.
+          </p>
+          <Link
+            to={"/owner/create-arena"}
+            className="px-7 mt-2 cursor-pointer hover:bg-slate-50 py-2 rounded-md text-indigo-600 bg-white font-semibold"
+          >
+            Buat Arena
+          </Link>
+          <img
+            src="hero-orn-2.webp"
+            alt="orn"
+            className="absolute -top-1 -right-1 h-[90%]"
+          />
+        </div>
+      </div>
+      <div className="flex flex-col justify-start items-start gap-3 w-full">
         <p className="text-base text-[#202020] font-semibold">List Arena</p>
         {/* SEARCHBAR */}
         <div className="w-full border border-[#202020]/20 rounded-md px-4 py-3 flex flex-row justify-start items-center gap-3">

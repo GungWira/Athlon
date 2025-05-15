@@ -11,6 +11,7 @@ import {
 import OverviewCustomer from "../../components/dashboard/OverviewCustomer";
 import BookingCustomer from "../../components/dashboard/BookingCustomer";
 import CommunityCustomer from "../../components/dashboard/CommunityCustomer";
+import MyAccount from "../../components/dashboard/MyAccount";
 
 export default function DashboardCustomer() {
   const [navigation, setNavigation] = useState("overview");
@@ -43,7 +44,7 @@ export default function DashboardCustomer() {
   if (loading && !datas) return <Loading />;
 
   return (
-    <div className="flex flex-row justify-start items-start gap-6 mt-4">
+    <div className="flex flex-col md:flex-row justify-start items-start gap-6 mt-4">
       {/* NAVIGATION */}
       <div className="flex flex-col px-4 py-6 rounded-xl border border-[#202020]/20 w-full max-w-xs">
         <h1 className="text-md font-semibold text-[#202020]">
@@ -147,6 +148,10 @@ export default function DashboardCustomer() {
 
       {navigation == "community" && (
         <CommunityCustomer datas={datas} userData={userData} />
+      )}
+
+      {navigation == "account" && (
+        <MyAccount datas={datas} userData={userData} />
       )}
     </div>
   );

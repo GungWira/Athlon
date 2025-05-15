@@ -43,24 +43,29 @@ export default function SearchPage() {
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Hasil Pencarian Terkait</h1>
-      {arenas.length == 0 ? (
-        <p>Tidak ada data yang sesuai bang</p>
-      ) : (
-        arenas.map((arena, key) => (
-          <Link to={`/arena/${arena.id}`} key={key}>
-            <CardArena
-              image={arena.images[0]}
-              name={arena.name}
-              location={arena.city}
-              price={0}
-              description={arena.description}
-              tag={arena.sports[0]}
-              tagColor={arena.tagColor}
-              timeSlots={arena.timeSlots}
-            />
-          </Link>
-        ))
-      )}
+      <p className="text-[#202020]/80 my-2">
+        Menampilkan hasil pencarian paling relavan dengan kata kunci
+      </p>
+      <div className="grid grid-cols-4 justify-start items-start gap-4 mt-8">
+        {arenas.length == 0 ? (
+          <p>Tidak ada data yang sesuai bang</p>
+        ) : (
+          arenas.map((arena, key) => (
+            <Link to={`/arena/${arena.id}`} key={key}>
+              <CardArena
+                image={arena.images[0]}
+                name={arena.name}
+                location={arena.city}
+                price={0}
+                description={arena.description}
+                tag={arena.sports[0]}
+                tagColor={arena.tagColor}
+                timeSlots={arena.timeSlots}
+              />
+            </Link>
+          ))
+        )}
+      </div>
     </div>
   );
 }

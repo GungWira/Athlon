@@ -45,6 +45,7 @@ module {
         return users.get(principal);
     };
 
+
     // Set User to be premium User
     public func setUserPremium(principal : Principal, users : UserType.Users, canisterPrincipal : Principal, amount : Nat, userBalances : UserBalanceType.UserBalances) : async ?UserType.User {
         let user = users.get(principal);
@@ -79,3 +80,30 @@ module {
         };
     };
 };
+
+    public func updateProfile(principal : Principal, username : Text, phone : Text, imageProfile : Text, users : UserType.Users) : async ?UserType.User {
+        switch (users.get(principal)) {
+            case (?user) {
+                let updatedUser : UserType.User = {
+                    principal = principal;
+                    username = username;
+                    imageProfile = ?imageProfile;
+                    userType = user.userType;
+                    walletAddress = user.walletAddress;
+                    phoneNumber = phone;
+                    arenas = user.arenas;
+                    preferedSports = user.preferedSports;
+                    createdAt = user.createdAt;
+                };
+
+                users.put(principal, updatedUser);
+                return ?updatedUser;
+            };
+            case null {
+                return null;
+            };
+        }
+    };
+
+}
+

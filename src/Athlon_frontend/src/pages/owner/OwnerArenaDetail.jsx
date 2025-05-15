@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import Button from "../../components/ui/Button";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function OwnerArenaDetail() {
   const { idArena } = useParams();
@@ -13,6 +14,7 @@ export default function OwnerArenaDetail() {
   const [arenaData, setArenaData] = useState(null);
   const [fieldData, setFieldData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || !principal) {
@@ -54,7 +56,7 @@ export default function OwnerArenaDetail() {
 
   const handleSetStatus = async (id, status) => {
     try {
-      setLoading(true);
+      setProcessing(true);
       if (actor) {
         let result = await actor.setArenaStatus(id, status);
         console.log(result);
@@ -63,12 +65,15 @@ export default function OwnerArenaDetail() {
             ...prev,
             status: prev.status === "active" ? "deactive" : "active",
           }));
+          toast.success(result.ok);
+          return;
         }
+        toast.error(result.err);
       }
     } catch (error) {
       console.log("Error mengubah status lapangan : ", error);
     } finally {
-      setLoading(false);
+      setProcessing(false);
     }
   };
 
@@ -92,6 +97,8 @@ export default function OwnerArenaDetail() {
   };
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <Toaster position="top-right" reverseOrder={false} />
+
       <main className="flex-1  mx-auto px-4 py-6 w-full">
         {fieldData && fieldData.length === 0 && (
           <div className="bg-amber-50 border border-amber-100 rounded-md p-4 mb-6 flex items-start">
@@ -124,8 +131,23 @@ export default function OwnerArenaDetail() {
         {/* detail arena */}
         {arenaData && (
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-1">{arenaData.name}</h1>
-            <p className="text-gray-600 mb-4">Kota {arenaData.city}</p>
+            <div className="flex flex-row justify-between items-start gap-2">
+              <div className="flex flex-col justify-start items-start gap-1">
+                <h1 className="text-3xl font-bold mb-1">{arenaData.name}</h1>
+                <p className="text-gray-600 mb-4">Kota {arenaData.city}</p>
+              </div>
+              <button
+                disabled={processing}
+                onClick={() => handleSetStatus(idArena, arenaData.status)}
+                className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 rounded-md py-2 w-64 text-white text-xl font-medium"
+              >
+                {processing
+                  ? "Memproses..."
+                  : arenaData.status === "active"
+                  ? "Aktif"
+                  : "Non-Aktif"}
+              </button>
+            </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
               {arenaData.sports.map((sport, key) => (
@@ -140,7 +162,7 @@ export default function OwnerArenaDetail() {
 
             <div className="mb-8">
               <h2 className="font-semibold text-lg mb-3">Deskripsi</h2>
-              <p className="text-gray-700">
+              <p className="text-gray-700 whitespace-pre-line">
                 {arenaData.description ||
                   "Figma ipsum component variant main layer. Arrange fill pencil italic list bold link inspect. Layer pen background draft layout ipsum strikethrough distribute style. Italic undo inspect italic asset thumbnail duplicate create list."}
               </p>

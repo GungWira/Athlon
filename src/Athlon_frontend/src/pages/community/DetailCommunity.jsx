@@ -1,8 +1,7 @@
-import React, { act, useEffect, useState } from "react";
-import { useParams, useNavigate, Link, data } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
-import Button from "../../components/ui/Button";
 import toast, { Toaster } from "react-hot-toast";
 import CardComunity from "../../components/community/CardComunity";
 
@@ -12,20 +11,21 @@ export default function DetailCommunity() {
   const { principal, isAuthenticated, actor, login } = useAuth();
 
   const [datas, setDatas] = useState(null);
+  const [events, setEvents] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const fetchArena = async () => {
-      console.log(principal);
       try {
         const result = await actor.getCommunityById(idCommunity);
+        console.log(result);
         if ("err" in result) {
           navigate(-1);
           return;
         }
-        setDatas(result.ok);
-        console.log(result.ok);
+        setDatas(result.ok[0]);
+        setEvents(result.ok[1]);
       } catch (err) {
         console.error("Error fetching arena:", err);
         navigate(-1);
@@ -74,6 +74,10 @@ export default function DetailCommunity() {
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleEvent = async () => {
+    navigate(`/community/${idCommunity}/create-event`);
   };
 
   if (loading) return <Loading />;
@@ -156,17 +160,16 @@ export default function DetailCommunity() {
                     </ul>
                   </div>
                 )}
-
-                <div className="flex flex-col justify-start items-start gap-4 w-full">
-                  <h2 className="font-semibold text-lg mb-3">Event Terbaru</h2>
-                  <div className="grid grid-cols-2 justify-start items-start gap-4 w-full"></div>
-                </div>
               </div>
 
               {/* JOIN */}
               <div className="flex flex-col justify-start items-start gap-1 px-4 py-3 rounded-md border border-[#202020]/20 w-full max-w-96">
                 <p className="font-semibold text-xl text-[#202020] ">
-                  Join Community
+                  {principal
+                    ? datas.owner.toText() == principal.toText()
+                      ? "Komunitas Anda"
+                      : "Gabung Komunitas"
+                    : "Gabung Komunitas"}
                 </p>
                 <p className="text-[#202020]/80 mb-2 text-base">
                   Ikuti komunitas olahraga untuk beragam informasi terbaru
@@ -179,24 +182,33 @@ export default function DetailCommunity() {
                   {getSportInfo(datas.sports[0])} {datas.sports[0]}
                 </p>
                 {principal ? (
-                  <button
-                    className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
-                      !datas.members.includes(principal.toText())
-                        ? "bg-indigo-600 hover:bg-indigo-700"
+                  datas.owner.toText() != principal.toText() ? (
+                    <button
+                      className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
+                        !datas.members.includes(principal.toText())
+                          ? "bg-indigo-600 hover:bg-indigo-700"
+                          : datas.owner.toText() == principal.toText()
+                          ? "bg-indigo-600 "
+                          : "bg-red-600 hover:bg-red-700"
+                      }`}
+                      onClick={handleAction}
+                    >
+                      {processing
+                        ? "Memproses..."
+                        : !datas.members.includes(principal.toText())
+                        ? "Join Community"
                         : datas.owner.toText() == principal.toText()
-                        ? "bg-indigo-600 "
-                        : "bg-red-600 hover:bg-red-700"
-                    }`}
-                    onClick={handleAction}
-                  >
-                    {processing
-                      ? "Memproses..."
-                      : !datas.members.includes(principal.toText())
-                      ? "Join Community"
-                      : datas.owner.toText() == principal.toText()
-                      ? "Your Community"
-                      : "Leave Community"}
-                  </button>
+                        ? "Your Community"
+                        : "Leave Community"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleEvent}
+                      className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      Buat Event
+                    </button>
+                  )
                 ) : (
                   <button
                     onClick={login}
@@ -208,6 +220,24 @@ export default function DetailCommunity() {
               </div>
             </div>
           )}
+          <div className="flex flex-col justify-start items-start gap-4 w-full">
+            <h2 className="font-semibold text-lg mb-3">Event Terbaru</h2>
+            <div className="grid grid-cols-4 justify-start items-start gap-4 w-full">
+              {events.map((event, key) => (
+                <CardComunity
+                  key={key}
+                  id={event.id}
+                  banner={event.banner}
+                  profile={event.communityProfile}
+                  title={event.title}
+                  description={event.description}
+                  members={event.participant}
+                  sports={event.sport}
+                  isEvent={true}
+                />
+              ))}
+            </div>
+          </div>
         </main>
       </div>
     </div>

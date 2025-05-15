@@ -141,6 +141,10 @@ actor class Athlon() = this {
     return await UserService.getUser(principal, users);
   };
 
+  public func updateProfile(principal : Principal, username : Text, phone : Text, imageProfile : Text) : async ?UserType.User {
+    return await UserService.updateProfile(principal, username, phone, imageProfile, users);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION ARENAS -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -254,6 +258,22 @@ actor class Athlon() = this {
     return await ArenaService.getArenaRecommendation(userOpt, users, arenas);
   };
 
+  public func updateArena(
+    arenaId : Text,
+    name: Text,
+    description: Text,
+    images: [Text],
+    sports: [Text],
+    province: Text,
+    city: Text,
+    district: Text,
+    mapsLink: Text,
+    rules: Text,
+    facilities: [Text],
+  ) : async Result.Result<Text, Text> {
+    return await ArenaService.updateArena(arenaId, name, description, images, sports, province, city, district, mapsLink, rules, facilities, arenas);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION FIELD ------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -261,6 +281,7 @@ actor class Athlon() = this {
   public func createField(
     arenaId: Text,
     name: Text,
+    description: Text,
     sportType: Text,
     size: Text,
     price: Nat,
@@ -272,6 +293,7 @@ actor class Athlon() = this {
     let field = await FieldService.createField(
       arenaId,
       name,
+      description,
       sportType,
       size,
       price,
@@ -329,6 +351,10 @@ actor class Athlon() = this {
     return await BookingService.bookField(arenaId, fieldId, times, user, customerName, owner, arenas, fields, userBalances, bookings, date);
   };
 
+  public func getBookingById(id : Text) : async ?BookingType.Booking {
+    return bookings.get(id);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION WALLET -----------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
@@ -352,7 +378,7 @@ actor class Athlon() = this {
         switch(isUser.userType == "owner"){
           case(false) return #err "Switch akun ke owner terlebih dahulu untuk melanjutkan";
           case(true) {
-            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances, communities);
           }
         }
       }
@@ -403,8 +429,8 @@ actor class Athlon() = this {
     await CommunityService.createCommunity(name, owner, ownerName, sports, description, profile, banner, rules, communities);
   };
 
-  public func getCommunityById(id: Text): async Result.Result<CommunityType.Community, Text> {
-    await CommunityService.getCommunityById(id, communities);
+  public func getCommunityById(id: Text): async Result.Result<(CommunityType.Community, [EventType.Event]), Text> {
+    await CommunityService.getCommunityById(id, communities, events);
   };
 
   public func getCommunities() : async [CommunityType.Community] {
@@ -427,21 +453,18 @@ actor class Athlon() = this {
     owner : Principal,
     ownerUsername : Text,
     communityId : Text,
-    communityName : Text,
-    communityProfile : Text,
     title : Text,
     description : Text,
+    sport : [Text],
     rules : Text,
     banner : Text,
     level : Text,
     maxParticipant : Nat,
-    sport : Text,
     date : Text,
     time : Text,
-    arenaId : Text,
-    fieldId : Text,
+    location : Text,
   ) : async Text {
-    return await EventService.createEvent(owner, ownerUsername, communityId, communityName, communityProfile, title, description, rules, banner, level, maxParticipant, sport, date, time, arenaId, fieldId, arenas, fields, events);
+    return await EventService.createEvent(owner, ownerUsername, communityId, title, description, rules, banner, level, maxParticipant, sport, date, time, location, communities, events);
   };
 
   public func getEventById(id : Text) : async ?EventType.Event {
@@ -450,6 +473,14 @@ actor class Athlon() = this {
 
   public func getEvents() : async [EventType.Event] {
     return await EventService.getEvents(events);
+  };
+
+  public func joinEvent(id: Text, user : Principal) : async Bool {
+    return await EventService.joinEvent(user, id, events, users);
+  };
+
+  public func leaveEvent(id: Text, user : Principal) : async Bool {
+    return await EventService.leaveEvent(user, id, events, users);
   };
 
   // ---------------------------------------------------------------------------------------------------------------
@@ -486,17 +517,15 @@ actor class Athlon() = this {
           };
       };
 
-      // Tambahkan cycles untuk pemanggilan HTTPS
       Cycles.add<system>(230_949_972_000);
 
       let http_response = await IC.http_request(http_request);
 
       let raw = switch (Text.decodeUtf8(http_response.body)) {
           case (?r) r;
-          case null return "0"; // Error decode
+          case null return "0";
       };
 
-      // Parse JSON
       let parsed = JSON.parse(raw);
       switch (parsed) {
         case (#ok(data)) {
@@ -508,11 +537,9 @@ actor class Athlon() = this {
                     case (#number(num)) {
                       switch (num) {
                         case (#int(i)) {
-                          Debug.print("Extracted int: " # debug_show(i));
                           return Int.toText(i);
                         };
                         case (#float(f)) {
-                          Debug.print("Extracted float: " # debug_show(f));
                           return Float.toText(f);
                         };
                       };

@@ -20,25 +20,39 @@ import Event from "../pages/event/Event";
 import CreateEvent from "../pages/event/CreateEvent";
 import EventDetail from "../pages/event/EventDetail";
 import DetailTransaction from "../pages/customer/DetailTransaction";
+import Logout from "../pages/Logout";
+import Success from "../pages/Success";
+import Premium from "../pages/Premium";
+import Evidence from "../pages/Evidence";
+import UnProtectedAuthRoute from "./unProtectedAuthRoute";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/createprofile" element={<CreateProfile />} />
-
-      <Route element={<ProtectedAuthRoute />}>
+      <Route element={<UnProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/premium" element={<Premium />} />
+        <Route path="/logout" element={<Logout />} />
         <Route path="/join-owner" element={<Owner />} />
         <Route path="/arena/:idArena" element={<CustomerArenaDetail />} />
-        <Route path="/arena/payment" element={<DetailTransaction />} />
         <Route path="/community" element={<Community />} />
-        <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />
         <Route path="/event" element={<Event />} />
-        <Route path="/event/create" element={<CreateEvent />} />
         <Route path="/event/:idEvent" element={<EventDetail />} />
         <Route path="/testing" element={<Testing />} />
+      </Route>
+
+      <Route element={<ProtectedAuthRoute />}>
+        <Route path="/arena/payment" element={<DetailTransaction />} />
+        <Route path="/success/" element={<Success />} />
+        <Route path="/evidence/:idBook" element={<Evidence />} />
+        <Route path="/community/create" element={<CreateCommunity />} />
+        <Route
+          path="/community/:idCommunity/create-event"
+          element={<CreateEvent />}
+        />
       </Route>
       {/* CUSTOMER ROUTES */}
       <Route element={<ProtectedCustomerRoute />}>

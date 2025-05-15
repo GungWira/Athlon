@@ -196,13 +196,19 @@ module {
         userOpt : ?Principal,
         users : UserType.Users,
         arenas : ArenaType.Arenas
-    ) : async ArenaType.ArenaRecommendation {
+        ) : async ArenaType.ArenaRecommendation {
 
         let arenaList = Iter.toArray(arenas.vals());
 
-        // Ambil arena berdasarkan createdAt terbaru
-        let sortedNewest = Array.sort<ArenaType.Arena>(
+        let activeArenas = Array.filter<ArenaType.Arena>(
             arenaList,
+            func(a: ArenaType.Arena): Bool {
+            a.status == "active"
+            }
+        );
+
+        let sortedNewest = Array.sort<ArenaType.Arena>(
+            activeArenas,
             func(a: ArenaType.Arena, b: ArenaType.Arena): {#less; #greater; #equal} {
             if (a.createdAt > b.createdAt) #less
             else if (a.createdAt < b.createdAt) #greater
@@ -210,9 +216,8 @@ module {
             }
         );
 
-        // Ambil arena berdasarkan createdAt terlama
         let sortedOldest = Array.sort<ArenaType.Arena>(
-            arenaList,
+            activeArenas,
             func(a: ArenaType.Arena, b: ArenaType.Arena): {#less; #greater; #equal} {
             if (a.createdAt < b.createdAt) #less
             else if (a.createdAt > b.createdAt) #greater
@@ -220,27 +225,25 @@ module {
             }
         );
 
-        // Fungsi helper untuk filter berdasarkan sports
         func hasMatchingSport(arena: ArenaType.Arena, preferred: [Text]) : Bool {
             Helper.any<Text>(arena.sports, func(sport: Text): Bool {
-                Helper.contains<Text>(preferred, sport, Text.equal)
+            Helper.contains<Text>(preferred, sport, Text.equal)
             })
         };
-
 
         let preferredArenas : [ArenaType.Arena] = switch (userOpt) {
             case (?user) {
             switch (users.get(user)) {
-                case (?u) {
-                let matched = Array.filter<ArenaType.Arena>(
-                    sortedNewest,
-                    func(a: ArenaType.Arena): Bool {
-                    hasMatchingSport(a, Option.get(u.preferedSports, []))
-                    }
-                );
-                Array.take(matched, 8)
-                };
-                case (_) [];
+            case (?u) {
+            let matched = Array.filter<ArenaType.Arena>(
+                sortedNewest,
+                func(a: ArenaType.Arena): Bool {
+                hasMatchingSport(a, Option.get(u.preferedSports, []))
+                }
+            );
+            Array.take(matched, 8)
+            };
+            case (_) [];
             }
             };
             case (_) [];
@@ -251,6 +254,47 @@ module {
             newest = Array.take(sortedNewest, 8);
             oldest = Array.take(sortedOldest, 8);
         }
+        };
+
+    public func updateArena(
+        arenaId: Text,
+        name: Text,
+        description: Text,
+        images: [Text],
+        sports: [Text],
+        province: Text,
+        city: Text,
+        district: Text,
+        mapsLink: Text,
+        rules: Text,
+        facilities: [Text],
+        arenas: ArenaType.Arenas
+    ): async Result.Result<Text, Text> {
+        let maybeArena = arenas.get(arenaId);
+        switch (maybeArena) {
+            case null { return #err "Arena tidak ditemukan" };
+            case (?arena) {
+                let updatedArena : ArenaType.Arena = {
+                    id = arena.id;
+                    name = name;
+                    description = description;
+                    images = images;
+                    sports = sports;
+                    province = province;
+                    city = city;
+                    district = district;
+                    mapsLink = mapsLink;
+                    rules = rules;
+                    facilities = facilities;
+                    status = arena.status;
+                    createdAt = arena.createdAt;
+                    owner = arena.owner;
+                };
+
+                arenas.put(arenaId, updatedArena);
+                return #ok "Arena berhasil diperbarui";
+            };
+        };
     };
 
 }

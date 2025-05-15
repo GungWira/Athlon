@@ -1,12 +1,19 @@
-import React from 'react'
-import { ArrowRight, Shield, FileCodeIcon as FileContract, LayoutDashboard } from "lucide-react"
+import React from "react";
+import {
+  ArrowRight,
+  Shield,
+  FileCodeIcon as FileContract,
+  LayoutDashboard,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Owner() {
+  const { login } = useAuth();
   return (
     <div className="">
       <section className="relative overflow-hidden mt-8 rounded-xl bg-indigo-600">
         <div className="py-16 relative z-10">
-          <div className="text-center flex flex-col justify-center items-center gap-8 text-white mb-8">
+          <div className="text-center flex flex-col justify-center items-center gap-8 text-white my-4">
             <div className="">
               <h2 className="text-4xl md:text-5xl font-bold mb-4">
                 List. Book. Earn.
@@ -16,12 +23,35 @@ export default function Owner() {
               </p>
             </div>
 
-            <button className="bg-white text-indigo-600 px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors">
+            <button
+              onClick={login}
+              className="bg-white text-indigo-600 px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors"
+            >
               <ArrowRight size={18} />
               <span>Gabung Sekarang</span>
             </button>
           </div>
         </div>
+        <img
+          src="hero-orn-1.webp"
+          alt="hero ornament"
+          className="absolute -bottom-1 -left-1"
+        />
+        <img
+          src="hero-orn-2.webp"
+          alt="hero ornament"
+          className="absolute -top-1 -right-1"
+        />
+        <img
+          src="hero-orn-3.webp"
+          alt="hero ornament"
+          className="absolute h-full top-0 right-0"
+        />
+        <img
+          src="hero-orn-3.webp"
+          alt="hero ornament"
+          className="absolute h-full top-0 left-0"
+        />
       </section>
       <section>
         <div className="py-16 md:py-24">
@@ -32,8 +62,9 @@ export default function Owner() {
                 Grow Your Sports Business With Blockchain Simplicity
               </h2>
               <p className="text-gray-600 mb-10">
-                Gabung bersama ratusan pemilik lapangan yang sudah memanfaatkan teknologi Web3. Proses mudah, transparan,
-                dan aman—lapanganmu siap dipesan kapan saja, dari mana saja.
+                Gabung bersama ratusan pemilik lapangan yang sudah memanfaatkan
+                teknologi Web3. Proses mudah, transparan, dan aman—lapanganmu
+                siap dipesan kapan saja, dari mana saja.
               </p>
 
               {/* Features */}
@@ -43,9 +74,12 @@ export default function Owner() {
                     <Shield size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2">Decentralized & Secure</h3>
+                    <h3 className="font-semibold text-xl mb-2">
+                      Decentralized & Secure
+                    </h3>
                     <p className="text-gray-600">
-                      Komisi jujur, tanpa biaya tambahan. Pendapatanmu langsung masuk dompet digital terverifikasi.
+                      Komisi jujur, tanpa biaya tambahan. Pendapatanmu langsung
+                      masuk dompet digital terverifikasi.
                     </p>
                   </div>
                 </div>
@@ -55,10 +89,12 @@ export default function Owner() {
                     <FileContract size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2">Smart Contract Booking</h3>
+                    <h3 className="font-semibold text-xl mb-2">
+                      Smart Contract Booking
+                    </h3>
                     <p className="text-gray-600">
-                      Semua pemesanan diproses otomatis dan aman lewat teknologi blockchain—tanpa campur tangan pihak
-                      ketiga.
+                      Semua pemesanan diproses otomatis dan aman lewat teknologi
+                      blockchain—tanpa campur tangan pihak ketiga.
                     </p>
                   </div>
                 </div>
@@ -68,9 +104,12 @@ export default function Owner() {
                     <LayoutDashboard size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2">Realtime Dashboard</h3>
+                    <h3 className="font-semibold text-xl mb-2">
+                      Realtime Dashboard
+                    </h3>
                     <p className="text-gray-600">
-                      Kelola jadwal, pesanan, dan pemasukanmu dalam satu tampilan modern dan simpel.
+                      Kelola jadwal, pesanan, dan pemasukanmu dalam satu
+                      tampilan modern dan simpel.
                     </p>
                   </div>
                 </div>
@@ -86,11 +125,10 @@ export default function Owner() {
                   className="w-full h-auto"
                 />
               </div>
-
             </div>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
