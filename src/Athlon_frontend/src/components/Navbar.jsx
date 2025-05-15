@@ -242,9 +242,9 @@ export default function Navbar() {
                 >
                   Sign In
                 </button>
-                <button className="bg-indigo-600 font-bold text-white px-4 py-2 rounded-lg">
+                {/* <button className="bg-indigo-600 font-bold text-white px-4 py-2 rounded-lg">
                   Get Started
-                </button>
+                </button> */}
               </>
             )}
           </div>
