@@ -14,7 +14,14 @@ export default function ProfileAvatar() {
           }
           alt=""
         />
-        {userData ? userData.username : "Guest"}
+        <div className="flex flex-col">
+          {userData ? userData.username : "Guest"}
+          {userData.isPremium ? (
+            <p className="text-indigo-600/80">Premium</p>
+          ) : (
+            <p className="text-gray-400">Free </p>
+          )}
+        </div>
       </div>
       <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
         <div className="py-1">
