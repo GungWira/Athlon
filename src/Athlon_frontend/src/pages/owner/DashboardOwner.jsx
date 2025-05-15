@@ -1,11 +1,18 @@
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import { useEffect, useState } from "react";
-import { LandPlot, LayoutDashboard, NotebookTabs, User } from "lucide-react";
+import {
+  LandPlot,
+  LayoutDashboard,
+  NotebookTabs,
+  User,
+  Users,
+} from "lucide-react";
 import OverviewOwner from "../../components/dashboard/OverviewOwner";
 import ArenaOwner from "../../components/dashboard/ArenaOwner";
 import BookingOwner from "../../components/dashboard/BookingOwner";
 import MyAccount from "../../components/dashboard/MyAccount";
+import CommunityCustomer from "../../components/dashboard/CommunityCustomer";
 
 export default function DashboardOwner() {
   const [navigation, setNavigation] = useState("overview");
@@ -100,6 +107,27 @@ export default function DashboardOwner() {
             </p>
           </div>
           <div
+            onClick={() => setNavigation("community")}
+            className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
+          >
+            <Users
+              className={`${
+                navigation == "community"
+                  ? "text-indigo-600"
+                  : "text-[#202020]/75"
+              } group-hover:text-indigo-600`}
+            />
+            <p
+              className={`text-base ${
+                navigation == "community"
+                  ? "text-indigo-600"
+                  : "text-[#202020]/75"
+              } group-hover:text-indigo-600`}
+            >
+              Komunitas
+            </p>
+          </div>
+          <div
             onClick={() => setNavigation("account")}
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
@@ -129,6 +157,10 @@ export default function DashboardOwner() {
 
       {navigation == "manage" && (
         <ArenaOwner datas={datas} userData={userData} />
+      )}
+
+      {navigation == "community" && (
+        <CommunityCustomer datas={datas} userData={userData} />
       )}
 
       {navigation == "book" && (

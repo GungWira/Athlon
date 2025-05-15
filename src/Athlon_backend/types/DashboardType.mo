@@ -9,6 +9,7 @@ module{
         arenas : [ArenaType.Arena];
         bookings : [BookingType.Booking];
         balance : Nat;
+        communities : [CommunityType.Community];
     };
 
     public type CustomerDashboard = {

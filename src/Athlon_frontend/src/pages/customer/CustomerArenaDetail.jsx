@@ -35,9 +35,11 @@ export default function CustomerArenaDetail() {
           navigate(-1);
           return;
         }
-        if (result[0].arena.owner.toText() == principal.toText()) {
-          navigate("/owner/arena/" + idArena);
-          return;
+        if (principal) {
+          if (result[0].arena.owner.toText() == principal.toText()) {
+            navigate("/owner/arena/" + idArena);
+            return;
+          }
         }
         setArenaData(result[0].arena);
         setFieldData(result[0].arenaFields);
