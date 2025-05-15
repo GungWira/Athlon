@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Upload } from "lucide-react";
+import { Upload, Copy, RefreshCw } from "lucide-react";
 import Loading from "../Loading";
 import { useAuth } from "../../contexts/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
+import Button from "../ui/Button";
 
 export default function MyAccount({ datas, userData }) {
   if (!datas && !userData) return <Loading />;
   const { actor, principal, refreshUserData } = useAuth();
+  const [balance, setBalance] = useState(null);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -30,7 +32,25 @@ export default function MyAccount({ datas, userData }) {
         setImagePreview(userData.imageProfile[0]);
       }
     }
-  }, [userData]);
+
+    const fetchBalance = async () => {
+      try {
+        const result = await actor.getBalance(principal);
+        if (result) {
+          console.log(result);
+          setBalance(Number(result) / 100000000);
+        } else {
+          setBalance(0);
+        }
+      } catch (error) {
+        console.log("Error fetchin data : ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBalance();
+  }, [userData, actor]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +58,28 @@ export default function MyAccount({ datas, userData }) {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const refreshBalance = async () => {
+    setIsSubmit(true);
+    const result = await actor.getBalanceLedger(principal);
+    if (result) {
+      setBalance(Number(result.balance) / 100000000);
+    } else {
+      setBalance(0);
+    }
+    setIsSubmit(false)
+  }
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        toast.success("Berhasil copy wallet address!")
+      })
+      .catch((err) => {
+        toast.error("Gagal copy wallet address!")
+        console.error("Failed to copy: ", err);
+      });
   };
 
   const handleImageChange = (e) => {
@@ -83,14 +125,39 @@ export default function MyAccount({ datas, userData }) {
   return (
     <div className="">
       <Toaster position="top-right" reverseOrder={false} />
-      <h1 className="text-2xl font-bold mb-1">Profil</h1>
+      <h1 className="text-2xl font-semibold mb-1">Akun Saya</h1>
       <p className="text-gray-600 mb-6">
-        Lihat informasi mengenai profil akun mu
+        Lihat dan kelola semua informasi akun mu.
       </p>
+      <div className="bg-indigo-600 rounded-xl p-4 my-8">
+        <div className="flex justify-between">
+          <h1 className="text-white text-lg lg:text-xl">Saldo ku</h1>
+          <Button onClick={refreshBalance} icon={<RefreshCw className={isSubmit ? "animate-spin" : ""} />}>Refresh Balance</Button>
+        </div>
+        <div className="grid grid-cols-4 gap-4 mt-4">
+          <div className="col-span-1 p-4 text-indigo-600 bg-[#CDE1FB] flex gap-2 flex-col rounded-lg">
+            <h1 className="font-medium">Balance</h1>
+            {balance ? (
+              <h1 className="text-3xl font-semibold">{balance} ICP</h1>
+            ) : (
+              <div className="h-8 w-32 bg-indigo-600/70 rounded animate-pulse" />
+            )}
+          </div>
+          <div className="col-span-3 p-4 text-indigo-600 bg-[#CDE1FB] flex gap-2 flex-col rounded-lg">
+            <h1>Wallet Address</h1>
+            <div className="flex bg-white p-2 rounded-lg gap-4 overflow-hidden relative">
+              <h1 className="text-black">{profileData.walletAddress}</h1>
+              <div className="absolute right-0 flex justify-end pr-2 w-12 bg-white cursor-pointer">
+                <Copy className="h-full" onClick={() => copyToClipboard(profileData.walletAddress)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Foto Profil</label>
+          <label className="block text-sm lg:text-lg font-medium mb-2">Foto Profil</label>
           <div className="relative">
             <div className="border border-gray-300 rounded-md aspect-square h-64 flex items-center justify-center cursor-pointer overflow-hidden">
               {imagePreview ? (
@@ -152,7 +219,7 @@ export default function MyAccount({ datas, userData }) {
         </div>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2">
+          <label htmlFor="name" className="block text-sm lg:text-lg font-medium mb-2">
             Nama
           </label>
           {isEditing ? (
@@ -173,7 +240,7 @@ export default function MyAccount({ datas, userData }) {
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium mb-2">
+          <label htmlFor="phone" className="block text-sm lg:text-lg font-medium mb-2">
             Nomor Telepon
           </label>
           {isEditing ? (
@@ -192,20 +259,6 @@ export default function MyAccount({ datas, userData }) {
             </div>
           )}
         </div>
-
-        {!isEditing && (
-          <div>
-            <label
-              htmlFor="walletAddress"
-              className="block text-sm font-medium mb-2"
-            >
-              Wallet Address
-            </label>
-            <div className="w-full border border-gray-300 rounded-md p-2.5 bg-white">
-              {profileData.walletAddress || "Belum diisi"}
-            </div>
-          </div>
-        )}
 
         <div>
           {isEditing ? (

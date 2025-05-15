@@ -1,11 +1,11 @@
 import {
-    BanIcon as Badminton,
-    TurtleIcon as Tennis,
-    ClubIcon as Football,
-    ShoppingBasketIcon as Basketball,
-    FishIcon as Swimming,
-    VibrateIcon as Volleyball,
-    GuitarIcon as Golf,
+    MessageCircle as Badminton,
+    Bomb as Tennis,
+    Bike as Cycling,
+    Eclipse as Basketball,
+    WavesLadder as Swimming,
+    Volleyball as Volleyball,
+    LandPlot as Golf,
 } from "lucide-react"
 
 export const sportCategories = [
@@ -18,8 +18,8 @@ export const sportCategories = [
         icon: Tennis,
     },
     {
-        name: "Football",
-        icon: Football,
+        name: "Cycling",
+        icon: Cycling,
     },
     {
         name: "Basketball",
@@ -32,10 +32,6 @@ export const sportCategories = [
     {
         name: "Volleyball",
         icon: Volleyball,
-    },
-    {
-        name: "Golf",
-        icon: Golf,
     },
     {
         name: "Golf",

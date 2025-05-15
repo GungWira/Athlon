@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
-import { ChevronDown, ImageIcon, Coins } from "lucide-react"
+import { ChevronDown, ImageIcon, Coins, X, AlertCircle } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
 
 export default function CreateField() {
@@ -12,10 +12,10 @@ export default function CreateField() {
   const location = useLocation()
 
   const { sports, arenaId } = location.state || {}
-  const [newTime, setNewTime] = useState("")
   const [process, setProcess] = useState(false)
   const [showSportDropdown, setShowSportDropdown] = useState(false)
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
+  const [timeError, setTimeError] = useState("")
 
   useEffect(() => {
     if (!sports || !arenaId) {
@@ -25,6 +25,7 @@ export default function CreateField() {
 
   const [form, setForm] = useState({
     name: "",
+    description: "",
     sportType: sports?.[0] || "",
     size: "",
     price: "",
@@ -40,13 +41,22 @@ export default function CreateField() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
+
+    // Special handling for interval to enforce minimum value
+    if (name === "interval") {
+      const intervalValue = Number.parseInt(value)
+      if (isNaN(intervalValue) || intervalValue < 30) {
+        setForm((prev) => ({ ...prev, interval: 30 }))
+        return
+      }
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleChangePrice = (e) => {
     let current = 0
     const { name, value } = e.target
-    console.log(name)
     if (form.priceMethod == "rp") {
       current = (value / Number(icpIdrRate)) * 10000000
     } else {
@@ -56,20 +66,65 @@ export default function CreateField() {
     setForm((prev) => ({ ...prev, icpPrice: Math.ceil(current) }))
   }
 
-  const addTime = () => {
-    if (newTime.trim() && !form.availableTimes.includes(newTime)) {
-      setForm((prev) => ({
-        ...prev,
-        availableTimes: [...prev.availableTimes, newTime],
-      }))
-      setNewTime("")
+  const generateTimeSlots = (startTime, endTime, interval) => {
+    // Ensure interval is at least 30 minutes to prevent crashes
+    const safeInterval = Math.max(30, interval)
+
+    const slots = []
+    const [startHour, startMinute] = startTime.split(":").map(Number)
+    const [endHour, endMinute] = endTime.split(":").map(Number)
+
+    let start = new Date()
+    start.setHours(startHour, startMinute, 0, 0)
+
+    const end = new Date()
+    end.setHours(endHour, endMinute, 0, 0)
+
+    // Validate time range
+    if (start >= end) {
+      setTimeError("Waktu selesai harus lebih besar dari waktu mulai")
+      return []
     }
+
+    // Calculate maximum number of slots to prevent excessive generation
+    const timeDiffMinutes = (end - start) / (60 * 1000)
+    const maxSlots = 48 // Reasonable maximum number of slots
+
+    if (timeDiffMinutes / safeInterval > maxSlots) {
+      setTimeError(`Interval terlalu kecil untuk rentang waktu ${timeDiffMinutes} menit. Harap tingkatkan interval.`)
+      return []
+    }
+
+    setTimeError("") // Clear error if validation passes
+
+    while (start < end) {
+      const slotEnd = new Date(start.getTime() + safeInterval * 60000)
+      if (slotEnd > end) break
+
+      const formatTime = (date) => {
+        return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`
+      }
+
+      slots.push(`${formatTime(start)} - ${formatTime(slotEnd)}`)
+      start = slotEnd
+    }
+
+    return slots
   }
 
-  const removeTime = (time) => {
+  const updateTimeSlots = () => {
+    const newSlots = generateTimeSlots(form.openTime, form.closeTime, form.interval)
+    setForm((prev) => ({ ...prev, availableTimes: newSlots }))
+  }
+
+  useEffect(() => {
+    updateTimeSlots()
+  }, [form.openTime, form.closeTime, form.interval])
+
+  const removeTimeSlot = (timeSlot) => {
     setForm((prev) => ({
       ...prev,
-      availableTimes: prev.availableTimes.filter((t) => t !== time),
+      availableTimes: prev.availableTimes.filter((t) => t !== timeSlot),
     }))
   }
 
@@ -144,32 +199,6 @@ export default function CreateField() {
     }
   }
 
-  function generateTimeSlots(openTime, closeTime, interval) {
-    const slots = []
-    const [openHour, openMinute] = openTime.split(":").map(Number)
-    const [closeHour, closeMinute] = closeTime.split(":").map(Number)
-    let start = new Date()
-    start.setHours(openHour, openMinute, 0, 0)
-    const end = new Date()
-    end.setHours(closeHour, closeMinute, 0, 0)
-
-    while (start < end) {
-      const endSlot = new Date(start.getTime() + interval * 60000)
-      if (endSlot > end) break
-
-      const format = (date) => date.toTimeString().slice(0, 5)
-      slots.push(`${format(start)} - ${format(endSlot)}`)
-      start = endSlot
-    }
-
-    return slots
-  }
-
-  useEffect(() => {
-    const newSlots = generateTimeSlots(form.openTime, form.closeTime, form.interval)
-    setForm((prev) => ({ ...prev, availableTimes: newSlots }))
-  }, [form.openTime, form.closeTime, form.interval])
-
   return (
     <div className="mx-auto p-6">
       <Toaster position="top-right" reverseOrder={false} />
@@ -190,7 +219,7 @@ export default function CreateField() {
               className="w-full border border-gray-300 rounded-md p-3 text-sm"
             />
           </div>
-             <div className="space-y-2">
+          <div className="space-y-2">
             <label className="block text-sm font-medium">Deskripsi Lapangan</label>
             <input
               name="description"
@@ -240,122 +269,132 @@ export default function CreateField() {
               )}
             </div>
           </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-medium">Waktu Sewa</label>
-            <div className="relative">
-              <div className="flex flex-wrap gap-2 mb-2">
-                {form.availableTimes.slice(0, 3).map((time, i) => (
-                  <div key={i} className="bg-indigo-600 text-white text-xs px-3 py-2 rounded whitespace-nowrap">
-                    {time
-                      .split(" - ")
-                      .map((t) => t.split(":").slice(0, 2).join(":"))
-                      .join(" - ")}
+            <div className="border border-gray-300 rounded-lg p-4">
+              {/* Display generated time slots */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {form.availableTimes.map((timeSlot, index) => (
+                  <div
+                    key={index}
+                    className="bg-indigo-600 text-white text-xs px-3 py-2 rounded-md flex items-center gap-1"
+                  >
+                    {timeSlot}
+                    <button type="button" onClick={() => removeTimeSlot(timeSlot)} className="ml-1 hover:text-gray-200">
+                      <X size={14} />
+                    </button>
                   </div>
                 ))}
               </div>
-              <div
-                className="w-full border border-gray-300 rounded-md p-3 text-sm flex justify-between items-center cursor-pointer mt-2"
-                onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-              >
-                <span className="text-gray-500">Tambah Waktu</span>
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
-              {showTimeDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1">
-                      <select
-                        name="openTime"
-                        value={form.openTime}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                      >
-                        {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                          <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
-                            {hour.toString().padStart(2, "0")}:00
-                          </option>
-                        ))}
-                      </select>
-                      <label className="block text-xs text-gray-500 mt-1">Waktu mulai</label>
-                    </div>
-                    <div className="col-span-1">
-                      <select
-                        name="closeTime"
-                        value={form.closeTime}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                      >
-                        {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                          <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
-                            {hour.toString().padStart(2, "0")}:00
-                          </option>
-                        ))}
-                      </select>
-                      <label className="block text-xs text-gray-500 mt-1">Waktu selesai</label>
-                    </div>
-                    <div className="col-span-1">
-                      <input
-                        type="number"
-                        name="interval"
-                        value={form.interval}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                        min={15}
-                        max={180}
-                        step={15}
-                      />
-                      <label className="block text-xs text-gray-500 mt-1">Durasi</label>
-                    </div>
-                  </div>
+
+              {/* Error message */}
+              {timeError && (
+                <div className="mb-4 p-2 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
+                  <AlertCircle className="text-red-500 h-4 w-4 mt-0.5" />
+                  <p className="text-red-600 text-sm">{timeError}</p>
                 </div>
               )}
+
+              {/* Divider */}
+              {form.availableTimes.length > 0 && <hr className="my-4 border-gray-200" />}
+
+              {/* Time configuration inputs */}
+              <div className="mt-2">
+                <h3 className="text-sm font-medium mb-3">Tambah Waktu</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <select
+                      name="openTime"
+                      value={form.openTime}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                    >
+                      {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                        <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
+                          {hour.toString().padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </select>
+                    <label className="block text-xs text-gray-500 mt-1">Waktu mulai</label>
+                  </div>
+
+                  <div>
+                    <select
+                      name="closeTime"
+                      value={form.closeTime}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                    >
+                      {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                        <option key={hour} value={`${hour.toString().padStart(2, "0")}:00`}>
+                          {hour.toString().padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </select>
+                    <label className="block text-xs text-gray-500 mt-1">Waktu selesai</label>
+                  </div>
+
+                  <div>
+                    <input
+                      type="number"
+                      name="interval"
+                      value={form.interval}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                      min={30}
+                      max={180}
+                      step={15}
+                    />
+                    <label className="block text-xs text-gray-500 mt-1">Interval (min. 30 menit)</label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-         <div className="space-y-2">
-          <label className="block text-sm font-medium">Harga per jam</label>
-          <div className="relative flex items-center">
-            <input
-              name="price"
-              value={form.price}
-              onChange={handleChangePrice}
-              type="number"
-              placeholder="Masukkan harga sewa"
-              className="w-full border border-gray-300 rounded-md p-3 text-sm ps-12"
-            />
-            {form.priceMethod === "icp" ? (
-              <img src="/icp.webp" alt="icp" className="w-7 absolute left-3" />
-            ) : (
-              <span className="absolute left-3 text-gray-500">Rp</span>
-            )}
-            <button
-              type="button"
-              onClick={() =>
-                setForm((prev) => ({
-                  ...prev,
-                  priceMethod: prev.priceMethod === "icp" ? "rp" : "icp",
-                }))
-              }
-              className="absolute flex justify-center items-center gap-2 right-3 bg-indigo-600 text-white px-3 py-1 rounded text-sm"
-            >
-              <Coins className="h-6" />
-              {form.priceMethod === "icp" ? "Rupiah" : "ICP"}
-            </button>
-          </div>
-          <p className="text-sm text-[#202020]/60">
-            Harga dalam {form.priceMethod === "icp" ? "Rupiah" : "ICP"}:{" "}
-            {form.price && icpIdrRate
-              ? form.priceMethod === "icp"
-                ? (parseFloat(form.price) * icpIdrRate).toLocaleString(
-                    "id-ID",
-                    {
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Harga per jam</label>
+            <div className="relative flex items-center">
+              <input
+                name="price"
+                value={form.price}
+                onChange={handleChangePrice}
+                type="number"
+                placeholder="Masukkan harga sewa"
+                className="w-full border border-gray-300 rounded-md p-3 text-sm ps-12"
+              />
+              {form.priceMethod === "icp" ? (
+                <img src="/icp.webp" alt="icp" className="w-7 absolute left-3" />
+              ) : (
+                <span className="absolute left-3 text-gray-500">Rp</span>
+              )}
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((prev) => ({
+                    ...prev,
+                    priceMethod: prev.priceMethod === "icp" ? "rp" : "icp",
+                  }))
+                }
+                className="absolute flex justify-center items-center gap-2 right-3 bg-indigo-600 text-white px-3 py-1 rounded text-sm"
+              >
+                <Coins className="h-6" />
+                {form.priceMethod === "icp" ? "Rupiah" : "ICP"}
+              </button>
+            </div>
+            <p className="text-sm text-[#202020]/60">
+              Harga dalam {form.priceMethod === "icp" ? "Rupiah" : "ICP"}:{" "}
+              {form.price && icpIdrRate
+                ? form.priceMethod === "icp"
+                  ? (Number.parseFloat(form.price) * icpIdrRate).toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
-                    }
-                  )
-                : (parseFloat(form.price) / icpIdrRate).toFixed(2) + " ICP"
-              : 0}
-          </p>
-        </div>
+                    })
+                  : (Number.parseFloat(form.price) / icpIdrRate).toFixed(2) + " ICP"
+                : 0}
+            </p>
+          </div>
         </div>
 
         <div className="image">
