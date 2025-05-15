@@ -32,11 +32,12 @@ export default function RecomendationEvent() {
             key={key}
             id={data.id}
             banner={data.banner}
-            profile={data.profile}
-            title={data.name}
+            profile={data.communityProfile}
+            title={data.title}
             description={data.description}
-            members={data.members}
-            sports={data.sports}
+            members={data.participant}
+            sports={data.sport}
+            isEvent={true}
           />
         ))}
       </div>

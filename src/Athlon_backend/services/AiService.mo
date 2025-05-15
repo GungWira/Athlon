@@ -166,7 +166,6 @@ module AiService {
       locations;
       sportsType;
       context;
-      facilitate;
     } = content;
     let request_headers = [
       { name = "User-Agent"; value = "POST_USER_COMMAND" },
@@ -182,7 +181,6 @@ module AiService {
     "input yang diterima akan dijadikan acuan dalam pembuatan aturan:\\n" #
     "- arenaName: " # arenaName # "\\n" #
     "- context: " # context # "\\n" #
-    "- facilitate: " # facilitate # "\\n" #
     "- formatOutput: Daftar Poin\\n" #
     "- locations: " # locations # "\\n" #
     "- sportsType: " # sportsType # "\\n" #
