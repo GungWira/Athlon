@@ -36,14 +36,17 @@ import EventService "services/EventService";
 import AiService "services/AiService";
 
 
-actor Athlon {
+actor class Athlon() = this {
+  // principal dipakai saat mencall function setUserPremium untuk mengirim icp ke canister
+  stable var athlonPrincipal : Principal = Principal.fromActor(this);
+
   // DATA
   private var users : UserType.Users = HashMap.HashMap<Principal, UserType.User>(
     10,
     Principal.equal,
     Principal.hash
   );
-  
+
   private var arenas : ArenaType.Arenas = HashMap.HashMap<Text, ArenaType.Arena>(
     0,
     Text.equal,
@@ -401,9 +404,6 @@ actor Athlon {
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION LLM --------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------
-  public func testBot(input : Text, passAnswer : Text) : async Result.Result<Text, Text> {
-    return await AiService.askBot(input, passAnswer);
-  };
 
   public func generateDesc(content: AiTypes.GenDescAi) : async Result.Result<Text, Text> {
     return await AiService.generateDesc(content);
