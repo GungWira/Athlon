@@ -475,6 +475,14 @@ actor Athlon {
     return await EventService.getEvents(events);
   };
 
+  public func joinEvent(id: Text, user : Principal) : async Bool {
+    return await EventService.joinEvent(user, id, events, users);
+  };
+
+  public func leaveEvent(id: Text, user : Principal) : async Bool {
+    return await EventService.leaveEvent(user, id, events, users);
+  };
+
   // ---------------------------------------------------------------------------------------------------------------
   // FUNCTION ICP RATE ---------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------

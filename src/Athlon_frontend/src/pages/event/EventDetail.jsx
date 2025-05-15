@@ -23,7 +23,6 @@ export default function DetailEvent() {
           navigate(-1);
           return;
         }
-        console.log(result[0]);
       } catch (err) {
         console.error("Error fetching arena:", err);
         navigate(-1);
@@ -38,33 +37,37 @@ export default function DetailEvent() {
   const handleAction = async () => {
     try {
       setProcessing(true);
-      if (principal.toText() == datas.owner.toText()) {
-        toast.error("Pemilik komunitas tidak boleh keluar!");
+      if (!principal) {
+        toast.error("Silahkan login untuk bergabung!");
         return;
       }
-      if (!datas.members.includes(principal.toText())) {
-        const res = await actor.joinCommunity(idCommunity, principal);
+      if (datas.owner.toText() == principal.toText()) {
+        toast.error("Pemilik event tidak boleh mengikuti event!");
+        return;
+      }
+      if (!datas.participant.includes(principal.toText())) {
+        const res = await actor.joinEvent(idEvent, principal);
         if (res) {
           setDatas((prev) => ({
             ...prev,
-            members: [...prev.members, principal.toText()],
+            participant: [...prev.participant, principal.toText()],
           }));
-          toast.success("Berhasil mengikuti komunitas!");
+          toast.success("Berhasil mengikuti event!");
         } else {
-          toast.error("Gagal mengikuti komunitas!");
+          toast.error("Gagal mengikuti event!");
         }
       } else {
-        const res = await actor.leaveCommunity(idCommunity, principal);
+        const res = await actor.leaveEvent(idEvent, principal);
         if (res) {
           setDatas((prev) => ({
             ...prev,
-            members: prev.members.filter(
-              (member) => member !== principal.toText()
+            participant: prev.participant.filter(
+              (item) => item !== principal.toText()
             ),
           }));
-          toast.success("Berhasil keluar komunitas!");
+          toast.success("Berhasil keluar dari event!");
         } else {
-          toast.error("Gagal keluar komunitas!");
+          toast.error("Gagal keluar dari event!");
         }
       }
     } catch (error) {
@@ -74,8 +77,8 @@ export default function DetailEvent() {
     }
   };
 
-  const handleEvent = async () => {
-    navigate(`/community/${idCommunity}/create-event`);
+  const handleStop = async () => {
+    console.log("Stop Event");
   };
 
   if (loading) return <Loading />;
@@ -198,30 +201,32 @@ export default function DetailEvent() {
               {/* JOIN */}
               <div className="flex flex-col justify-start items-start gap-1 px-4 py-3 rounded-md border border-[#202020]/20 w-full max-w-96">
                 <p className="font-semibold text-xl text-[#202020] ">
-                  {principal ? datas.owner.toText() == principal.toText()
-                    ? "Event Anda"
-                    : "Gabung Event" : "Gabung Event"}
+                  {principal
+                    ? datas.owner.toText() == principal.toText()
+                      ? "Event Anda"
+                      : "Gabung Event"
+                    : "Gabung Event"}
                 </p>
                 <p className="text-[#202020]/80 mb-2 text-base">
                   Ikuti event olahraga untuk bertemu dengan sesama pecinta
                   olahraga!
                 </p>
 
-                <div className="flex flex-row justify-start items-center gap-2 my-2">
+                <div className="flex flex-row justify-start items-center gap-2 my-1">
                   <LocateIcon className="w-8" />
                   <p className="text-[#202020]/80 text-base">
                     {datas.location}
                   </p>
                 </div>
 
-                <div className="flex flex-row justify-start items-center gap-2 my-2">
+                <div className="flex flex-row justify-start items-center gap-2 my-1">
                   <User className="w-8" />
                   <p className="text-[#202020]/80 text-base">
                     {datas.participant.length} Peserta
                   </p>
                 </div>
 
-                <div className="flex flex-row justify-start items-center gap-2 mb-2">
+                <div className="flex flex-row justify-start items-center gap-2 my-1">
                   <Sprout className="w-8" />
                   <p className="text-[#202020]/80 text-base">
                     Tingkat {datas.level}
@@ -232,7 +237,7 @@ export default function DetailEvent() {
                   datas.owner.toText() != principal.toText() ? (
                     <button
                       className={`text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer ${
-                        !datas.members.includes(principal.toText())
+                        !datas.participant.includes(principal.toText())
                           ? "bg-indigo-600 hover:bg-indigo-700"
                           : datas.owner.toText() == principal.toText()
                           ? "bg-indigo-600 "
@@ -242,7 +247,7 @@ export default function DetailEvent() {
                     >
                       {processing
                         ? "Memproses..."
-                        : !datas.members.includes(principal.toText())
+                        : !datas.participant.includes(principal.toText())
                         ? "Join Event"
                         : datas.owner.toText() == principal.toText()
                         ? "Your Event"
@@ -250,7 +255,7 @@ export default function DetailEvent() {
                     </button>
                   ) : (
                     <button
-                      onClick={handleEvent}
+                      onClick={handleStop}
                       className="text-white font-semibold text-md text-center w-full py-2 rounded-md mt-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700"
                     >
                       Hentikan Lomba
