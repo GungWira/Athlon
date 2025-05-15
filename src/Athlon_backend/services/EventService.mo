@@ -1,5 +1,3 @@
-import ArenaType "../types/ArenaType";
-import FieldType "../types/FieldType";
 import EventType "../types/EventType";
 import Helper "../helper/Helper";
 import Time "mo:base/Time";
@@ -57,7 +55,10 @@ module {
   };
 
   public func getEventById(id : Text, events : EventType.Events) : async ?EventType.Event {
-    events.get(id);
+    let eventList = Iter.toArray(events.vals());
+    return Array.find<EventType.Event>(eventList, func(event : EventType.Event) : Bool {
+      event.id == id
+    });
   };
 
   public func getEvents(events : EventType.Events) : async [EventType.Event] {

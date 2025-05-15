@@ -429,8 +429,8 @@ actor Athlon {
     await CommunityService.createCommunity(name, owner, ownerName, sports, description, profile, banner, rules, communities);
   };
 
-  public func getCommunityById(id: Text): async Result.Result<CommunityType.Community, Text> {
-    await CommunityService.getCommunityById(id, communities);
+  public func getCommunityById(id: Text): async Result.Result<(CommunityType.Community, [EventType.Event]), Text> {
+    await CommunityService.getCommunityById(id, communities, events);
   };
 
   public func getCommunities() : async [CommunityType.Community] {

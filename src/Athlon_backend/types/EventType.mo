@@ -2,8 +2,6 @@ import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
 import Principal "mo:base/Principal";
 import Nat "mo:base/Nat";
-import ArenaType "ArenaType";
-import FieldType "FieldType";
 
 
 module {

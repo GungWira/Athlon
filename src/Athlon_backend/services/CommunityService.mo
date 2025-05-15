@@ -5,6 +5,7 @@ import Time "mo:base/Time";
 import Result "mo:base/Result";
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
+import EventType "../types/EventType";
 
 module {
 // CREATE
@@ -37,11 +38,19 @@ module {
     return id;
   };
 
-  public func getCommunityById(id: Text, communities : CommunityType.Communities): async Result.Result<CommunityType.Community, Text> {
-      switch(communities.get(id)){
-          case (?isCom) return #ok isCom;
-          case (null) return #err "No community found";
-      }
+  public func getCommunityById(
+    id: Text,
+    communities: CommunityType.Communities,
+    events: EventType.Events
+  ): async Result.Result<(CommunityType.Community, [EventType.Event]), Text> {
+    switch (communities.get(id)) {
+      case (?isCom) {
+        let eventList = Iter.toArray(events.vals());
+        let relatedEvents = Array.filter<EventType.Event>(eventList, func(e) = e.communityId == id);
+        return #ok (isCom, relatedEvents);
+      };
+      case (null) return #err "No community found";
+    }
   };
 
   public func getCommunities(communities : CommunityType.Communities) : async [CommunityType.Community] {

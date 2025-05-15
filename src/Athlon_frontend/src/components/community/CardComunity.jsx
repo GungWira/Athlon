@@ -10,10 +10,11 @@ export default function CardComunity({
   members,
   sports,
   id,
+  isEvent = false,
 }) {
   return (
     <Link
-      to={"/community/" + id}
+      to={isEvent ? "/event/" + id : "/community/" + id}
       className="flex flex-col w-full justify-start items-start gap-6 overflow-hidden rounded-2xl cursor-pointer hover:bg-slate-50 border-[#202020]/5 border"
     >
       <div
