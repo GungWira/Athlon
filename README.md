@@ -78,7 +78,7 @@ To start the local development server:
 Your application should now be running at `http://[your CANISTER_ID_Athlon_frontend].localhost:4943`.
 
 ## 🔮 Conclusion & Future Plans
-Athlon is redefining how people discover and book sports venues by harnessing the power of Web3 technology. With various features, Athlon offers a secure, transparent, and future-ready platform for sports communities. Looking ahead, we aim to expand Atlhon with these exciting developments:
+Athlon is redefining how people discover and book sports venues with the power of Web3 technology. And we aim to expand Atlhon with these exciting developments:
 - **Shared Practice Schedules** : Allow users to create and join open training sessions or matches, fostering collaboration and team spirit.
 - **Multi-chain Integration** : Expand beyond Internet Computer (ICP) to support additional blockchain networks.
 - **On-chain Reviews & Ratings** : Maintain transparency and build trust through immutable community feedback.
