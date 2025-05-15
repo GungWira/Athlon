@@ -122,7 +122,7 @@ module AiService {
     "- formatOutput: Daftar Poin\\n" #
     "- locations: " # locations # "\\n" #
     "- sportsType: " # sportsType # "\\n" #
-    "- note: " # "harap hasilkan daftar aturan yang sesuai konteks, tanpa penjelasan tambahan. Langsung tampilkan dalam bentuk list bernomor, tanpa paragraf pembuka atau penutup, dan tanpa judul (langsung mulai pada nomor 1)." # "\\n" #
+    "- note: " # "harap hasilkan daftar aturan yang sesuai konteks, tanpa penjelasan tambahan. Langsung tampilkan dalam bentuk list bernomor, tanpa paragraf pembuka atau penutup, dan tanpa judul (langsung mulai pada nomor 1 tanpa basa basi memberikan penjelasan diawal) response dari list nomor satu." # "\\n" #
     "\"}]}]}";
 
     let request_body = Text.encodeUtf8(request_body_json);
