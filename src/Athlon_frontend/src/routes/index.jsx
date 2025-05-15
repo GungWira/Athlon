@@ -29,10 +29,10 @@ import UnProtectedAuthRoute from "./unProtectedAuthRoute";
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route path="/createprofile" element={<CreateProfile />} />
       <Route element={<UnProtectedAuthRoute />}>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/createprofile" element={<CreateProfile />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/join-owner" element={<Owner />} />

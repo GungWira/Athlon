@@ -517,17 +517,15 @@ actor Athlon {
           };
       };
 
-      // Tambahkan cycles untuk pemanggilan HTTPS
       Cycles.add<system>(230_949_972_000);
 
       let http_response = await IC.http_request(http_request);
 
       let raw = switch (Text.decodeUtf8(http_response.body)) {
           case (?r) r;
-          case null return "0"; // Error decode
+          case null return "0";
       };
 
-      // Parse JSON
       let parsed = JSON.parse(raw);
       switch (parsed) {
         case (#ok(data)) {
