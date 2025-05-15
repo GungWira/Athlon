@@ -74,4 +74,4 @@ To start the local development server:
    dfx deploy
    ```
 
-Your application should now be running at `http://[your CANISTER_ID_ATHLON_FRONTEND].localhost:4943`.
+Your application should now be running at `http://[your CANISTER_ID_Athlon_frontend].localhost:4943`.
