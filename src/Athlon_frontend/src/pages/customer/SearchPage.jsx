@@ -46,9 +46,9 @@ export default function SearchPage() {
       <p className="text-[#202020]/80 my-2">
         Menampilkan hasil pencarian paling relavan dengan kata kunci
       </p>
-      <div className="grid grid-cols-4 justify-start items-start gap-4 mt-8">
+      <div className="grid justify-start items-start gap-4 mt-8">
         {arenas.length == 0 ? (
-          <p>Tidak ada data yang sesuai bang</p>
+          <p>Tidak ada data yang sesuai dengan pencarian</p>
         ) : (
           arenas.map((arena, key) => (
             <Link to={`/arena/${arena.id}`} key={key}>
