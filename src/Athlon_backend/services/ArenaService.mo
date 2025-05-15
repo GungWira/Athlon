@@ -1,5 +1,3 @@
-
-
 import ArenaType "../types/ArenaType";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
