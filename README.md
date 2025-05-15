@@ -1,6 +1,6 @@
 # `Athlon`
 
-Welcome to your new `Athlon` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+`Athlon` is a decentralized web application that revolutionizes the way people book sports venues. Built on Web3 infrastructure, Athlon provides a transparent, secure, and user-owned booking system for various sports facilities. Whether you're reserving a futsal field, tennis court, or gym space, Athlon empowers users with trustless smart contracts, and ICP token based payments.
 
 <p align="center">
   <img src="https://i.imghippo.com/files/AP5018QQ.png" alt="" border="0">
