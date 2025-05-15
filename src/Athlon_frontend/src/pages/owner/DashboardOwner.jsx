@@ -5,7 +5,7 @@ import { LandPlot, LayoutDashboard, NotebookTabs, User } from "lucide-react";
 import OverviewOwner from "../../components/dashboard/OverviewOwner";
 import ArenaOwner from "../../components/dashboard/ArenaOwner";
 import BookingOwner from "../../components/dashboard/BookingOwner";
-import AkunSaya from "../../components/dashboard/AkunSaya";
+import MyAccount from "../../components/dashboard/MyAccount";
 
 export default function DashboardOwner() {
   const [navigation, setNavigation] = useState("overview");
@@ -136,7 +136,7 @@ export default function DashboardOwner() {
       )}
 
       {navigation == "account" && (
-        <AkunSaya datas={datas} userData={userData}/>
+        <MyAccount datas={datas} userData={userData} />
       )}
     </div>
   );
