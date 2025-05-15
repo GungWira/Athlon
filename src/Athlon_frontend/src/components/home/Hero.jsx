@@ -37,8 +37,8 @@ export default function Hero() {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white rounded-3xl px-6 py-4 shadow-2xl md:max-w-2xl lg:max-w-5xl mx-auto flex flex-row justify-between">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl px-6 py-4 shadow-2xl max-w-2xl lg:max-w-4xl mx-auto flex flex-row justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Input Nama */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -87,21 +87,25 @@ export default function Hero() {
                 <option>Badminton</option>
                 <option>Tennis</option>
                 <option>Soccer</option>
+                <option>Voli</option>
+                <option>Sepak bola</option>
+                <option>Renang</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <ChevronDown className="h-5 w-5 text-gray-400" />
               </div>
             </div>
-          </div>
           {/* Tombol Cari */}
           <button
             disabled={isSearchDisabled}
             onClick={handleSearch}
-            className={`bg-indigo-600 cursor-pointer hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex justify-center items-center`}
+            className={`bg-indigo-600 text-sm cursor-pointer hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex justify-center items-center`}
           >
             <Search className="h-5 w-5 mr-2" />
             Cari Sekarang
           </button>
+          </div>
+          
         </div>
       </div>
       {/* ORNAMENT */}

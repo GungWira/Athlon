@@ -11,7 +11,7 @@ export default function Categories() {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+      <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
         {sportCategories.map((category, index) => (
           <SportCategory
             key={index}
