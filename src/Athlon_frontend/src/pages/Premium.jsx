@@ -2,9 +2,10 @@ import { Check } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Premium() {
-  const { userData, actor } = useAuth();
+  const { userData, actor, refreshUserData } = useAuth();
 
   const handlerUpgrade = async () => {
     if (userData.isPremium) {
@@ -14,7 +15,10 @@ export default function Premium() {
       const result = await actor.setUserPremium(userData.principal, 5000000);
       if (result[0].username) {
         console.log("Upgrade successful:", result);
+        refreshUserData();
+        toast.success("Upgrade successful!");
       } else {
+        toast.error("Upgrade failed!");
         console.log("Upgrade failed");
       }
     } catch (error) {
@@ -23,6 +27,8 @@ export default function Premium() {
   };
   return (
     <div className="w-full max-w-6xl flex flex-col justify-start items-start gap-6 mt-8">
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="flex flex-row justify-between items-center gap-8">
         <div className="flex flex-col justify-start items-start gap-3">
           <p className="text-[#202020]/95 text-3xl font-semibold">
@@ -38,9 +44,9 @@ export default function Premium() {
       </div>
 
       <div className="w-full grid grid-cols-2 flex-row justify-between items-stretch gap-8">
-        {/* GRATIS */}
+        {/* PREMIUM */}
         <div className="px-6 py-5 rounded-xl border border-[#202020]/20 flex flex-col justify-start items-start gap-4">
-          <p className="text-[#202020] text-2xl font-semibold">Paket Gratis</p>
+          <p className="text-[#202020] text-2xl font-semibold">Paket Premium</p>
           <div className="w-full flex flex-row justify-start items-center gap-2">
             <img src="icp.webp" alt="" className="w-12" />
             <p className="text-[#202020] text-4xl font-bold">0</p>
