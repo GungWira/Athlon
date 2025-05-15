@@ -5,6 +5,7 @@ import Helper "../helper/Helper";
 import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
+import CommunityType "../types/CommunityType";
 
 
 module {
@@ -12,55 +13,45 @@ module {
     owner : Principal,
     ownerUsername : Text,
     communityId : Text,
-    communityName : Text,
-    communityProfile : Text,
     title : Text,
     description : Text,
     rules : Text,
     banner : Text,
     level : Text,
     maxParticipant : Nat,
-    sport : Text,
+    sport : [Text],
     date : Text,
     time : Text,
-    arenaId : Text,
-    fieldId : Text,
-    arenas : ArenaType.Arenas,
-    fields : FieldType.Fields,
+    location : Text,
+    communities : CommunityType.Communities,
     events : EventType.Events
   ) : async Text {
     let id = Helper.generateUUID(owner, description);
-    switch (arenas.get(arenaId)) {
-        case (null) return "No Arena Found";
-        case (?eventsArena) {
-            switch(fields.get(fieldId)) {
-                case (null) return "No Field Found";
-                case (?eventsField){
-                    let event : EventType.Event = {
-                    id = id;
-                    owner = owner;
-                    ownerUsername = ownerUsername;
-                    communityId = communityId;
-                    communityName = communityName;
-                    communityProfile = communityProfile;
-                    title = title;
-                    description = description;
-                    rules = rules;
-                    banner = banner;
-                    level = level;
-                    participant = [];
-                    maxParticipant = maxParticipant;
-                    sport = sport;
-                    date = date;
-                    time = time;
-                    arena = eventsArena;
-                    field = eventsField;
-                    createdAt = Time.now();
-                    };
-                    events.put(id, event);
-                    return id;
-                }
-            }
+    switch (communities.get(communityId)) {
+        case (null) return "No Community Found";
+        case (?isCommunity) {
+            let event : EventType.Event = {
+            id = id;
+            owner = owner;
+            ownerUsername = ownerUsername;
+            communityId = communityId;
+            communityName = isCommunity.name;
+            communityProfile = isCommunity.profile;
+            title = title;
+            description = description;
+            rules = rules;
+            banner = banner;
+            level = level;
+            participant = [];
+            maxParticipant = maxParticipant;
+            sport = sport;
+            date = date;
+            time = time;
+            location = location;
+            createdAt = Time.now();
+            };
+            events.put(id, event);
+            return id;
         }
     };
   };

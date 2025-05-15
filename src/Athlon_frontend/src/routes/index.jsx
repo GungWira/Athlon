@@ -44,7 +44,10 @@ export default function AppRoutes() {
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:idCommunity" element={<DetailCommunity />} />
         <Route path="/event" element={<Event />} />
-        <Route path="/event/create" element={<CreateEvent />} />
+        <Route
+          path="/community/:idCommunity/create-event"
+          element={<CreateEvent />}
+        />
         <Route path="/event/:idEvent" element={<EventDetail />} />
 
         <Route path="/testing" element={<Testing />} />
