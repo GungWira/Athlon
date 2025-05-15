@@ -1,8 +1,26 @@
 import { Check } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Premium() {
+  const { userData, actor } = useAuth();
+
+  const handlerUpgrade = async () => {
+    if (userData.isPremium) {
+      return;
+    }
+    try {
+      const result = await actor.setUserPremium(userData.principal, 5000000);
+      if (result[0].username) {
+        console.log("Upgrade successful:", result);
+      } else {
+        console.log("Upgrade failed");
+      }
+    } catch (error) {
+      console.error("Error during upgrade:", error);
+    }
+  };
   return (
     <div className="w-full max-w-6xl flex flex-col justify-start items-start gap-6 mt-8">
       <div className="flex flex-row justify-between items-center gap-8">
@@ -90,8 +108,11 @@ export default function Premium() {
               <p className="text-base text-white/70">Boosting Postingan</p>
             </div>
           </div>
-          <button className="w-full py-2 mt-2 rounded-md border-indigo-600 border-2 text-indigo-600 font-semibold text-base bg-white">
-            Upgrade
+          <button
+            onClick={handlerUpgrade}
+            className="w-full py-2 mt-2 rounded-md border-indigo-600 border-2 text-indigo-600 font-semibold text-base bg-white"
+          >
+            {userData.isPremium ? "Sudah Memiliki" : "Upgrade Sekarang"}
           </button>
         </div>
       </div>
