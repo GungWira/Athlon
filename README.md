@@ -25,6 +25,53 @@ Athlon is developed by a dedicated team of four members:
 ## 🚀 Technology Stack
 - **Frontend:** React, Tailwind CSS, GSAP, Draggable React
 - **Backend:** Motoko (Deployed on ICP)
-- **AI Integration:** Gemini AI API, OpenAI GPT API
+- **AI Integration:** Gemini AI API
 - **Blockchain:** ICP (Internet Computer), Smart Contracts
 
+## 🔧 Prerequisites
+ 🔧 Prerequisites
+Before setting up the project, ensure you have the following installed:
+- **Node.js** (v16+ recommended) [Get It From](https://nodejs.org/)
+- **Dfinity SDK (dfx)** – To deploy on ICP [Installation Guide](https://internetcomputer.org/docs/current/developer-docs/getting-started/install)
+- **Git** [Download](https://git-scm.com/downloads)
+
+## 🛠 Installation
+Clone the repository and install dependencies:
+```sh
+# Clone the repo
+git clone https://github.com/GungWira/Athlon.git
+cd Athlon
+
+# Install dependencies
+npm install
+mops install
+```
+
+## 🌎 Environment Setup
+To integrate **Gemini AI**, you need API keys:
+
+**Obtain Gemini API Key**
+- Sign up at [Google AI](https://ai.google.dev/) and generate an API key.
+- Add the key to your `/src/ECOBUDDY_backend/constants/GlobalConstants.mo` file:
+     ```sh
+     API_KEY=your_api_key_here
+     ```
+
+## 💻 Local Development
+To start the local development server:
+1. Clean dfx processes on system:
+   ```bash
+   dfx killall
+   ```
+   
+2. Deploy the ICP Ledger:
+   ```bash
+   npm run deploy-ledger
+   ```
+
+3. Deploy project canisters:
+   ```bash
+   dfx deploy
+   ```
+
+Your application should now be running at `http://[your CANISTER_ID_ATHLON_FRONTEND].localhost:4943`.
