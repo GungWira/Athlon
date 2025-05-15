@@ -21,7 +21,7 @@ Athlon is developed by a dedicated team of four members:
 - **Premium Accounts** – Access to exclusive arenas, discounts, and faster booking.
 - **Full Decentralization** – Data stored and run directly on ICP canisters, not centralized servers.
 - **AI Generative Description** - Using generative AI, the platform automatically generates engaging and informative descriptions for each arena based on its facilities, location, and user reviews.
-- **Community Features : Enable users to join local communities, interact, and build connections with other sports enthusiasts.
+- **Community Features** : Enable users to join local communities, interact, and build connections with other sports enthusiasts.
 
 ## 🚀 Technology Stack
 - **Frontend:** React, Tailwind CSS, GSAP, Draggable React
@@ -79,6 +79,6 @@ Your application should now be running at `http://[your CANISTER_ID_Athlon_front
 
 ##🔮 Conclusion & Future Plans
 ArenaChain is redefining how people discover and book sports venues by harnessing the power of Web3 technology. With various features, Athlon offers a secure, transparent, and future-ready platform for sports communities. Looking ahead, we aim to expand Atlhon with these exciting developments:
-- **Shared Practice Schedules : Allow users to create and join open training sessions or matches, fostering collaboration and team spirit.
-- **Multi-chain Integration : Expand beyond Internet Computer (ICP) to support additional blockchain networks.
-- **On-chain Reviews & Ratings : Maintain transparency and build trust through immutable community feedback.
+- **Shared Practice Schedules** : Allow users to create and join open training sessions or matches, fostering collaboration and team spirit.
+- **Multi-chain Integration** : Expand beyond Internet Computer (ICP) to support additional blockchain networks.
+- **On-chain Reviews & Ratings** : Maintain transparency and build trust through immutable community feedback.
