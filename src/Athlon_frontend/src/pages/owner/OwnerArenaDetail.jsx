@@ -299,7 +299,6 @@ export default function OwnerArenaDetail() {
                                 </span>
                               </div>
                             </div>
-
                             <button
                               onClick={() => toggleTimeSlots(field.id)}
                               className="bg-indigo-600 text-white px-4 py-2 rounded-md flex items-center"
