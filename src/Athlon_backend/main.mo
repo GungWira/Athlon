@@ -37,6 +37,7 @@ import AiService "services/AiService";
 
 
 actor class Athlon() = this {
+  // principal dipakai saat mencall function setUserPremium untuk mengirim icp ke canister
   stable var athlonPrincipal : Principal = Principal.fromActor(this);
 
   // DATA

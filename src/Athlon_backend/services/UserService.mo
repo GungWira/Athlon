@@ -61,7 +61,7 @@ module {
         };
         // Check if transfer was successful
         switch (transferResult) {
-            case (#err(e)) { return null };
+            case (#err(_)) { return null };
             case (#ok(_)) {
                 switch (user) {
                     case (null) { return null };
