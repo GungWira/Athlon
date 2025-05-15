@@ -21,7 +21,7 @@ const facilitiesOptions = [
 ];
 
 export default function CreateArena() {
-  const { actor, principal } = useAuth();
+  const { actor, principal, userData } = useAuth();
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState({
@@ -43,8 +43,29 @@ export default function CreateArena() {
   const [showPromptRules, setShowPromptRules] = useState(false);
   const [promptRules, setPromptRules] = useState("");
   const [prompting, setPrompting] = useState(false);
+  const [ownerCanCreate, setownerCanCreate] = useState(true);
 
-  // Close dropdown when clicking outside
+  useEffect(() => {
+    const fetchArenas = async () => {
+      try {
+        if (actor) {
+          const result = await actor.getArenaByOwner(principal);
+          if (result) {
+            if (result.length > 0 && !userData.isPremium) {
+              toast.error(
+                "Silahkan upgrade ke premium untuk membuat lebih dari 1 arena"
+              );
+              setownerCanCreate(false);
+            }
+          }
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+    fetchArenas();
+  }, [actor]);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -93,6 +114,12 @@ export default function CreateArena() {
 
   const handleSubmit = async () => {
     try {
+      if (!ownerCanCreate) {
+        toast.error(
+          "Silahkan upgrade ke premium untuk membuat lebih dari 1 arena"
+        );
+        return;
+      }
       if (!formData.name.trim()) {
         toast.error("Nama arena tidak boleh kosong");
         return;

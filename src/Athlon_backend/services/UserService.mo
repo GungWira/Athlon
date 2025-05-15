@@ -50,13 +50,12 @@ module {
     public func setUserPremium(principal : Principal, users : UserType.Users, canisterPrincipal : Principal, amount : Nat, userBalances : UserBalanceType.UserBalances) : async ?UserType.User {
         let user = users.get(principal);
 
-        // Check if user is already premium
         let transferResult = await TransactionService.transferBalance(principal, canisterPrincipal, amount, userBalances);
         switch (user) {
             case (null) { return null };
             case (?u) {
                 if (u.isPremium) {
-                    return null; // User is already premium
+                    return null; 
                 };
             };
         };
@@ -70,7 +69,7 @@ module {
                         let updatedUser = {
                             u with
                             isPremium = true;
-                            endPremiumDate = Time.now() + 30 * 24 * 60 * 60; // 30 days from now
+                            endPremiumDate = Time.now() + 30 * 24 * 60 * 60;
                         };
                         users.put(principal, updatedUser);
                         return ?updatedUser;
@@ -79,7 +78,6 @@ module {
             };
         };
     };
-};
 
     public func updateProfile(principal : Principal, username : Text, phone : Text, imageProfile : Text, users : UserType.Users) : async ?UserType.User {
         switch (users.get(principal)) {
@@ -94,6 +92,8 @@ module {
                     arenas = user.arenas;
                     preferedSports = user.preferedSports;
                     createdAt = user.createdAt;
+                    isPremium = user.isPremium;
+                    endPremiumDate = user.endPremiumDate;
                 };
 
                 users.put(principal, updatedUser);
