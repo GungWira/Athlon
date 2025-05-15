@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { X, ImageIcon } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -12,31 +12,22 @@ const sportsOptions = [
 ];
 
 export default function CreateEvent() {
+  const { idCommunity } = useParams();
   const { actor, principal, userData } = useAuth();
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    images: [],
-    banner: [],
     sports: [],
     rules: "",
+    banner: [],
+    level: "",
+    maxParticipant: 1,
+    date: "",
+    time: "",
+    location: "",
   });
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const readers = files.map(
-      (file) =>
-        new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        })
-    );
-    Promise.all(readers).then((images) => {
-      setFormData((prev) => ({ ...prev, images }));
-    });
-  };
 
   const handleBannerChange = (e) => {
     const files = Array.from(e.target.files);
@@ -65,6 +56,11 @@ export default function CreateEvent() {
     });
   };
 
+  const formatDateToDDMMYYYY = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${day}${month}${year}`;
+  };
+
   const handleSubmit = async () => {
     try {
       if (!formData.name.trim()) {
@@ -79,8 +75,28 @@ export default function CreateEvent() {
         toast.error("Deskripsi tidak boleh kosong");
         return;
       }
-      if (formData.images.length === 0) {
-        toast.error("Harap unggah setidaknya satu gambar arena");
+      if (!formData.rules.trim()) {
+        toast.error("Aturan tidak boleh kosong");
+        return;
+      }
+      if (!formData.level.trim()) {
+        toast.error("Level tidak boleh kosong");
+        return;
+      }
+      if (!formData.maxParticipant) {
+        toast.error("Jumlah peserta tidak boleh kosong");
+        return;
+      }
+      if (!formData.date) {
+        toast.error("Tanggal tidak boleh kosong");
+        return;
+      }
+      if (!formData.time) {
+        toast.error("Waktu tidak boleh kosong");
+        return;
+      }
+      if (!formData.location) {
+        toast.error("Lokasi tidak boleh kosong");
         return;
       }
       if (formData.banner.length === 0) {
@@ -90,28 +106,36 @@ export default function CreateEvent() {
 
       setIsSubmit(true);
 
-      const result = await actor.createCommunity(
-        formData.name,
+      const result = await actor.createEvent(
         principal,
         userData.username,
-        formData.sports,
+        idCommunity,
+        formData.name,
         formData.description,
-        formData.images[0],
+        formData.sports,
+        formData.rules,
         formData.banner[0],
-        formData.rules
+        formData.level,
+        BigInt(formData.maxParticipant),
+        formatDateToDDMMYYYY(formData.date),
+        formData.time,
+        formData.location
       );
-      console.log(result);
 
       setFormData({
         name: "",
         description: "",
-        images: [],
-        banner: [],
         sports: [],
         rules: "",
+        banner: [],
+        level: "",
+        maxParticipant: 1,
+        date: "",
+        time: "",
+        location: "",
       });
 
-      navigate(`/community/${result}`);
+      navigate(`/event/${result}`);
     } catch (err) {
       console.error(err);
       alert("Gagal membuat arena");
@@ -189,7 +213,7 @@ export default function CreateEvent() {
                   </div>
                 </div>
 
-                {/* deksripsi  */}
+                {/* deskripsi */}
                 <div>
                   <label
                     htmlFor="description"
@@ -211,7 +235,124 @@ export default function CreateEvent() {
                   />
                 </div>
 
-                {/* Arena Rules */}
+                {/* LOKASI */}
+                <div>
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Lokasi
+                  </label>
+                  <input
+                    type="text"
+                    id="location"
+                    min="1"
+                    value={formData.location}
+                    placeholder="Masukkan lokasi"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        location: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* LEVEL */}
+                <div>
+                  <label
+                    htmlFor="level"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Level
+                  </label>
+                  <select
+                    id="level"
+                    value={formData.level}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        level: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="" disabled>
+                      Pilih level
+                    </option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="professional">Professional</option>
+                  </select>
+                </div>
+
+                {/* MAX PARTICIPANT */}
+                <div>
+                  <label
+                    htmlFor="maxParticipant"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Jumlah Maksimal Peserta
+                  </label>
+                  <input
+                    type="number"
+                    id="maxParticipant"
+                    min="1"
+                    value={formData.maxParticipant}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        maxParticipant: parseInt(e.target.value, 10),
+                      }))
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* DATE */}
+                <div>
+                  <label
+                    htmlFor="date"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Tanggal
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    value={formData.date}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        date: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* TIME */}
+                <div>
+                  <label
+                    htmlFor="time"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Waktu (Jam)
+                  </label>
+                  <input
+                    type="time"
+                    id="time"
+                    value={formData.time}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        time: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
                 <div>
                   <label
                     htmlFor="rules"

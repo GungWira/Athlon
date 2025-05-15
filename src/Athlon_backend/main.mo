@@ -453,21 +453,18 @@ actor Athlon {
     owner : Principal,
     ownerUsername : Text,
     communityId : Text,
-    communityName : Text,
-    communityProfile : Text,
     title : Text,
     description : Text,
+    sport : [Text],
     rules : Text,
     banner : Text,
     level : Text,
     maxParticipant : Nat,
-    sport : Text,
     date : Text,
     time : Text,
-    arenaId : Text,
-    fieldId : Text,
+    location : Text,
   ) : async Text {
-    return await EventService.createEvent(owner, ownerUsername, communityId, communityName, communityProfile, title, description, rules, banner, level, maxParticipant, sport, date, time, arenaId, fieldId, arenas, fields, events);
+    return await EventService.createEvent(owner, ownerUsername, communityId, title, description, rules, banner, level, maxParticipant, sport, date, time, location, communities, events);
   };
 
   public func getEventById(id : Text) : async ?EventType.Event {

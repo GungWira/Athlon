@@ -63,7 +63,7 @@ export default function Premium() {
           <p className="text-white text-2xl font-semibold">Paket Gratis</p>
           <div className="w-full flex flex-row justify-start items-center gap-2">
             <img src="icp.webp" alt="" className="w-12" />
-            <p className="text-white text-4xl font-bold">0</p>
+            <p className="text-white text-4xl font-bold">0.5</p>
             <p className="text-white/40 text-base">/bulan</p>
           </div>
           <div className="flex flex-col justify-start items-start gap-2">

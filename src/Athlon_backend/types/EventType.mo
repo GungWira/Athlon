@@ -23,11 +23,10 @@ module {
         level : Text;
         participant : [EventParticipant];
         maxParticipant : Nat;
-        sport : Text;
+        sport : [Text];
         date : Text;
         time : Text;
-        arena : ArenaType.Arena;
-        field : FieldType.Field;
+        location : Text;
         createdAt : Int;
     };
 

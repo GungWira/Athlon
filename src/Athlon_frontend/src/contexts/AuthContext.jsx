@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
           if (user && user[0]) {
             setUserData(user[0]);
           }
-          const rate = await actorInstance.get_icp_idr_exchange();
+          const rate = await canisterActor.get_icp_idr_exchange();
           setIcpIdrRate(rate);
         } catch (e) {
           console.error("Error fetching user:", e);
