@@ -3,7 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
 import { getTodayFormattedDate } from "../../utils/formatedDate";
-import { MapPinned, ChevronDown, ChevronUp, EqualApproximately } from "lucide-react";
+import {
+  MapPinned,
+  ChevronDown,
+  ChevronUp,
+  EqualApproximately,
+} from "lucide-react";
 import Button from "../../components/ui/Button";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -145,7 +150,8 @@ export default function OwnerArenaDetail() {
                   <ul className="text-gray-600 text-sm space-y-1">
                     {arenaData.facilities.map((facility, index) => (
                       <li key={index} className="flex items-start">
-                        <span className="mr-2">{index + 1 + "."}</span> {facility}
+                        <span className="mr-2">{index + 1 + "."}</span>{" "}
+                        {facility}
                       </li>
                     ))}
                   </ul>
@@ -230,7 +236,7 @@ export default function OwnerArenaDetail() {
                           onClick={() => toggleTimeSlots(field.id)}
                           className="bg-indigo-600 text-white px-4 py-2 rounded-md flex items-center"
                         >
-                          {availableTimes.length} Jadwal Tersedia {" "}
+                          {availableTimes.length} Jadwal Tersedia{" "}
                           <span className="ml-1">
                             {isTimeSlotsVisible ? (
                               <ChevronUp size={16} />
@@ -242,29 +248,31 @@ export default function OwnerArenaDetail() {
 
                         {isTimeSlotsVisible && (
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 transition-all duration-300">
-                            {[...bookedTimes, ...availableTimes].map((time, idx) => {
-                              const isBooked = bookedTimes.includes(time);
+                            {[...bookedTimes, ...availableTimes].map(
+                              (time, idx) => {
+                                const isBooked = bookedTimes.includes(time);
 
-                              return (
-                                <div
-                                  key={idx}
-                                  className="border-indigo-600/20 border rounded-md overflow-hidden"
-                                >
+                                return (
                                   <div
-                                    className={`w-full py-4 text-center text-base  ${
-                                      isBooked
-                                        ? "bg-gray-200 text-gray-500"
-                                        : "bg-white"
-                                    }`}
+                                    key={idx}
+                                    className="border-indigo-600/20 border rounded-md overflow-hidden"
                                   >
-                                    <div className="py-2 text-center text-base font-semibold">
-                                      60 Menit
+                                    <div
+                                      className={`w-full py-4 text-center text-base  ${
+                                        isBooked
+                                          ? "bg-gray-200 text-gray-500"
+                                          : "bg-white"
+                                      }`}
+                                    >
+                                      <div className="py-2 text-center text-base font-semibold">
+                                        60 Menit
+                                      </div>
+                                      {time}
                                     </div>
-                                    {time}
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              }
+                            )}
                           </div>
                         )}
                       </div>
