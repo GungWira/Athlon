@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
-import { ChevronDown, ImageIcon } from "lucide-react"
+import { ChevronDown, ImageIcon, Coins } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
 
 export default function CreateField() {
@@ -335,8 +335,9 @@ export default function CreateField() {
                   priceMethod: prev.priceMethod === "icp" ? "rp" : "icp",
                 }))
               }
-              className="absolute right-3 bg-indigo-600 text-white px-3 py-1 rounded text-sm"
+              className="absolute flex justify-center items-center gap-2 right-3 bg-indigo-600 text-white px-3 py-1 rounded text-sm"
             >
+              <Coins className="h-6" />
               {form.priceMethod === "icp" ? "Rupiah" : "ICP"}
             </button>
           </div>
