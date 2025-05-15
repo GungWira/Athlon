@@ -375,7 +375,7 @@ actor Athlon {
         switch(isUser.userType == "owner"){
           case(false) return #err "Switch akun ke owner terlebih dahulu untuk melanjutkan";
           case(true) {
-            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances);
+            return await DashboardService.getOwnerDetailDashboard(owner, arenas, bookings, userBalances, communities);
           }
         }
       }

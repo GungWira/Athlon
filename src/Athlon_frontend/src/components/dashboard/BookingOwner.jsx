@@ -89,9 +89,6 @@ export default function BookingOwner({ datas, userData }) {
 
   useEffect(() => {
     if (datas) {
-      console.log(datas);
-
-      // Update chart data
       const now = new Date();
       const countByDay = new Array(7).fill(0);
 
@@ -99,19 +96,16 @@ export default function BookingOwner({ datas, userData }) {
         const createdAt = Number(booking.createdAt / BigInt(1_000_000)); // dari nanodetik ke milidetik
         const bookingDate = new Date(createdAt);
 
-        // Hitung selisih hari antara booking dan sekarang
         const dayDiff = Math.floor(
           (now.setHours(0, 0, 0, 0) - bookingDate.setHours(0, 0, 0, 0)) /
             86400000
         );
 
-        // Jika dalam rentang 0-6 hari kebelakang
         if (dayDiff >= 0 && dayDiff <= 6) {
           countByDay[6 - dayDiff] += 1;
         }
       });
 
-      // Update chart
       setSeries([
         {
           name: "Booking",
@@ -119,7 +113,6 @@ export default function BookingOwner({ datas, userData }) {
         },
       ]);
 
-      // Update filtered bookings
       const filtered = datas.bookings.filter((books) => {
         const query = searchQuery.toLowerCase();
         return (

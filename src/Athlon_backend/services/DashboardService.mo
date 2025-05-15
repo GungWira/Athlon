@@ -16,7 +16,8 @@ module{
         owner : Principal, 
         arenas : ArenaType.Arenas, 
         bookings : BookingType.Bookings, 
-        balances : UserBalanceType.UserBalances
+        balances : UserBalanceType.UserBalances,
+        communities : CommunityType.Communities,
     ) : async Result.Result <DashboardType.OwnerDashboard, Text> {
         // GET ARENA
         let allArena = Iter.toArray(arenas.vals());
@@ -64,10 +65,23 @@ module{
             case (?isBalance) isBalance;
         };
 
+        let principalText = Principal.toText(owner);
+        let allCommunities = Iter.toArray(communities.vals());
+
+        let userCommunities = Array.filter<CommunityType.Community>(
+            allCommunities,
+            func(c : CommunityType.Community) : Bool {
+            Array.find<Text>(c.members, func(m : Text) : Bool {
+            m == principalText
+        }) != null
+            }
+        );
+
         let ownerData : DashboardType.OwnerDashboard = {
             arenas = orderedArens;
             bookings = orderedBooks;
-            balance = ownerBalance.balance
+            balance = ownerBalance.balance;
+            communities = userCommunities;
         };
 
         return #ok ownerData;

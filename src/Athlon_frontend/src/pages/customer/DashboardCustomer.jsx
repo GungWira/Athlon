@@ -11,7 +11,7 @@ import {
 import OverviewCustomer from "../../components/dashboard/OverviewCustomer";
 import BookingCustomer from "../../components/dashboard/BookingCustomer";
 import CommunityCustomer from "../../components/dashboard/CommunityCustomer";
-import AkunSaya from "../../components/dashboard/AkunSaya";
+import MyAccount from "../../components/dashboard/MyAccount";
 
 export default function DashboardCustomer() {
   const [navigation, setNavigation] = useState("overview");
@@ -56,16 +56,18 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <LayoutDashboard
-              className={`${navigation == "overview"
+              className={`${
+                navigation == "overview"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${navigation == "overview"
+              className={`text-base ${
+                navigation == "overview"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             >
               Overview
             </p>
@@ -75,16 +77,18 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <LandPlot
-              className={`${navigation == "booking"
+              className={`${
+                navigation == "booking"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${navigation == "booking"
+              className={`text-base ${
+                navigation == "booking"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             >
               Booking
             </p>
@@ -94,16 +98,18 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <Users
-              className={`${navigation == "community"
+              className={`${
+                navigation == "community"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${navigation == "community"
+              className={`text-base ${
+                navigation == "community"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             >
               Komunitas
             </p>
@@ -113,16 +119,18 @@ export default function DashboardCustomer() {
             className="flex flex-row justify-start items-center gap-3 cursor-pointer group"
           >
             <User
-              className={`${navigation == "account"
+              className={`${
+                navigation == "account"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             />
             <p
-              className={`text-base ${navigation == "account"
+              className={`text-base ${
+                navigation == "account"
                   ? "text-indigo-600"
                   : "text-[#202020]/75"
-                } group-hover:text-indigo-600`}
+              } group-hover:text-indigo-600`}
             >
               Akun Saya
             </p>
@@ -143,7 +151,7 @@ export default function DashboardCustomer() {
       )}
 
       {navigation == "account" && (
-        <AkunSaya datas={datas} userData={userData} />
+        <MyAccount datas={datas} userData={userData} />
       )}
     </div>
   );
